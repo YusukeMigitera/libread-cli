@@ -1,0 +1,17 @@
+# ビルド成果物
+/libread
+/bin/
+*.exe
+
+# 秘密情報
+.env
+.env.*
+
+# Claude Code の個人設定
+.claude/settings.local.json
+
+# テストのカバレッジ
+coverage.out
+
+# OS
+.DS_Store
