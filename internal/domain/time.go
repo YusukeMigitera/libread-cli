@@ -92,3 +92,6 @@ func (d Date) After(o Date) bool  { return d.start().After(o.start()) }
 func (d Date) Weekday() time.Weekday { return d.start().Weekday() }
 
 func (d Date) start() time.Time { return time.Date(d.year, d.month, d.day, 0, 0, 0, 0, tokyo) }
+
+// Year はその日の年。
+func (d Date) Year() int { return d.year }
