@@ -155,7 +155,7 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Implementation for User Story 1
 
-- [ ] T024 [P] [US1] Implement `Availability` and `AvailabilityOf` in `internal/domain/availability.go`:
+- [X] T024 [P] [US1] Implement `Availability` and `AvailabilityOf` in `internal/domain/availability.go`:
   - Values: `AvailableToLend`, `InLibraryOnly`, `OnLoan`, `Reserved`, `NotHeld`, `Unknown`.
   - Japanese labels: 在架（貸出可）, 在架（館内閲覧のみ）, 貸出中, 予約中 (Calil's value as-is), 所蔵なし, 不明.
   - `HoldingSnapshot{ISBN, SystemID, SystemStatus, ByLibKey, FetchedAt}`.
