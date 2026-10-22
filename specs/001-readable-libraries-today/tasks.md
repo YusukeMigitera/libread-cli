@@ -125,7 +125,7 @@ description: "Task list for 今日読める図書館の検索"
   - ClosedRegular.
   - NotYetOpen / Open / FinishedToday at the boundaries (exactly open time, exactly close time).
   - The 閉館まで30分未満 flag.
-- [ ] T020 [P] [US1] Write tests in `internal/domain/result_test.go` for `Readable` and the result aggregation:
+- [X] T020 [P] [US1] Write tests in `internal/domain/result_test.go` for `Readable` and the result aggregation:
   - Readable only when OpenStatus ∈ {Open, NotYetOpen} and Availability ∈ {AvailableToLend, InLibraryOnly} and the snapshot is not stale (>30分 is stale).
   - Libraries with ≥1 readable book are in `Readable`, sorted by 読める冊数の多い順 → 閉館時刻の遅い順 (FR-008).
   - Other libraries are in `NotReadable`, with their reasons.
