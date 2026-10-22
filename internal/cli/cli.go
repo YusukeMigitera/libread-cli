@@ -25,6 +25,7 @@ type Env struct {
 	Stdout      io.Writer
 	Stderr      io.Writer
 	Now         func() time.Time
+	Sleep       func(ctx context.Context, d time.Duration) error // カーリルのポーリング間隔の待ち。nil なら実際に待つ
 	HTTPClient  *http.Client
 	DataDir     string
 	CacheDir    string

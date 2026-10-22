@@ -174,7 +174,7 @@ description: "Task list for 今日読める図書館の検索"
   - Measure the deadline with the injected clock (the start time from `Now` plus 8 seconds), not with `context.WithTimeout` or a real timer, so that T022 and T041 can test it with fake time. Still honour cancellation of the caller's `ctx`.
   - Send `User-Agent: libread/<version>`.
   - Base URL, sleep and clock are injectable.
-- [ ] T029 [US1] Implement the `check` command in `internal/cli/check.go`. Depends on T026–T028 and T017.
+- [X] T029 [US1] Implement the `check` command in `internal/cli/check.go`. Depends on T026–T028 and T017.
   1. Load data and select the target books (all by default, or the resolved `<本>`).
   2. Collect the distinct system IDs.
   3. Use cached holdings `holdings.json`, keyed `ISBN|SystemID`, when ≤30分 old; otherwise refetch.
