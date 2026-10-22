@@ -113,7 +113,7 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests for User Story 1 (write first, confirm they fail)
 
-- [ ] T018 [P] [US1] Write tests in `internal/domain/availability_test.go` for mapping a Calil value to `Availability`, covering every row of research.md R2:
+- [X] T018 [P] [US1] Write tests in `internal/domain/availability_test.go` for mapping a Calil value to `Availability`, covering every row of research.md R2:
   - 貸出可→AvailableToLend, 館内のみ→InLibraryOnly, 貸出中→OnLoan, 予約中→Reserved (label is Calil's value 予約中 as-is).
   - 蔵書なし, or a library missing from the response while the system status is OK/Cache → NotHeld.
   - 蔵書あり / 準備中 / 休館中 / unknown values → Unknown.
