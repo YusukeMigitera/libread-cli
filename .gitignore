@@ -15,3 +15,11 @@ coverage.out
 
 # OS
 .DS_Store
+
+# Go
+*.test
+vendor/
+
+# エディタ
+*.swp
+*.tmp

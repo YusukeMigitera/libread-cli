@@ -44,6 +44,16 @@
 - `<祝日>`: `same`（曜日どおり） / `closed` / `HH:MM-HH:MM`。初めて設定するときの既定は `same`。
 - 実行すると最終更新日が今日の日付になる。
 
+### `book find` / `book add` の補足
+
+- 書誌は国立国会図書館サーチの蔵書（`dpid=iss-ndl-opac`）から探す（research.md R3）。
+- 出典表示（NDL サーチの利用条件, research.md R10）: `book find` と `book add` の出力の末尾に、次の1行を必ず表示する。
+  `libread help` の末尾にも同じ1行を表示する。
+
+  ```text
+  書誌情報: 国立国会図書館サーチ API を利用しています（https://ndlsearch.ndl.go.jp/）
+  ```
+
 ### `lib find` の補足
 
 - spec FR-011 のとおり、都道府県を選んでから探す。カーリルの図書館検索は都道府県の指定が必須なので、`--pref` を必須とする。

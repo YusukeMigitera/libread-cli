@@ -28,10 +28,10 @@ description: "Task list for 今日読める図書館の検索"
 
 **Purpose**: Go モジュールと品質ゲートの準備
 
-- [ ] T001 Create `go.mod` with module path `libread` and `go 1.25`. Create the empty package directories `cmd/libread/`, `internal/domain/`, `internal/calil/testdata/`, `internal/ndl/testdata/`, `internal/holiday/testdata/`, `internal/store/` and `internal/cli/testdata/`.
-- [ ] T002 Add staticcheck as a tool dependency with `go get -tool honnef.co/go/tools/cmd/staticcheck@latest`, so that `go tool staticcheck ./...` runs. This updates `go.mod` and `go.sum`.
-- [ ] T003 [P] Create `Makefile` with a `check` target that runs, in order, `test -z "$(gofmt -l .)"`, `go vet ./...`, `go tool staticcheck ./...` and `go test ./...` (the quality gate in quickstart.md step 1).
-- [ ] T004 [P] Create `.gitignore` that ignores `bin/`.
+- [X] T001 Create `go.mod` with module path `libread` and `go 1.25`. Create the empty package directories `cmd/libread/`, `internal/domain/`, `internal/calil/testdata/`, `internal/ndl/testdata/`, `internal/holiday/testdata/`, `internal/store/` and `internal/cli/testdata/`.
+- [X] T002 Add staticcheck as a tool dependency with `go get -tool honnef.co/go/tools/cmd/staticcheck@latest`, so that `go tool staticcheck ./...` runs. This updates `go.mod` and `go.sum`.
+- [X] T003 [P] Create `Makefile` with a `check` target that runs, in order, `test -z "$(gofmt -l .)"`, `go vet ./...`, `go tool staticcheck ./...` and `go test ./...` (the quality gate in quickstart.md step 1).
+- [X] T004 [P] Create `.gitignore` that ignores `bin/`.
 
 ---
 
@@ -43,57 +43,57 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests (write first, confirm they fail)
 
-- [ ] T005 [P] Write table-driven tests for `ISBN` in `internal/domain/isbn_test.go`:
+- [X] T005 [P] Write table-driven tests for `ISBN` in `internal/domain/isbn_test.go`:
   - Hyphens are allowed.
   - A 10-digit ISBN converts to 13 digits.
   - An invalid check digit is an error.
   - Wrong length and non-digit characters are errors.
-- [ ] T006 [P] Write tests for `TimeOfDay`, `Hours` and `Date` parsing in `internal/domain/time_test.go`:
+- [X] T006 [P] Write tests for `TimeOfDay`, `Hours` and `Date` parsing in `internal/domain/time_test.go`:
   - `HH:MM` 形式、00:00〜24:00. Out of range is an error.
   - `Hours` requires 開館 < 閉館.
   - `Date` is `YYYY-MM-DD` in Asia/Tokyo.
-- [ ] T007 [P] Write tests for `LibraryID` in `internal/domain/library_test.go`:
+- [X] T007 [P] Write tests for `LibraryID` in `internal/domain/library_test.go`:
   - Parsing and formatting use `SystemID:LibKey`.
   - An empty `SystemID` or `LibKey` is an error.
   - A `LibKey` may contain `:` (only the first `:` splits).
-- [ ] T008 [P] Write round-trip tests for data.json in `internal/store/data_test.go`:
+- [X] T008 [P] Write round-trip tests for data.json in `internal/store/data_test.go`:
   - Save and load with `version: 1` (data-model.md「永続化形式」).
   - A missing file loads as empty data.
   - An unknown `version` is an error.
   - Writes are atomic (write to a temp file in the same directory, then rename).
   - `LIBREAD_DATA_DIR` overrides the default `os.UserConfigDir()/libread`.
-- [ ] T009 [P] Write tests for `cli.Run` dispatch in `internal/cli/cli_test.go`:
+- [X] T009 [P] Write tests for `cli.Run` dispatch in `internal/cli/cli_test.go`:
   - An unknown subcommand returns exit code `2` with usage on stderr.
   - Resolving `<本>` by ISBN or 書名の部分一致: no match or multiple matches returns exit code `2`, listing the candidates when there are several.
   - Resolving `<図書館>` by `SystemID:LibKey` or 図書館名の部分一致 follows the same rules.
 
 ### Implementation
 
-- [ ] T010 [P] Implement `ISBN` (13桁に正規化; ハイフン許容; 10桁は13桁へ変換; チェックディジット不正はエラー) in `internal/domain/isbn.go`
-- [ ] T011 [P] Implement `TimeOfDay` (minutes since 0:00), `Hours` and `Date` in `internal/domain/time.go`.
+- [X] T010 [P] Implement `ISBN` (13桁に正規化; ハイフン許容; 10桁は13桁へ変換; チェックディジット不正はエラー) in `internal/domain/isbn.go`
+- [X] T011 [P] Implement `TimeOfDay` (minutes since 0:00), `Hours` and `Date` in `internal/domain/time.go`.
   - Load Asia/Tokyo once via `time.LoadLocation`.
   - Add `import _ "time/tzdata"` in this file.
-- [ ] T012 [P] Implement `LibraryID{SystemID, LibKey}` in `internal/domain/library.go`, with `ParseLibraryID` and `String()`.
-- [ ] T013 Define the entities in `internal/domain/entities.go`, following data-model.md:
+- [X] T012 [P] Implement `LibraryID{SystemID, LibKey}` in `internal/domain/library.go`, with `ParseLibraryID` and `String()`.
+- [X] T013 Define the entities in `internal/domain/entities.go`, following data-model.md:
   - `Book{ISBN, Title, Author, Publisher}`. Title is required.
   - `ReadingBook{Book, Note, AddedOn}`.
   - `RegisteredLibrary{ID, Name, Pref, City, Schedule *Schedule, Closures []ClosurePeriod}`.
   - `Schedule{Weekly [7]DayRule, Holiday HolidayRule, UpdatedOn}`. `DayRule` is closed or `Hours`. `HolidayRule` is `SameAsWeekday` / `Closed` / `CustomHours(Hours)`.
   - `ClosurePeriod{Start, End, Reason}` (Start ≤ End, inclusive).
-- [ ] T014 Implement `internal/store/data.go` (depends on T013):
+- [X] T014 Implement `internal/store/data.go` (depends on T013):
   - `Load` and `Save` for `data.json`, using JSON structs with explicit tags.
   - `weekly` omitted days mean 休館.
   - `holiday.mode` is one of `same` / `closed` / `hours`.
   - Convert to and from the domain types at this boundary; do not use `any`.
-- [ ] T015 Implement `internal/cli/cli.go` (depends on T013):
+- [X] T015 Implement `internal/cli/cli.go` (depends on T013):
   - `Run(ctx, args, env Env) int`, where `Env` holds stdout/stderr, `Now func() time.Time`, `*http.Client`, data and cache dirs, and the Calil key.
   - Subcommand dispatch using `flag.FlagSet`.
   - Exit codes `0/1/2` as in contracts/cli.md.
   - Helpers that resolve `<本>` and `<図書館>`.
-- [ ] T016 Implement `cmd/libread/main.go`:
+- [X] T016 Implement `cmd/libread/main.go`:
   - Build `cli.Env` from `os.Getenv` (`LIBREAD_CALIL_APPKEY`, `LIBREAD_DATA_DIR`, `LIBREAD_CACHE_DIR`), `time.Now` and an `http.Client` with a 10s timeout.
   - Call `os.Exit(cli.Run(...))`.
-- [ ] T017 [P] Implement `internal/store/cache.go`, a JSON file cache under `LIBREAD_CACHE_DIR` (default `os.UserCacheDir()/libread`).
+- [X] T017 [P] Implement `internal/store/cache.go`, a JSON file cache under `LIBREAD_CACHE_DIR` (default `os.UserCacheDir()/libread`).
   - Get and put typed values, each with a stored-at time.
   - Write atomically (temp file in the same directory, then rename).
   - Add tests in `internal/store/cache_test.go` first.
@@ -204,7 +204,7 @@ description: "Task list for 今日読める図書館の検索"
   - Parse ISBN, title, author and publisher (the elements are confirmed from the recording, research.md R3).
   - Skip entries without an ISBN.
   - Return at most 10 results.
-  - Requests use the `title` or `isbn` parameter, plus `cnt`, and send `User-Agent`.
+  - Requests use the `title` or `isbn` parameter, plus `cnt` and `dpid=iss-ndl-opac` (research.md R3), and send `User-Agent`.
 - [ ] T033 [P] [US2] Write tests in `internal/cli/book_test.go`:
   - `book add` rejects a duplicate ISBN (同じ ISBN は1冊しか登録できない) with exit code 2.
   - `book add` looks up the bibliographic record by ISBN and stores `AddedOn` = today.
@@ -212,15 +212,17 @@ description: "Task list for 今日読める図書館の検索"
   - `book rm` resolves `<本>` and removes the book.
   - The `book list` output format is tested.
   - Notes are never sent in any HTTP request.
+  - `book find` and `book add` end with the NDL attribution line from contracts/cli.md, and so does `libread help` (research.md R10).
 
 ### Implementation for User Story 2
 
 - [ ] T034 [P] [US2] Implement the NDL client in `internal/ndl/ndl.go`:
   - `Search(ctx, query) ([]domain.Book, error)`. A query that parses as an ISBN uses the `isbn` parameter; otherwise it uses `title`.
-  - Endpoint `https://ndlsearch.ndl.go.jp/api/opensearch`.
+  - Endpoint `https://ndlsearch.ndl.go.jp/api/opensearch`, always with `dpid=iss-ndl-opac`.
   - Decode with `encoding/xml` into typed structs.
   - Base URL is injectable.
 - [ ] T035 [US2] Implement the `book find`, `book add <ISBN> [--note]`, `book list`, `book note <本> <テキスト>` and `book rm <本>` subcommands in `internal/cli/book.go`, and register them in `internal/cli/cli.go`. Depends on T034.
+  - Print the NDL attribution line from contracts/cli.md at the end of `book find` and `book add`, and add it to the end of `writeUsage` in `internal/cli/cli.go` (research.md R10).
 
 **Checkpoint**: Books can be registered from the CLI, and `libread` (US1) uses them without editing `data.json` by hand.
 
