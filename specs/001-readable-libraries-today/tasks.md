@@ -168,7 +168,7 @@ description: "Task list for 今日読める図書館の検索"
   - Uses `store` cache files named `holidays-YYYY.json`, with a 30-day refresh.
   - Returns `func(Date) (isHoliday, known bool)`.
   - Base URL is injectable for tests.
-- [ ] T028 [P] [US1] Implement the Calil check client in `internal/calil/check.go`:
+- [X] T028 [P] [US1] Implement the Calil check client in `internal/calil/check.go`:
   - `Check(ctx, isbns []ISBN, systemIDs []string) ([]HoldingSnapshot, error)` against `https://api.calil.jp/check` with `format=json&callback=no`.
   - Poll with `session` at ≥2秒 intervals, under an 8-second overall deadline.
   - Measure the deadline with the injected clock (the start time from `Now` plus 8 seconds), not with `context.WithTimeout` or a real timer, so that T022 and T041 can test it with fake time. Still honour cancellation of the caller's `ctx`.

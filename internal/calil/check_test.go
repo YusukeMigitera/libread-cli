@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -354,5 +355,25 @@ func TestCheckMissingEntryIsError(t *testing.T) {
 	}
 	if s := findSnapshot(t, snaps, isbnB, "Tokyo_Setagaya"); s.SystemStatus != domain.SystemError {
 		t.Errorf("応答にない本の status = %q, want Error", s.SystemStatus)
+	}
+}
+
+type failingTransport struct{}
+
+func (failingTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return nil, errors.New("connection refused")
+}
+
+func TestCheckErrorDoesNotLeakAppKey(t *testing.T) {
+	clock := &fakeClock{now: start}
+	c := newClient("https://api.calil.jp", clock)
+	c.HTTP = &http.Client{Transport: failingTransport{}}
+
+	_, err := c.Check(context.Background(), []domain.ISBN{isbnA}, systems)
+	if err == nil {
+		t.Fatal("接続できないのにエラーにならない")
+	}
+	if strings.Contains(err.Error(), testAppKey) {
+		t.Errorf("エラーにアプリケーションキーが含まれる: %v", err)
 	}
 }
