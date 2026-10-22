@@ -144,7 +144,7 @@ description: "Task list for 今日読める図書館の検索"
      - Polls use `session` and wait ≥2秒 between requests (use an injected sleep function).
      - Polling stops at the 8-second overall deadline, leaving still-Running systems marked as timed out.
      - The JSON is decoded into typed structs.
-- [ ] T023 [P] [US1] Write tests in `internal/cli/check_test.go` for the `check` command:
+- [X] T023 [P] [US1] Write tests in `internal/cli/check_test.go` for the `check` command:
   - Golden-file tests in `internal/cli/testdata/check_*.golden` for spec US1 acceptance scenarios 1–5.
   - Edge cases from spec.md: 開館前 (counted as readable, shown as `開館前 HH:MM〜HH:MM`), 本日終了, 閉館まで30分未満, 臨時休館, 開館情報未入力, 不明(古い情報), 取得タイムアウト, 予約中 (shown with Calil's value as-is).
   - With no libraries or no books, exit code 2 and the guidance message.

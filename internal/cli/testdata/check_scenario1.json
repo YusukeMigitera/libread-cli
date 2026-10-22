@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "books": [
+    {"isbn": "9784003101018", "title": "本のタイトルP", "addedOn": "2026-10-01"},
+    {"isbn": "9784003101100", "title": "本のタイトルQ", "addedOn": "2026-10-02"}
+  ],
+  "libraries": [
+    {"systemId": "Tokyo_Setagaya", "libKey": "中央", "name": "世田谷区立中央図書館",
+     "schedule": {"weekly": {"wed": {"open": "09:00", "close": "19:00"}}, "holiday": {"mode": "same"}, "updatedOn": "2026-10-01"},
+     "closures": []},
+    {"systemId": "Tokyo_Setagaya", "libKey": "梅丘", "name": "世田谷区立梅丘図書館",
+     "schedule": {"weekly": {"tue": {"open": "09:00", "close": "19:00"}, "wed": {"closed": true}}, "holiday": {"mode": "same"}, "updatedOn": "2026-10-01"},
+     "closures": []},
+    {"systemId": "Tokyo_Setagaya", "libKey": "経堂", "name": "世田谷区立経堂図書館",
+     "schedule": {"weekly": {"wed": {"open": "09:00", "close": "19:00"}}, "holiday": {"mode": "same"}, "updatedOn": "2026-10-01"},
+     "closures": []}
+  ]
+}
