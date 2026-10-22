@@ -130,6 +130,7 @@ description: "Task list for 今日読める図書館の検索"
   - Libraries with ≥1 readable book are in `Readable`, sorted by 読める冊数の多い順 → 閉館時刻の遅い順 (FR-008).
   - Other libraries are in `NotReadable`, with their reasons.
 - [ ] T021 [P] [US1] After the holidays-jp row of research.md R10 is filled in, record a real holidays-jp response to `internal/holiday/testdata/2026.json`. Then write tests in `internal/holiday/holiday_test.go`:
+  - **進捗 (2026-10-22)**: テストは記述済み。実装環境から holidays-jp に接続できなかったため、実レスポンスの記録（`testdata/2026.json`）は未実施。テストは同じ形式の応答をテスト内で組み立てて使っている（`holiday_test.go` の TODO(T021)）。記録したら置き換えて `[X]` にする。
   - Holiday lookup by `Date`.
   - The year cache is reused within 30 days and refreshed after.
   - On fetch failure with no cache, the result is `known=false`.
