@@ -119,7 +119,7 @@ description: "Task list for 今日読める図書館の検索"
   - 蔵書あり / 準備中 / 休館中 / unknown values → Unknown.
   - System status Error, or Running at the deadline → Unknown.
   - The raw value is preserved.
-- [ ] T019 [P] [US1] Write tests in `internal/domain/openstatus_test.go` for `OpenStatusOf`, one case per step of data-model.md「OpenStatusOf の判定順」:
+- [X] T019 [P] [US1] Write tests in `internal/domain/openstatus_test.go` for `OpenStatusOf`, one case per step of data-model.md「OpenStatusOf の判定順」:
   - NoSchedule, ClosedPeriod (inclusive bounds), HolidayUnknown (only when the holiday rule is not `SameAsWeekday`).
   - Holiday rule `Closed` and `CustomHours`.
   - ClosedRegular.
