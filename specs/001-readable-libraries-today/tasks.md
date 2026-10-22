@@ -162,7 +162,7 @@ description: "Task list for 今日読める図書館の検索"
 - [X] T025 [P] [US1] Implement `OpenStatus` in `internal/domain/openstatus.go`:
   - Values: `Open`, `NotYetOpen`, `FinishedToday`, `ClosedRegular`, `ClosedPeriod`, `NoSchedule`, `HolidayUnknown`.
   - `OpenStatusOf(lib, now, isHoliday func(Date) (bool, bool))`, following the order in data-model.md.
-- [ ] T026 [US1] Implement `Readable`, `Result{CheckedAt, Readable, NotReadable}` and the FR-008 sort in `internal/domain/result.go`. Depends on T024 and T025.
+- [X] T026 [US1] Implement `Readable`, `Result{CheckedAt, Readable, NotReadable}` and the FR-008 sort in `internal/domain/result.go`. Depends on T024 and T025.
 - [ ] T027 [P] [US1] Implement the holidays-jp client in `internal/holiday/holiday.go`:
   - Endpoint `https://holidays-jp.github.io/api/v1/{year}/date.json`.
   - Uses `store` cache files named `holidays-YYYY.json`, with a 30-day refresh.
