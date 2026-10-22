@@ -186,7 +186,7 @@ description: "Task list for 今日読める図書館の検索"
   - Library status: `開館中 〜HH:MM`, `開館前 HH:MM〜HH:MM` for libraries not yet open (FR-004), and the `（閉館まで30分未満）` note.
   - Per-book `（HH:MM 取得）` when fetch times differ.
   - The footer with Calil links, `開館情報: 利用者入力（最終更新 ...）` and `※ 臨時休館は入力済みの情報のみ反映しています`.
-- [ ] T031 [US1] Make `libread` with no arguments run `check` (contracts/cli.md), wiring it in `internal/cli/cli.go`.
+- [X] T031 [US1] Make `libread` with no arguments run `check` (contracts/cli.md), wiring it in `internal/cli/cli.go`.
 
 **Checkpoint**: The US1 golden tests pass. With a hand-written `data.json`, the real `libread` shows today's readable libraries.
 

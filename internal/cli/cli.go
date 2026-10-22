@@ -39,13 +39,12 @@ type command struct {
 }
 
 // commands は実装済みのサブコマンド。各ユーザーストーリーで追加する。
-var commands []command
+var commands = []command{checkCommand}
 
 // Run は args（プログラム名を除く）を解析してサブコマンドを実行し、終了コードを返す。
 func Run(ctx context.Context, args []string, env Env) int {
 	if len(args) == 0 {
-		writeUsage(env.Stderr)
-		return ExitUsage
+		args = []string{checkCommand.name} // 引数なしの libread は check（contracts/cli.md）
 	}
 	switch args[0] {
 	case "help", "-h", "--help":
