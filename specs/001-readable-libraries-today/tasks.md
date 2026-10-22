@@ -180,7 +180,7 @@ description: "Task list for 今日読める図書館の検索"
   3. Use cached holdings `holdings.json`, keyed `ISBN|SystemID`, when ≤30分 old; otherwise refetch.
   4. On refetch failure, keep the stale snapshot marked stale.
   5. Compute `OpenStatusOf` per library and build `Result`.
-- [ ] T030 [US1] Implement the result formatter in `internal/cli/format.go`, exactly matching the output example in contracts/cli.md:
+- [X] T030 [US1] Implement the result formatter in `internal/cli/format.go`, exactly matching the output example in contracts/cli.md:
   - Header `YYYY-MM-DD(曜) HH:MM 時点`.
   - The two sections, with the `今日読める図書館はありません` fallback.
   - Library status: `開館中 〜HH:MM`, `開館前 HH:MM〜HH:MM` for libraries not yet open (FR-004), and the `（閉館まで30分未満）` note.
