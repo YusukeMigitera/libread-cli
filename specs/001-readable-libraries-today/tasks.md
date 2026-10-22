@@ -159,7 +159,7 @@ description: "Task list for 今日読める図書館の検索"
   - Values: `AvailableToLend`, `InLibraryOnly`, `OnLoan`, `Reserved`, `NotHeld`, `Unknown`.
   - Japanese labels: 在架（貸出可）, 在架（館内閲覧のみ）, 貸出中, 予約中 (Calil's value as-is), 所蔵なし, 不明.
   - `HoldingSnapshot{ISBN, SystemID, SystemStatus, ByLibKey, FetchedAt}`.
-- [ ] T025 [P] [US1] Implement `OpenStatus` in `internal/domain/openstatus.go`:
+- [X] T025 [P] [US1] Implement `OpenStatus` in `internal/domain/openstatus.go`:
   - Values: `Open`, `NotYetOpen`, `FinishedToday`, `ClosedRegular`, `ClosedPeriod`, `NoSchedule`, `HolidayUnknown`.
   - `OpenStatusOf(lib, now, isHoliday func(Date) (bool, bool))`, following the order in data-model.md.
 - [ ] T026 [US1] Implement `Readable`, `Result{CheckedAt, Readable, NotReadable}` and the FR-008 sort in `internal/domain/result.go`. Depends on T024 and T025.
