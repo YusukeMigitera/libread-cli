@@ -138,7 +138,7 @@ Result
      "note": "p.120まで", "addedOn": "2026-10-21"}
   ],
   "libraries": [
-    {"systemId": "Tokyo_Setagaya", "libKey": "中央", "name": "世田谷区立中央図書館",
+    {"systemId": "Tokyo_Setagaya", "libKey": "中央図書館", "name": "世田谷区立中央図書館",
      "pref": "東京都", "city": "世田谷区",
      "schedule": {
        "weekly": {"sun": {"open": "09:00", "close": "17:00"}, "mon": {"closed": true}},

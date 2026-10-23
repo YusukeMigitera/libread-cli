@@ -175,8 +175,8 @@ const exampleRunning = `{"session": "S-1", "continue": 1, "books": {
   "9784003101100": {"Tokyo_Setagaya": {"status": "Running", "libkey": {}}}}}`
 
 const exampleFinal = `{"session": "S-1", "continue": 0, "books": {
-  "9784003101018": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"中央": "貸出可", "経堂": "貸出可", "奥沢": "館内のみ", "梅丘": "貸出可", "烏山": "蔵書あり"}}},
-  "9784003101100": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"中央": "館内のみ", "経堂": "貸出中", "奥沢": "予約中"}}}}}`
+  "9784003101018": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"中央図書館": "貸出可", "経堂図書館": "貸出可", "奥沢図書館": "館内のみ", "梅丘図書館": "貸出可", "烏山図書館": "蔵書あり"}}},
+  "9784003101100": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"中央図書館": "館内のみ", "経堂図書館": "貸出中", "奥沢図書館": "予約中"}}}}}`
 
 // TestCheckContractExample は contracts/cli.md の出力例を再現する
 // （US1 受け入れシナリオ 2〜4、開館前、閉館まで30分未満、臨時休館、開館情報未入力、予約中、所蔵なし）。
@@ -213,7 +213,7 @@ func TestCheckContractExample(t *testing.T) {
 // US1 受け入れシナリオ 1: 本を指定して検索し、読める館・休館・貸出中を区別する。
 func TestCheckScenario1SingleBook(t *testing.T) {
 	final := `{"session": "S-1", "continue": 0, "books": {
-	  "9784003101018": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"中央": "貸出可", "梅丘": "貸出可", "経堂": "貸出中"}}}}}`
+	  "9784003101018": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"中央図書館": "貸出可", "梅丘図書館": "貸出可", "経堂図書館": "貸出中"}}}}}`
 	svc := &fakeServices{calil: []string{final}}
 	env, stdout, stderr := newCheckEnv(t, "check_scenario1.json", svc)
 
@@ -229,8 +229,8 @@ func TestCheckScenario1SingleBook(t *testing.T) {
 // US1 受け入れシナリオ 5: どの館でも読めない。
 func TestCheckScenario5NoneReadable(t *testing.T) {
 	final := `{"session": "S-1", "continue": 0, "books": {
-	  "9784003101018": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"中央": "貸出中", "梅丘": "貸出可", "経堂": "予約中"}}},
-	  "9784003101100": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"経堂": "貸出中"}}}}}`
+	  "9784003101018": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"中央図書館": "貸出中", "梅丘図書館": "貸出可", "経堂図書館": "予約中"}}},
+	  "9784003101100": {"Tokyo_Setagaya": {"status": "OK", "libkey": {"経堂図書館": "貸出中"}}}}}`
 	svc := &fakeServices{calil: []string{final}}
 	env, stdout, stderr := newCheckEnv(t, "check_scenario1.json", svc)
 
@@ -244,7 +244,7 @@ func TestCheckScenario5NoneReadable(t *testing.T) {
 func TestCheckEdgeCases(t *testing.T) {
 	running := `{"session": "S-1", "continue": 1, "books": {
 	  "9784003101018": {
-	    "Tokyo_Setagaya": {"status": "OK", "libkey": {"中央": "貸出可", "経堂": "貸出可"}},
+	    "Tokyo_Setagaya": {"status": "OK", "libkey": {"中央図書館": "貸出可", "経堂図書館": "貸出可"}},
 	    "Tokyo_Meguro": {"status": "Running", "libkey": {}},
 	    "Kanagawa_Kawasaki": {"status": "Error", "libkey": {}}}}}`
 	svc := &fakeServices{calil: []string{running}, holidaysStatus: http.StatusInternalServerError}
@@ -263,7 +263,7 @@ func TestCheckReusesFreshCache(t *testing.T) {
 	svc := &fakeServices{}
 	env, stdout, stderr := newCheckEnv(t, "check_single.json", svc)
 	writeHoldingsCache(t, env, `
-	  "9784003101018|Tokyo_Setagaya": {"isbn": "9784003101018", "systemId": "Tokyo_Setagaya", "systemStatus": "OK", "byLibKey": {"中央": "貸出可"}, "fetchedAt": "2026-10-21T13:50:00+09:00"},
+	  "9784003101018|Tokyo_Setagaya": {"isbn": "9784003101018", "systemId": "Tokyo_Setagaya", "systemStatus": "OK", "byLibKey": {"中央図書館": "貸出可"}, "fetchedAt": "2026-10-21T13:50:00+09:00"},
 	  "9784003101018|Tokyo_Meguro": {"isbn": "9784003101018", "systemId": "Tokyo_Meguro", "systemStatus": "Cache", "byLibKey": {}, "fetchedAt": "2026-10-21T13:50:00+09:00"}`)
 
 	if code := Run(context.Background(), []string{"check"}, env); code != ExitOK {
@@ -283,7 +283,7 @@ func TestCheckStaleCacheAndFailedRefetch(t *testing.T) {
 	svc := &fakeServices{calilStatus: http.StatusServiceUnavailable}
 	env, stdout, stderr := newCheckEnv(t, "check_single.json", svc)
 	writeHoldingsCache(t, env, `
-	  "9784003101018|Tokyo_Setagaya": {"isbn": "9784003101018", "systemId": "Tokyo_Setagaya", "systemStatus": "OK", "byLibKey": {"中央": "貸出可"}, "fetchedAt": "2026-10-21T13:00:00+09:00"}`)
+	  "9784003101018|Tokyo_Setagaya": {"isbn": "9784003101018", "systemId": "Tokyo_Setagaya", "systemStatus": "OK", "byLibKey": {"中央図書館": "貸出可"}, "fetchedAt": "2026-10-21T13:00:00+09:00"}`)
 
 	if code := Run(context.Background(), []string{"check"}, env); code != ExitOK {
 		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
@@ -295,15 +295,15 @@ func TestCheckStaleCacheAndFailedRefetch(t *testing.T) {
 }
 
 func TestCheckFallsBackToCachePerSystem(t *testing.T) {
-	// 中央（世田谷）はキャッシュがないので再取得する。八雲中央（目黒）は再取得に失敗したので、30分以内のキャッシュを使う。
+	// 中央図書館（世田谷）はキャッシュがないので再取得する。八雲中央図書館（目黒）は再取得に失敗したので、30分以内のキャッシュを使う。
 	final := `{"session": "S-1", "continue": 0, "books": {
 	  "9784003101018": {
-	    "Tokyo_Setagaya": {"status": "OK", "libkey": {"中央": "貸出可"}},
+	    "Tokyo_Setagaya": {"status": "OK", "libkey": {"中央図書館": "貸出可"}},
 	    "Tokyo_Meguro": {"status": "Error", "libkey": {}}}}}`
 	svc := &fakeServices{calil: []string{final}}
 	env, stdout, stderr := newCheckEnv(t, "check_single.json", svc)
 	writeHoldingsCache(t, env, `
-	  "9784003101018|Tokyo_Meguro": {"isbn": "9784003101018", "systemId": "Tokyo_Meguro", "systemStatus": "OK", "byLibKey": {"八雲中央": "館内のみ"}, "fetchedAt": "2026-10-21T13:50:00+09:00"}`)
+	  "9784003101018|Tokyo_Meguro": {"isbn": "9784003101018", "systemId": "Tokyo_Meguro", "systemStatus": "OK", "byLibKey": {"八雲中央図書館": "館内のみ"}, "fetchedAt": "2026-10-21T13:50:00+09:00"}`)
 
 	if code := Run(context.Background(), []string{"check"}, env); code != ExitOK {
 		t.Fatalf("exit code = %d, stderr = %s", code, stderr)

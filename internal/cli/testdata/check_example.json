@@ -5,22 +5,22 @@
     {"isbn": "9784003101100", "title": "本のタイトルQ", "addedOn": "2026-10-02"}
   ],
   "libraries": [
-    {"systemId": "Tokyo_Setagaya", "libKey": "中央", "name": "世田谷区立中央図書館", "pref": "東京都", "city": "世田谷区",
+    {"systemId": "Tokyo_Setagaya", "libKey": "中央図書館", "name": "世田谷区立中央図書館", "pref": "東京都", "city": "世田谷区",
      "schedule": {"weekly": {"wed": {"open": "09:00", "close": "19:00"}}, "holiday": {"mode": "same"}, "updatedOn": "2026-10-01"},
      "closures": []},
-    {"systemId": "Tokyo_Setagaya", "libKey": "経堂", "name": "世田谷区立経堂図書館", "pref": "東京都", "city": "世田谷区",
+    {"systemId": "Tokyo_Setagaya", "libKey": "経堂図書館", "name": "世田谷区立経堂図書館", "pref": "東京都", "city": "世田谷区",
      "schedule": {"weekly": {"wed": {"open": "09:00", "close": "14:30"}}, "holiday": {"mode": "same"}, "updatedOn": "2026-10-01"},
      "closures": []},
-    {"systemId": "Tokyo_Setagaya", "libKey": "奥沢", "name": "世田谷区立奥沢図書館", "pref": "東京都", "city": "世田谷区",
+    {"systemId": "Tokyo_Setagaya", "libKey": "奥沢図書館", "name": "世田谷区立奥沢図書館", "pref": "東京都", "city": "世田谷区",
      "schedule": {"weekly": {"wed": {"open": "15:00", "close": "20:00"}}, "holiday": {"mode": "same"}, "updatedOn": "2026-10-05"},
      "closures": []},
-    {"systemId": "Tokyo_Setagaya", "libKey": "梅丘", "name": "世田谷区立梅丘図書館", "pref": "東京都", "city": "世田谷区",
+    {"systemId": "Tokyo_Setagaya", "libKey": "梅丘図書館", "name": "世田谷区立梅丘図書館", "pref": "東京都", "city": "世田谷区",
      "schedule": {"weekly": {"wed": {"open": "09:00", "close": "19:00"}}, "holiday": {"mode": "same"}, "updatedOn": "2026-09-15"},
      "closures": [{"start": "2026-10-20", "end": "2026-10-24", "reason": "特別整理期間"}]},
-    {"systemId": "Tokyo_Setagaya", "libKey": "烏山", "name": "世田谷区立烏山図書館", "pref": "東京都", "city": "世田谷区",
+    {"systemId": "Tokyo_Setagaya", "libKey": "烏山図書館", "name": "世田谷区立烏山図書館", "pref": "東京都", "city": "世田谷区",
      "schedule": {"weekly": {"wed": {"open": "09:00", "close": "19:00"}}, "holiday": {"mode": "same"}, "updatedOn": "2026-10-10"},
      "closures": []},
-    {"systemId": "Tokyo_Setagaya", "libKey": "深沢", "name": "世田谷区立深沢図書館", "pref": "東京都", "city": "世田谷区",
+    {"systemId": "Tokyo_Setagaya", "libKey": "深沢図書館", "name": "世田谷区立深沢図書館", "pref": "東京都", "city": "世田谷区",
      "closures": []}
   ]
 }
