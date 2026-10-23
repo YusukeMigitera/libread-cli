@@ -59,13 +59,19 @@ func (c *Client) Check(ctx context.Context, isbns []domain.ISBN, systemIDs []str
 	}
 
 	fetchedAt := c.now()
+	// 応答にない本・システムは、取得中に打ち切ったならタイムアウト、取得が終わっていたなら取得できなかったものとして扱う。
+	// 実際の応答では、取得中の本が books に載っていないことがある。
+	missing := domain.SystemError
+	if resp.Continue == 1 {
+		missing = domain.SystemRunning
+	}
 	snaps := make([]domain.HoldingSnapshot, 0, len(isbns)*len(systemIDs))
 	for _, isbn := range isbns {
 		for _, system := range systemIDs {
 			snap := domain.HoldingSnapshot{
 				ISBN:         isbn,
 				SystemID:     system,
-				SystemStatus: domain.SystemError, // 応答になければ取得できなかったものとして扱う
+				SystemStatus: missing,
 				ByLibKey:     map[string]string{},
 				FetchedAt:    fetchedAt,
 			}

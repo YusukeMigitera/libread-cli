@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -14,8 +16,8 @@ import (
 	"libread/internal/domain"
 )
 
-// 以下の応答は、カーリル 図書館API の check（format=json&callback=no）と同じ形式。
-// TODO(T022): 実レスポンスを testdata/check_*.json に記録し、それを使うように置き換える。
+// 以下の応答は、カーリル 図書館API の check（format=json&callback=no）と同じ形式で組み立てたもの。
+// 実際の応答は testdata/check_*.json に記録してある。記録できていない状態（Cache・Error）を確かめるために使う。
 const (
 	checkInitial = `{
   "session": "S-0001",
@@ -375,5 +377,73 @@ func TestCheckErrorDoesNotLeakAppKey(t *testing.T) {
 	}
 	if strings.Contains(err.Error(), testAppKey) {
 		t.Errorf("エラーにアプリケーションキーが含まれる: %v", err)
+	}
+}
+
+func readFixture(t *testing.T, name string) string {
+	t.Helper()
+	raw, err := os.ReadFile(filepath.Join("testdata", name))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(raw)
+}
+
+// TestCheckRecordedResponses は記録した実際の応答（2026-10-23 取得）を使う。
+// 初回の応答には、まだ1冊目しか載っていない。
+func TestCheckRecordedResponses(t *testing.T) {
+	clock := &fakeClock{now: start}
+	srv := newFakeCalil(t, clock, readFixture(t, "check_initial.json"), readFixture(t, "check_final.json"))
+
+	snaps, err := newClient(srv.URL, clock).Check(context.Background(), []domain.ISBN{isbnA, isbnB}, []string{"Tokyo_Setagaya", "Tokyo_Meguro"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	reqs := srv.recorded()
+	if len(reqs) != 2 || reqs[1].query.Get("session") != "7c3b96b0ab0d9745243cebaa1d38b2bc7ad0f0f2f14a9f4046276dadb09454cc" {
+		t.Fatalf("初回の応答の session でポーリングしていない: %d 回", len(reqs))
+	}
+	tests := []struct {
+		isbn     domain.ISBN
+		system   string
+		byLibKey map[string]string
+	}{
+		{isbnA, "Tokyo_Meguro", map[string]string{"八雲中央図書館": "貸出中", "中目黒駅前図書館": "貸出可"}},
+		{isbnA, "Tokyo_Setagaya", map[string]string{"梅丘図書館": "貸出可", "世田谷図書館": "貸出可", "喜多見図書室": "貸出中"}},
+		{isbnB, "Tokyo_Meguro", map[string]string{"緑が丘図書館": "貸出可"}},
+		{isbnB, "Tokyo_Setagaya", map[string]string{"中央図書館": "貸出可"}},
+	}
+	if len(snaps) != len(tests) {
+		t.Fatalf("snapshots = %d, want %d", len(snaps), len(tests))
+	}
+	for _, tt := range tests {
+		s := findSnapshot(t, snaps, tt.isbn, tt.system)
+		if s.SystemStatus != domain.SystemOK {
+			t.Errorf("%s|%s status = %q, want OK", tt.isbn, tt.system, s.SystemStatus)
+		}
+		if len(s.ByLibKey) != len(tt.byLibKey) {
+			t.Errorf("%s|%s ByLibKey = %v, want %v", tt.isbn, tt.system, s.ByLibKey, tt.byLibKey)
+		}
+		for k, v := range tt.byLibKey {
+			if s.ByLibKey[k] != v {
+				t.Errorf("%s|%s ByLibKey[%s] = %q, want %q", tt.isbn, tt.system, k, s.ByLibKey[k], v)
+			}
+		}
+	}
+}
+
+// 実際の応答では、取得中の本が books に載っていないことがある。上限で打ち切ったときはタイムアウトとして扱う。
+func TestCheckMissingEntryAtDeadlineIsTimeout(t *testing.T) {
+	clock := &fakeClock{now: start}
+	srv := newFakeCalil(t, clock, readFixture(t, "check_initial.json"))
+
+	snaps, err := newClient(srv.URL, clock).Check(context.Background(), []domain.ISBN{isbnA, isbnB}, []string{"Tokyo_Setagaya", "Tokyo_Meguro"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, s := range snaps {
+		if s.SystemStatus != domain.SystemRunning {
+			t.Errorf("%s|%s status = %q, want Running（取得タイムアウト）", s.ISBN, s.SystemID, s.SystemStatus)
+		}
 	}
 }
