@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -12,9 +14,15 @@ import (
 	"libread/internal/store"
 )
 
-// holidays2026 は holidays-jp の {year}/date.json と同じ形式（日付 → 祝日名）の応答。
-// TODO(T021): 実レスポンスを testdata/2026.json に記録し、それを使うように置き換える。
-const holidays2026 = `{"2026-01-01":"元日","2026-10-12":"スポーツの日","2026-11-03":"文化の日","2026-11-23":"勤労感謝の日"}`
+// holidays2026 は holidays-jp の 2026/date.json の実際の応答（testdata/2026.json に記録）。
+func holidays2026(t *testing.T) string {
+	t.Helper()
+	raw, err := os.ReadFile(filepath.Join("testdata", "2026.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(raw)
+}
 
 const testUserAgent = "libread/test"
 
@@ -69,7 +77,7 @@ func mustDate(t *testing.T, s string) domain.Date {
 var now = time.Date(2026, 10, 21, 14, 5, 0, 0, domain.Tokyo())
 
 func TestLookup(t *testing.T) {
-	srv := newFakeServer(t, http.StatusOK, holidays2026)
+	srv := newFakeServer(t, http.StatusOK, holidays2026(t))
 	c := newClient(t, srv.URL, store.NewCache(t.TempDir()), now)
 	isHoliday := c.Lookup(context.Background())
 
@@ -79,6 +87,9 @@ func TestLookup(t *testing.T) {
 	}{
 		{date: "2026-10-12", wantHoliday: true},
 		{date: "2026-11-03", wantHoliday: true},
+		{date: "2026-05-06", wantHoliday: true}, // 振替休日
+		{date: "2026-09-22", wantHoliday: true}, // 国民の休日
+		{date: "2026-12-23", wantHoliday: false},
 		{date: "2026-10-21", wantHoliday: false},
 	}
 	for _, tt := range tests {
@@ -108,7 +119,7 @@ func TestLookupUsesCacheWithin30Days(t *testing.T) {
 	if err := store.Put(cache, "holidays-2026.json", map[string]string{"2026-10-21": "テスト用の祝日"}, now.Add(-29*24*time.Hour)); err != nil {
 		t.Fatal(err)
 	}
-	srv := newFakeServer(t, http.StatusOK, holidays2026)
+	srv := newFakeServer(t, http.StatusOK, holidays2026(t))
 	isHoliday := newClient(t, srv.URL, cache, now).Lookup(context.Background())
 
 	got, known := isHoliday(mustDate(t, "2026-10-21"))
@@ -125,7 +136,7 @@ func TestLookupRefreshesAfter30Days(t *testing.T) {
 	if err := store.Put(cache, "holidays-2026.json", map[string]string{"2026-10-21": "古い祝日"}, now.Add(-31*24*time.Hour)); err != nil {
 		t.Fatal(err)
 	}
-	srv := newFakeServer(t, http.StatusOK, holidays2026)
+	srv := newFakeServer(t, http.StatusOK, holidays2026(t))
 	isHoliday := newClient(t, srv.URL, cache, now).Lookup(context.Background())
 
 	if got, known := isHoliday(mustDate(t, "2026-10-21")); !known || got {
