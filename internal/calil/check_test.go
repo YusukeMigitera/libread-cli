@@ -17,7 +17,7 @@ import (
 )
 
 // 以下の応答は、カーリル 図書館API の check（format=json&callback=no）と同じ形式で組み立てたもの。
-// 実際の応答は testdata/check_*.json に記録してある。記録できていない状態（Cache・Error）を確かめるために使う。
+// 実際の応答は testdata/check_*.json に記録してある。記録できていない状態（Error）を確かめるために使う。
 const (
 	checkInitial = `{
   "session": "S-0001",
@@ -444,6 +444,50 @@ func TestCheckMissingEntryAtDeadlineIsTimeout(t *testing.T) {
 	for _, s := range snaps {
 		if s.SystemStatus != domain.SystemRunning {
 			t.Errorf("%s|%s status = %q, want Running（取得タイムアウト）", s.ISBN, s.SystemID, s.SystemStatus)
+		}
+	}
+}
+
+// TestCheckRecordedCacheAndUnknownSystem は記録した実際の応答（2026-10-23 取得）を使う。
+// 最近問い合わせた本は Cache で返る。存在しないシステムは Error にならず、Running のまま continue: 1 が続く
+// （2冊目には載りもしない）。上限で打ち切り、そのシステムだけを取得タイムアウトにする。
+func TestCheckRecordedCacheAndUnknownSystem(t *testing.T) {
+	clock := &fakeClock{now: start}
+	srv := newFakeCalil(t, clock, readFixture(t, "check_cache_unknown_system.json"))
+	systems := []string{"Tokyo_Setagaya", "Tokyo_Meguro", "Tokyo_NoSuchSystem"}
+
+	snaps, err := newClient(srv.URL, clock).Check(context.Background(), []domain.ISBN{isbnA, isbnB}, systems)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if elapsed := clock.Now().Sub(start); elapsed > 8*time.Second {
+		t.Errorf("経過時間 = %v, want ≤ 8s", elapsed)
+	}
+	tests := []struct {
+		isbn     domain.ISBN
+		system   string
+		status   domain.SystemStatus
+		byLibKey map[string]string
+	}{
+		{isbnA, "Tokyo_Setagaya", domain.SystemCache, map[string]string{"梅丘図書館": "貸出可", "世田谷図書館": "貸出可", "喜多見図書室": "貸出中"}},
+		{isbnA, "Tokyo_Meguro", domain.SystemCache, map[string]string{"八雲中央図書館": "貸出中", "中目黒駅前図書館": "貸出可"}},
+		{isbnA, "Tokyo_NoSuchSystem", domain.SystemRunning, map[string]string{}},
+		{isbnB, "Tokyo_Setagaya", domain.SystemCache, map[string]string{"中央図書館": "貸出可"}},
+		{isbnB, "Tokyo_Meguro", domain.SystemCache, map[string]string{"緑が丘図書館": "貸出可"}},
+		{isbnB, "Tokyo_NoSuchSystem", domain.SystemRunning, map[string]string{}},
+	}
+	for _, tt := range tests {
+		s := findSnapshot(t, snaps, tt.isbn, tt.system)
+		if s.SystemStatus != tt.status {
+			t.Errorf("%s|%s status = %q, want %q", tt.isbn, tt.system, s.SystemStatus, tt.status)
+		}
+		if len(s.ByLibKey) != len(tt.byLibKey) {
+			t.Errorf("%s|%s ByLibKey = %v, want %v", tt.isbn, tt.system, s.ByLibKey, tt.byLibKey)
+		}
+		for k, v := range tt.byLibKey {
+			if s.ByLibKey[k] != v {
+				t.Errorf("%s|%s ByLibKey[%s] = %q, want %q", tt.isbn, tt.system, k, s.ByLibKey[k], v)
+			}
 		}
 	}
 }

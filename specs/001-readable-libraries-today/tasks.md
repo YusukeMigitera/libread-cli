@@ -136,7 +136,7 @@ description: "Task list for 今日読める図書館の検索"
   - On fetch failure with no cache, the result is `known=false`.
   - The request includes `User-Agent: libread/<version>`.
 - [ ] T022 [P] [US1] Write tests in `internal/calil/check_test.go` for the check client:
-  - **進捗 (2026-10-23)**: 手順 2・3 は完了。手順 1 は一部完了: 実際の初回応答（`continue: 1`、1冊目だけが載っている）と最終応答（`continue: 0`、すべて OK）を `internal/calil/testdata/check_initial.json`・`check_final.json` に記録し、`TestCheckRecordedResponses` で使っている。Cache・Error を含む応答はまだ記録できていないため、その状態はテスト内で組み立てた応答で確かめている。記録できたら `[X]` にする。
+  - **進捗 (2026-10-23)**: 手順 2・3 は完了。手順 1 は Error 以外を記録済み: 初回応答（`continue: 1`、1冊目だけが載っている）・最終応答（`continue: 0`、すべて OK）を `check_initial.json`・`check_final.json` に、Cache と存在しないシステムを含む応答を `check_cache_unknown_system.json` に記録し、テストで使っている。存在しない `systemid` は Error にならず、Running のまま `continue: 1` が続くと分かった（上限の8秒で打ち切り、取得タイムアウトとして表示する）。Error を返させる方法が見つからないため、Error はテスト内で組み立てた応答で確かめている。
   1. After the Calil row of research.md R10 is filled in, record real responses: an initial reply with `continue: 1`, a poll reply, and a final reply (`continue: 0`) whose system statuses include OK, Cache and Error. Save them to `internal/calil/testdata/check_*.json`, removing the `appkey` value from every saved URL and body.
   2. Add `TestFixturesHaveNoAppKey` in `internal/calil/fixtures_test.go`. It fails if any file under `internal/calil/testdata/` contains `appkey=` followed by a non-empty value (Constitution 技術的制約: no secrets in the repository).
   3. With `httptest.Server`, assert:
