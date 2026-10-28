@@ -31,18 +31,32 @@ type Client struct {
 	Now       func() time.Time                                 // nil なら time.Now
 	Sleep     func(ctx context.Context, d time.Duration) error // nil なら実際に待つ
 	UserAgent string
+
+	// realTimeout は実時間での上限（0 なら checkDeadline）。テストで短くする。
+	realTimeout time.Duration
 }
 
 // Check は isbns × systemIDs の所蔵状況を1セッションで問い合わせる。
 // 8秒の上限までに取得が終わらなかったシステムは、SystemStatus が Running のまま返す（取得タイムアウト）。
-// 上限は注入した時計で測るので、テストでは実際に待たずに確かめられる。
+// ポーリングが失敗したときも、それまでに取得できた結果を返し、未完了のシステムは取得タイムアウトとする。
+// エラーを返すのは、初回の要求が失敗したときと、ctx が取り消されたときだけ。
+//
+// ポーリングを続けるかは注入した時計で判定するので、テストでは実際に待たずに確かめられる。
+// HTTP の待ち時間は実時間でしか測れないため、要求には実時間で上限に切れる context も渡す（SC-002）。
 func (c *Client) Check(ctx context.Context, isbns []domain.ISBN, systemIDs []string) ([]domain.HoldingSnapshot, error) {
 	deadline := c.now().Add(checkDeadline)
+	timeout := c.realTimeout
+	if timeout == 0 {
+		timeout = checkDeadline
+	}
+	reqCtx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	isbnStrs := make([]string, len(isbns))
 	for i, isbn := range isbns {
 		isbnStrs[i] = isbn.String()
 	}
-	resp, err := c.get(ctx, url.Values{
+	resp, err := c.get(reqCtx, url.Values{
 		"isbn":     {strings.Join(isbnStrs, ",")},
 		"systemid": {strings.Join(systemIDs, ",")},
 	})
@@ -50,12 +64,20 @@ func (c *Client) Check(ctx context.Context, isbns []domain.ISBN, systemIDs []str
 		return nil, err
 	}
 	for resp.Continue == 1 && c.now().Add(pollInterval).Before(deadline) {
-		if err := c.sleep(ctx, pollInterval); err != nil {
-			return nil, fmt.Errorf("カーリルの応答を待てません: %w", err)
+		if err := c.sleep(reqCtx, pollInterval); err != nil {
+			if ctx.Err() != nil {
+				return nil, fmt.Errorf("カーリルの応答を待てません: %w", ctx.Err())
+			}
+			break // 実時間の上限に達した
 		}
-		if resp, err = c.get(ctx, url.Values{"session": {resp.Session}}); err != nil {
-			return nil, err
+		next, err := c.get(reqCtx, url.Values{"session": {resp.Session}})
+		if err != nil {
+			if ctx.Err() != nil {
+				return nil, err
+			}
+			break // 実時間の上限に達したか、ポーリングが失敗した。取得済みの結果を返す
 		}
+		resp = next
 	}
 
 	fetchedAt := c.now()

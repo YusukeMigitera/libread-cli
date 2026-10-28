@@ -491,3 +491,94 @@ func TestCheckRecordedCacheAndUnknownSystem(t *testing.T) {
 		}
 	}
 }
+
+// sequenceServer は i 番目（0 始まり）の要求を handlers[i] で処理する。尽きたら最後の handler を使う。
+func sequenceServer(t *testing.T, handlers ...http.HandlerFunc) *httptest.Server {
+	t.Helper()
+	var mu sync.Mutex
+	n := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		i := min(n, len(handlers)-1)
+		n++
+		mu.Unlock()
+		handlers[i](w, r)
+	}))
+	t.Cleanup(srv.Close)
+	return srv
+}
+
+func respond(body string) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) { w.Write([]byte(body)) }
+}
+
+// hang は要求が打ち切られるまで応答しない。
+func hang(w http.ResponseWriter, r *http.Request) { <-r.Context().Done() }
+
+// 初回は世田谷だけ取得済み、目黒は取得中。
+const partialRunning = `{"session": "S-0003", "continue": 1, "books": {
+  "9784003101018": {
+    "Tokyo_Setagaya": {"status": "OK", "libkey": {"中央図書館": "貸出可"}},
+    "Tokyo_Meguro": {"status": "Running"}}}}`
+
+func assertPartial(t *testing.T, snaps []domain.HoldingSnapshot) {
+	t.Helper()
+	if s := findSnapshot(t, snaps, isbnA, "Tokyo_Setagaya"); s.SystemStatus != domain.SystemOK || s.ByLibKey["中央図書館"] != "貸出可" {
+		t.Errorf("取得済みの結果が失われた: %+v", s)
+	}
+	if s := findSnapshot(t, snaps, isbnA, "Tokyo_Meguro"); s.SystemStatus != domain.SystemRunning {
+		t.Errorf("未完了のシステムの status = %q, want Running（取得タイムアウト）", s.SystemStatus)
+	}
+}
+
+// HTTP の待ち時間も上限に含める。応答しない要求は上限で打ち切る（SC-002）。
+func TestCheckDeadlineCoversSlowInitialRequest(t *testing.T) {
+	clock := &fakeClock{now: start}
+	c := newClient(sequenceServer(t, hang).URL, clock)
+	c.realTimeout = 100 * time.Millisecond
+
+	began := time.Now()
+	_, err := c.Check(context.Background(), []domain.ISBN{isbnA}, []string{"Tokyo_Setagaya"})
+	if elapsed := time.Since(began); elapsed > 2*time.Second {
+		t.Errorf("応答しない初回の要求で %v 待った", elapsed)
+	}
+	if err == nil {
+		t.Error("初回の要求が打ち切られたのにエラーにならない")
+	}
+}
+
+func TestCheckDeadlineCoversSlowPoll(t *testing.T) {
+	clock := &fakeClock{now: start}
+	c := newClient(sequenceServer(t, respond(partialRunning), hang).URL, clock)
+	c.realTimeout = 100 * time.Millisecond
+
+	began := time.Now()
+	snaps, err := c.Check(context.Background(), []domain.ISBN{isbnA}, []string{"Tokyo_Setagaya", "Tokyo_Meguro"})
+	if elapsed := time.Since(began); elapsed > 2*time.Second {
+		t.Errorf("応答しないポーリングで %v 待った", elapsed)
+	}
+	if err != nil {
+		t.Fatalf("取得済みの結果があるのにエラー: %v", err)
+	}
+	assertPartial(t, snaps)
+}
+
+// ポーリングが失敗しても、取得済みの結果は返す。
+func TestCheckPollFailureKeepsPartialResults(t *testing.T) {
+	failures := map[string]http.HandlerFunc{
+		"HTTP 503": func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusServiceUnavailable) },
+		"不正な JSON": respond(`{"session": `),
+	}
+	for name, fail := range failures {
+		t.Run(name, func(t *testing.T) {
+			clock := &fakeClock{now: start}
+			c := newClient(sequenceServer(t, respond(partialRunning), fail).URL, clock)
+
+			snaps, err := c.Check(context.Background(), []domain.ISBN{isbnA}, []string{"Tokyo_Setagaya", "Tokyo_Meguro"})
+			if err != nil {
+				t.Fatalf("取得済みの結果があるのにエラー: %v", err)
+			}
+			assertPartial(t, snaps)
+		})
+	}
+}
