@@ -113,28 +113,30 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests for User Story 1 (write first, confirm they fail)
 
-- [ ] T018 [P] [US1] Write tests in `internal/domain/availability_test.go` for mapping a Calil value to `Availability`, covering every row of research.md R2:
+- [X] T018 [P] [US1] Write tests in `internal/domain/availability_test.go` for mapping a Calil value to `Availability`, covering every row of research.md R2:
   - 貸出可→AvailableToLend, 館内のみ→InLibraryOnly, 貸出中→OnLoan, 予約中→Reserved (label is Calil's value 予約中 as-is).
   - 蔵書なし, or a library missing from the response while the system status is OK/Cache → NotHeld.
   - 蔵書あり / 準備中 / 休館中 / unknown values → Unknown.
   - System status Error, or Running at the deadline → Unknown.
   - The raw value is preserved.
-- [ ] T019 [P] [US1] Write tests in `internal/domain/openstatus_test.go` for `OpenStatusOf`, one case per step of data-model.md「OpenStatusOf の判定順」:
+- [X] T019 [P] [US1] Write tests in `internal/domain/openstatus_test.go` for `OpenStatusOf`, one case per step of data-model.md「OpenStatusOf の判定順」:
   - NoSchedule, ClosedPeriod (inclusive bounds), HolidayUnknown (only when the holiday rule is not `SameAsWeekday`).
   - Holiday rule `Closed` and `CustomHours`.
   - ClosedRegular.
   - NotYetOpen / Open / FinishedToday at the boundaries (exactly open time, exactly close time).
   - The 閉館まで30分未満 flag.
-- [ ] T020 [P] [US1] Write tests in `internal/domain/result_test.go` for `Readable` and the result aggregation:
+- [X] T020 [P] [US1] Write tests in `internal/domain/result_test.go` for `Readable` and the result aggregation:
   - Readable only when OpenStatus ∈ {Open, NotYetOpen} and Availability ∈ {AvailableToLend, InLibraryOnly} and the snapshot is not stale (>30分 is stale).
   - Libraries with ≥1 readable book are in `Readable`, sorted by 読める冊数の多い順 → 閉館時刻の遅い順 (FR-008).
   - Other libraries are in `NotReadable`, with their reasons.
-- [ ] T021 [P] [US1] After the holidays-jp row of research.md R10 is filled in, record a real holidays-jp response to `internal/holiday/testdata/2026.json`. Then write tests in `internal/holiday/holiday_test.go`:
+- [X] T021 [P] [US1] After the holidays-jp row of research.md R10 is filled in, record a real holidays-jp response to `internal/holiday/testdata/2026.json`. Then write tests in `internal/holiday/holiday_test.go`:
+  - **進捗 (2026-10-23)**: 実際の応答を `internal/holiday/testdata/2026.json` に記録し、テストで使っている。
   - Holiday lookup by `Date`.
   - The year cache is reused within 30 days and refreshed after.
   - On fetch failure with no cache, the result is `known=false`.
   - The request includes `User-Agent: libread/<version>`.
-- [ ] T022 [P] [US1] Write tests in `internal/calil/check_test.go` for the check client:
+- [X] T022 [P] [US1] Write tests in `internal/calil/check_test.go` for the check client:
+  - **進捗 (2026-10-23)**: 手順 2・3 は完了。手順 1 は Error 以外を記録済み: 初回応答（`continue: 1`、1冊目だけが載っている）・最終応答（`continue: 0`、すべて OK）を `check_initial.json`・`check_final.json` に、Cache と存在しないシステムを含む応答を `check_cache_unknown_system.json` に記録し、テストで使っている。存在しない `systemid` は Error にならず、Running のまま `continue: 1` が続くと分かった（上限の8秒で打ち切り、取得タイムアウトとして表示する）。Error を返させる方法が見つからないため、Error はテスト内で組み立てた応答で確かめている。Error は図書館側の障害時にしか返らないと考えられるため、この状態で完了とする（2026-10-23）。Error の応答が得られたら記録して差し替える。
   1. After the Calil row of research.md R10 is filled in, record real responses: an initial reply with `continue: 1`, a poll reply, and a final reply (`continue: 0`) whose system statuses include OK, Cache and Error. Save them to `internal/calil/testdata/check_*.json`, removing the `appkey` value from every saved URL and body.
   2. Add `TestFixturesHaveNoAppKey` in `internal/calil/fixtures_test.go`. It fails if any file under `internal/calil/testdata/` contains `appkey=` followed by a non-empty value (Constitution 技術的制約: no secrets in the repository).
   3. With `httptest.Server`, assert:
@@ -142,7 +144,7 @@ description: "Task list for 今日読める図書館の検索"
      - Polls use `session` and wait ≥2秒 between requests (use an injected sleep function).
      - Polling stops at the 8-second overall deadline, leaving still-Running systems marked as timed out.
      - The JSON is decoded into typed structs.
-- [ ] T023 [P] [US1] Write tests in `internal/cli/check_test.go` for the `check` command:
+- [X] T023 [P] [US1] Write tests in `internal/cli/check_test.go` for the `check` command:
   - Golden-file tests in `internal/cli/testdata/check_*.golden` for spec US1 acceptance scenarios 1–5.
   - Edge cases from spec.md: 開館前 (counted as readable, shown as `開館前 HH:MM〜HH:MM`), 本日終了, 閉館まで30分未満, 臨時休館, 開館情報未入力, 不明(古い情報), 取得タイムアウト, 予約中 (shown with Calil's value as-is).
   - With no libraries or no books, exit code 2 and the guidance message.
@@ -153,38 +155,38 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Implementation for User Story 1
 
-- [ ] T024 [P] [US1] Implement `Availability` and `AvailabilityOf` in `internal/domain/availability.go`:
+- [X] T024 [P] [US1] Implement `Availability` and `AvailabilityOf` in `internal/domain/availability.go`:
   - Values: `AvailableToLend`, `InLibraryOnly`, `OnLoan`, `Reserved`, `NotHeld`, `Unknown`.
   - Japanese labels: 在架（貸出可）, 在架（館内閲覧のみ）, 貸出中, 予約中 (Calil's value as-is), 所蔵なし, 不明.
   - `HoldingSnapshot{ISBN, SystemID, SystemStatus, ByLibKey, FetchedAt}`.
-- [ ] T025 [P] [US1] Implement `OpenStatus` in `internal/domain/openstatus.go`:
+- [X] T025 [P] [US1] Implement `OpenStatus` in `internal/domain/openstatus.go`:
   - Values: `Open`, `NotYetOpen`, `FinishedToday`, `ClosedRegular`, `ClosedPeriod`, `NoSchedule`, `HolidayUnknown`.
   - `OpenStatusOf(lib, now, isHoliday func(Date) (bool, bool))`, following the order in data-model.md.
-- [ ] T026 [US1] Implement `Readable`, `Result{CheckedAt, Readable, NotReadable}` and the FR-008 sort in `internal/domain/result.go`. Depends on T024 and T025.
-- [ ] T027 [P] [US1] Implement the holidays-jp client in `internal/holiday/holiday.go`:
+- [X] T026 [US1] Implement `Readable`, `Result{CheckedAt, Readable, NotReadable}` and the FR-008 sort in `internal/domain/result.go`. Depends on T024 and T025.
+- [X] T027 [P] [US1] Implement the holidays-jp client in `internal/holiday/holiday.go`:
   - Endpoint `https://holidays-jp.github.io/api/v1/{year}/date.json`.
   - Uses `store` cache files named `holidays-YYYY.json`, with a 30-day refresh.
   - Returns `func(Date) (isHoliday, known bool)`.
   - Base URL is injectable for tests.
-- [ ] T028 [P] [US1] Implement the Calil check client in `internal/calil/check.go`:
+- [X] T028 [P] [US1] Implement the Calil check client in `internal/calil/check.go`:
   - `Check(ctx, isbns []ISBN, systemIDs []string) ([]HoldingSnapshot, error)` against `https://api.calil.jp/check` with `format=json&callback=no`.
   - Poll with `session` at ≥2秒 intervals, under an 8-second overall deadline.
   - Measure the deadline with the injected clock (the start time from `Now` plus 8 seconds), not with `context.WithTimeout` or a real timer, so that T022 and T041 can test it with fake time. Still honour cancellation of the caller's `ctx`.
   - Send `User-Agent: libread/<version>`.
   - Base URL, sleep and clock are injectable.
-- [ ] T029 [US1] Implement the `check` command in `internal/cli/check.go`. Depends on T026–T028 and T017.
+- [X] T029 [US1] Implement the `check` command in `internal/cli/check.go`. Depends on T026–T028 and T017.
   1. Load data and select the target books (all by default, or the resolved `<本>`).
   2. Collect the distinct system IDs.
   3. Use cached holdings `holdings.json`, keyed `ISBN|SystemID`, when ≤30分 old; otherwise refetch.
   4. On refetch failure, keep the stale snapshot marked stale.
   5. Compute `OpenStatusOf` per library and build `Result`.
-- [ ] T030 [US1] Implement the result formatter in `internal/cli/format.go`, exactly matching the output example in contracts/cli.md:
+- [X] T030 [US1] Implement the result formatter in `internal/cli/format.go`, exactly matching the output example in contracts/cli.md:
   - Header `YYYY-MM-DD(曜) HH:MM 時点`.
   - The two sections, with the `今日読める図書館はありません` fallback.
   - Library status: `開館中 〜HH:MM`, `開館前 HH:MM〜HH:MM` for libraries not yet open (FR-004), and the `（閉館まで30分未満）` note.
   - Per-book `（HH:MM 取得）` when fetch times differ.
   - The footer with Calil links, `開館情報: 利用者入力（最終更新 ...）` and `※ 臨時休館は入力済みの情報のみ反映しています`.
-- [ ] T031 [US1] Make `libread` with no arguments run `check` (contracts/cli.md), wiring it in `internal/cli/cli.go`.
+- [X] T031 [US1] Make `libread` with no arguments run `check` (contracts/cli.md), wiring it in `internal/cli/cli.go`.
 
 **Checkpoint**: The US1 golden tests pass. With a hand-written `data.json`, the real `libread` shows today's readable libraries.
 
