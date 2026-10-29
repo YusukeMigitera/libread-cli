@@ -52,7 +52,7 @@ func TestBookWorkflow(t *testing.T) {
 		t.Fatalf("find: exit code = %d, stderr = %s", code, stderr)
 	}
 	assertGolden(t, "book_find.golden", stdout.String())
-	if !strings.Contains(stdout.String(), "345件中10件を表示") || !strings.Contains(stdout.String(), "--author") {
+	if !strings.Contains(stdout.String(), "345件中10件を表示") || !strings.Contains(stdout.String(), "--author") || strings.Contains(stdout.String(), "上位") {
 		t.Errorf("一致件数と絞り込みの案内がない: %q", stdout.String())
 	}
 	if q := svc.recorded()[0].url.Query(); q.Get("title") != "吾輩は猫である" || q.Get("dpid") != "iss-ndl-opac" || q.Has("creator") {
@@ -211,11 +211,45 @@ func TestBookFindNoResults(t *testing.T) {
 	if code := run(env, stdout, stderr, "book", "find", "存在しない本"); code != ExitUsage {
 		t.Errorf("exit code = %d, want %d", code, ExitUsage)
 	}
-	if !strings.Contains(stderr.String(), "存在しない本") {
+	if !strings.Contains(stderr.String(), "「存在しない本」に一致する本は見つかりませんでした") {
 		t.Errorf("stderr = %q", stderr.String())
 	}
-	if !strings.HasSuffix(stdout.String(), wantAttribution) {
-		t.Errorf("stdout = %q, want 出典表示で終わる", stdout.String())
+	// 一致がないので、絞り込みの案内は出さない。
+	if stdout.String() != wantAttribution {
+		t.Errorf("stdout = %q, want 出典表示だけ", stdout.String())
+	}
+}
+
+// 絞り込みで0件になったときは、指定した著者・出版社もメッセージに含める。
+func TestBookFindNoResultsShowsFilters(t *testing.T) {
+	svc := &fakeServices{ndl: emptyRSS}
+	env, stdout, stderr := newCheckEnv(t, "", svc)
+
+	if code := run(env, stdout, stderr, "book", "find", "吾輩は猫である", "--author", "夏目 漱石", "--publisher", "岩波書店"); code != ExitUsage {
+		t.Errorf("exit code = %d, want %d", code, ExitUsage)
+	}
+	if !strings.Contains(stderr.String(), "「吾輩は猫である」（著者: 夏目 漱石、出版社: 岩波書店）に一致する本は見つかりませんでした") {
+		t.Errorf("stderr = %q", stderr.String())
+	}
+}
+
+// 一致はあるのに、取得した記録に ISBN のある本が1件もないときも、絞り込みの案内を出す。
+func TestBookFindNoISBNInFetchedRecords(t *testing.T) {
+	const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
+		`<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" version="2.0"><channel>` +
+		`<openSearch:totalResults>345</openSearch:totalResults>` +
+		`<item><dc:title>内田百間全集</dc:title></item>` +
+		`<item><dc:title>漱石全集</dc:title></item>` +
+		`</channel></rss>`
+	svc := &fakeServices{ndl: rss}
+	env, stdout, stderr := newCheckEnv(t, "", svc)
+
+	if code := run(env, stdout, stderr, "book", "find", "吾輩は猫である"); code != ExitUsage {
+		t.Errorf("exit code = %d, want %d", code, ExitUsage)
+	}
+	assertGolden(t, "book_find_no_isbn.golden", stdout.String())
+	if !strings.Contains(stderr.String(), "吾輩は猫である") {
+		t.Errorf("stderr = %q", stderr.String())
 	}
 }
 

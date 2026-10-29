@@ -74,26 +74,30 @@ func runBookFind(ctx context.Context, args []string, env Env) error {
 	if query == "" {
 		return usageErrorf("%s", usage)
 	}
-	res, err := ndlClient(env).Search(ctx, ndl.Query{Text: query, Author: *author, Publisher: *publisher})
+	q := ndl.Query{Text: query, Author: strings.TrimSpace(*author), Publisher: strings.TrimSpace(*publisher)}
+	res, err := ndlClient(env).Search(ctx, q)
 	if err != nil {
 		return err
 	}
 	if len(res.Books) == 0 {
+		// 一致はあるのに取得した記録に ISBN のある本がないときは、絞り込めば見つかるかもしれない。
+		if res.Truncated {
+			fmt.Fprintf(env.Stdout, "%d件の一致がありますが、取得した中に ISBN のある本がありませんでした。%s\n\n", res.Total, narrowingHint)
+		}
 		fmt.Fprintln(env.Stdout, ndlAttribution)
-		return usageErrorf("「%s」に一致する本は見つかりませんでした", query)
+		return usageErrorf("%sに一致する本は見つかりませんでした", describeQuery(q))
 	}
 	if res.Truncated {
-		fmt.Fprintf(env.Stdout, "「%s」の検索結果（%d件中%d件を表示）\n", query, res.Total, len(res.Books))
+		fmt.Fprintf(env.Stdout, "%sの検索結果（%d件中%d件を表示）\n", describeQuery(q), res.Total, len(res.Books))
 	} else {
-		fmt.Fprintf(env.Stdout, "「%s」の検索結果（%d件）\n", query, len(res.Books))
+		fmt.Fprintf(env.Stdout, "%sの検索結果（%d件）\n", describeQuery(q), len(res.Books))
 	}
 	for i, b := range res.Books {
 		fmt.Fprintf(env.Stdout, "%d. %s %s\n", i+1, b.ISBN, describeBook(b))
 	}
 	fmt.Fprintln(env.Stdout)
 	if res.Truncated {
-		fmt.Fprintf(env.Stdout, "%d件のうち上位%d件を表示しています。"+
-			"見つからないときは --author <著者> や --publisher <出版社> で絞り込むか、ISBN で探してください\n", res.Total, len(res.Books))
+		fmt.Fprintf(env.Stdout, "表示しきれていない本があります。見つからないときは %s\n", narrowingHint)
 	}
 	fmt.Fprintln(env.Stdout, "登録するには: libread book add <ISBN> [--note <テキスト>]")
 	fmt.Fprintln(env.Stdout)
@@ -232,6 +236,25 @@ func runBookRm(args []string, env Env) error {
 	}
 	fmt.Fprintf(env.Stdout, "読みかけの本から外しました: 『%s』\n", target.Book.Title)
 	return nil
+}
+
+// narrowingHint は、一致した本を表示しきれなかったときの案内（contracts/cli.md）。
+const narrowingHint = "--author <著者> や --publisher <出版社> で絞り込むか、ISBN で探してください"
+
+// describeQuery は「書名」（著者: …、出版社: …）の形で検索条件を表す。指定しなかった条件は省く。
+func describeQuery(q ndl.Query) string {
+	s := "「" + q.Text + "」"
+	var filters []string
+	if q.Author != "" {
+		filters = append(filters, "著者: "+q.Author)
+	}
+	if q.Publisher != "" {
+		filters = append(filters, "出版社: "+q.Publisher)
+	}
+	if len(filters) > 0 {
+		s += "（" + strings.Join(filters, "、") + "）"
+	}
+	return s
 }
 
 // describeBook は『書名』 著者 / 出版社 の形で本を表す。著者・出版社が空なら省く。

@@ -233,6 +233,10 @@ description: "Task list for 今日読める図書館の検索"
   - In `internal/cli/book_test.go`: golden files for `book find` with and without the 「N件中M件を表示」 note, and `--author` / `--publisher` given before or after the title.
 - [X] T046 [US2] Implement the ranking, `--author` / `--publisher` and the match-count note in `internal/ndl/ndl.go` and `internal/cli/book.go`. Depends on T045.
 - [X] T047 [US2] Give NDL requests a 30-second timeout, leaving the 10-second timeout of `env.HTTPClient` for the other services (research.md R3「Decision（タイムアウト）」). Test in `internal/cli/book_test.go` that the NDL client has the 30-second timeout and reuses the same Transport, and that `env.HTTPClient` is unchanged.
+- [X] T048 [US2] Fix the `book find` messages found in review (contracts/cli.md「`book find` / `book add` の補足」), with tests in `internal/cli/book_test.go` first:
+  - When NDL reports more matches but none of the fetched records has an ISBN, show the narrowing hint too (exit code 2).
+  - Replace 「N件のうち上位M件」, which suggests ranking across all matches, with 「表示しきれていない本があります」.
+  - Include `--author` and `--publisher` in the heading and in the not-found message.
 
 **Checkpoint**: Books can be registered from the CLI, and `libread` (US1) uses them without editing `data.json` by hand.
 
