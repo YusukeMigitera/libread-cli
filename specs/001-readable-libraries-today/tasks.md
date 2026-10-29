@@ -253,6 +253,7 @@ description: "Task list for 今日読める図書館の検索"
 ### Tests for User Story 3 (write first, confirm they fail)
 
 - [X] T036 [P] [US3] Record a real Calil library search response (e.g. `pref=東京都&city=世田谷区`) to `internal/calil/testdata/library_*.json`, removing the `appkey` value. These files are covered by `TestFixturesHaveNoAppKey` in `internal/calil/fixtures_test.go`; if T022 is not done yet, create that test first as T022 step 2 describes. Then write tests in `internal/calil/library_test.go`:
+  - **進捗 (2026-10-30)**: 完了。`pref=東京都&city=世田谷区` の実際の応答（35館。世田谷区立の21館と区内の大学図書館など）を `internal/calil/testdata/library_setagaya.json` に、`systemid=Tokyo_Setagaya` の実際の応答（21館）を `library_system_setagaya.json` に記録し、テストで使っている。応答は JSON の配列で、項目名は想定どおりだった。存在しない `systemid` には空の配列 `[]` が返る。館キーは `中央図書館` のような館名で、大学図書館は `本館`・`中央` などになる。
   - Parse `systemid`, `libkey`, `formal`, `pref`, `city` and `address`.
   - `pref` is required.
   - `appkey` and `User-Agent` are sent.
