@@ -39,7 +39,7 @@ type command struct {
 }
 
 // commands は実装済みのサブコマンド。各ユーザーストーリーで追加する。
-var commands = []command{checkCommand, bookCommand}
+var commands = []command{checkCommand, bookCommand, libCommand}
 
 // Run は args（プログラム名を除く）を解析してサブコマンドを実行し、終了コードを返す。
 func Run(ctx context.Context, args []string, env Env) int {

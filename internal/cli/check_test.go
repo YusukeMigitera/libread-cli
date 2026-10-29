@@ -51,6 +51,7 @@ type fakeServices struct {
 	mu             sync.Mutex
 	calil          []string // i 番目の要求に返す応答。尽きたら最後の応答を返し続ける
 	calilStatus    int
+	calilLibrary   string // 図書館検索（/library）の応答
 	holidays       string
 	holidaysStatus int
 	ndl            string
@@ -71,6 +72,10 @@ func (f *fakeServices) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	f.requests = append(f.requests, recordedRequest{host: r.Host, url: r.URL, agent: r.Header.Get("User-Agent")})
 	switch r.Host {
 	case "api.calil.jp":
+		if r.URL.Path == "/library" {
+			w.Write([]byte(f.calilLibrary))
+			return
+		}
 		f.calilRequests++
 		if f.calilStatus != 0 && f.calilStatus != http.StatusOK {
 			w.WriteHeader(f.calilStatus)

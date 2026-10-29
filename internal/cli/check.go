@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"time"
@@ -55,10 +54,8 @@ func runCheck(ctx context.Context, args []string, env Env) error {
 		}
 		books = []domain.ReadingBook{b}
 	}
-	if env.CalilAppKey == "" {
-		return errors.New("カーリルのアプリケーションキーが設定されていません。" +
-			"カーリルの開発者ダッシュボード（https://calil.jp/api/dashboard/）でキーを取得し、" +
-			"環境変数 LIBREAD_CALIL_APPKEY に設定してください")
+	if err := requireAppKey(env); err != nil {
+		return err
 	}
 
 	now := env.Now()
