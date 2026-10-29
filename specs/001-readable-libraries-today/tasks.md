@@ -290,7 +290,8 @@ description: "Task list for 今日読める図書館の検索"
   - Per command, requests stay within the limits in research.md R9: `check` sends one Calil session (initial request plus polls ≥2秒 apart) and at most one holidays-jp request per year, and sends no Calil request when the holdings cache is ≤30分 old; `lib find` and `lib add` each send one Calil library request; `book find` and `book add` send one NDL request.
   - At most one request to each service is in flight at a time.
   - Every request carries `User-Agent: libread/<version>`.
-- [ ] T043 Run the `check` target in `Makefile` (gofmt, go vet, staticcheck, go test) and fix every warning.
+- [X] T043 Run the `check` target in `Makefile` (gofmt, go vet, staticcheck, go test) and fix every warning.
+  - **進捗 (2026-10-29)**: 完了。gofmt・go vet・staticcheck・go test のいずれも警告なし（`go test -race ./...` も成功）。修正が必要な箇所はなかった。
 - [ ] T044 Run quickstart.md steps 2 and 3 against the real services with a temporary `LIBREAD_DATA_DIR`, and record any differences in `specs/001-readable-libraries-today/quickstart.md`.
 
 ---
