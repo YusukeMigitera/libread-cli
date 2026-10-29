@@ -202,8 +202,8 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests for User Story 2 (write first, confirm they fail)
 
-- [ ] T032 [P] [US2] After the NDL row of research.md R10 is filled in, record real NDL OpenSearch responses (a title search and an ISBN search) to `internal/ndl/testdata/*.xml`. Then write tests in `internal/ndl/ndl_test.go`:
-  - **進捗 (2026-10-29)**: テストは完了。実応答の記録は未完了: 作業環境のネットワーク制限で `ndlsearch.ndl.go.jp` に接続できなかったため、DC-NDL 形式の仕様（RSS 2.0 の `dc:title`・`dc:creator`・`dc:publisher`・`dc:identifier xsi:type="dcndl:ISBN"`）に沿って手書きした仮の応答を `internal/ndl/testdata/opensearch_title.xml`・`opensearch_isbn.xml` に置き、テストで使っている（各ファイルの先頭に「仮の応答」と注記）。実応答を同じ要求（ファイル先頭の注記を参照）で記録して差し替え、要素の位置が違えば `internal/ndl/ndl.go` を直したら完了とする。
+- [X] T032 [P] [US2] After the NDL row of research.md R10 is filled in, record real NDL OpenSearch responses (a title search and an ISBN search) to `internal/ndl/testdata/*.xml`. Then write tests in `internal/ndl/ndl_test.go`:
+  - **進捗 (2026-10-29)**: 完了。書名検索（`title=吾輩は猫である`）と ISBN 検索（`isbn=9784003101018`）の実際の応答を `internal/ndl/testdata/opensearch_title.xml`・`opensearch_isbn.xml` に記録し、テストで使っている。要素の位置は想定どおりで、`internal/ndl/ndl.go` の変更は不要だった。著者の `dc:creator` は典拠形（例: `夏目, 漱石, 1867-1916`）で、そのまま表示している。
   - Parse ISBN, title, author and publisher (the elements are confirmed from the recording, research.md R3).
   - Skip entries without an ISBN.
   - Return at most 10 results.

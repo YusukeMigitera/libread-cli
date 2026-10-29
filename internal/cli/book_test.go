@@ -65,7 +65,7 @@ func TestBookWorkflow(t *testing.T) {
 		t.Fatalf("登録された本 = %d, want 1", len(d.Books))
 	}
 	got := d.Books[0]
-	if got.Book.ISBN != "9784003101018" || got.Book.Title != "吾輩は猫である" || got.Book.Author != "夏目漱石 著" || got.Book.Publisher != "岩波書店" {
+	if got.Book.ISBN != "9784003101018" || got.Book.Title != "吾輩は猫である" || got.Book.Author != "夏目, 漱石, 1867-1916" || got.Book.Publisher != "岩波書店" {
 		t.Errorf("登録された書誌 = %+v", got.Book)
 	}
 	if got.Note != "p.120 まで" || got.AddedOn.String() != "2026-10-21" {

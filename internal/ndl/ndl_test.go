@@ -17,6 +17,9 @@ import (
 
 const testUserAgent = "libread/test"
 
+// fixture は testdata に記録した NDL サーチ OpenSearch の実際の応答（2026-10-29 取得）。
+//   - opensearch_title.xml: GET /api/opensearch?title=吾輩は猫である&cnt=10&dpid=iss-ndl-opac
+//   - opensearch_isbn.xml:  GET /api/opensearch?isbn=9784003101018&cnt=10&dpid=iss-ndl-opac
 func fixture(t *testing.T, name string) string {
 	t.Helper()
 	raw, err := os.ReadFile(filepath.Join("testdata", name))
@@ -72,11 +75,19 @@ func TestSearchByTitle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// ISBN のない記録は除き、同じ ISBN の記録は最初の1件だけにする。10桁・ハイフン付きは13桁に正規化する。
+	// 応答の10件のうち、ISBN のない『内田百間全集』だけを除く。
+	// 10桁・ハイフン付きの ISBN は13桁に正規化し、著者・出版社が複数あれば「、」でつなぐ。
+	// 著者は dc:creator（典拠形「姓, 名, 生没年」）をそのまま使う。dc:creator のない記録は著者が空になる。
 	want := []domain.Book{
-		{ISBN: mustISBN(t, "9784003101018"), Title: "吾輩は猫である", Author: "夏目漱石 著", Publisher: "岩波書店"},
-		{ISBN: mustISBN(t, "9784101010014"), Title: "吾輩は猫である", Author: "夏目漱石 著", Publisher: "新潮社"},
-		{ISBN: mustISBN(t, "9784041001141"), Title: "吾輩は猫である 注釈版", Author: "夏目漱石 著、注釈者 注", Publisher: "角川書店"},
+		{ISBN: mustISBN(t, "9784895283694"), Title: "赤い実 : ほか", Author: "井上, 靖, 1907-1991、三木, 卓, 1935-2023、安岡, 章太郎, 1920-2013、直野, 敦, 1929-", Publisher: "光村図書出版"},
+		{ISBN: mustISBN(t, "9784072966969"), Title: "頭のいい子を育てる日本のおはなし : ハンディタイプ : おでかけに最適!軽くて持ち運びやすい", Author: "主婦の友社", Publisher: "主婦の友社"},
+		{ISBN: mustISBN(t, "9784795292833"), Title: "エリザベス : 現代版「吾輩は猫である」", Author: "山川, とおる, 1946-", Publisher: "東京図書出版会、星雲社 (発売)"},
+		{ISBN: mustISBN(t, "9784790715917"), Title: "男漱石を女が読む", Author: "渡辺, 澄子, 1930- 近代日本文学", Publisher: "世界思想社"},
+		{ISBN: mustISBN(t, "9784784511396"), Title: "革命伝説・宮本研の劇世界", Author: "日本演劇学会", Publisher: "社会評論社"},
+		{ISBN: mustISBN(t, "9784405072077"), Title: "考える力を伸ばす!心を育てる!読み聞かせ366話", Author: "新星出版社", Publisher: "新星出版社"},
+		{ISBN: mustISBN(t, "9787559638427"), Title: "我是猫", Author: "夏目, 漱石, 1867-1916、孙, 静", Publisher: "北京联合出版"},
+		{ISBN: mustISBN(t, "9789888570096"), Title: "我是貓 : 首二章 : 日漢對照・精裝有聲版", Author: "夏目, 漱石, 1867-1916、鄒, 波", Publisher: "香港中和出版、香港聯合書刊物流"},
+		{ISBN: mustISBN(t, "9787806572856"), Title: "我是猫", Author: "", Publisher: "译林出版社"},
 	}
 	if len(got) != len(want) {
 		t.Fatalf("got %d 件 %+v, want %d 件", len(got), got, len(want))
@@ -115,7 +126,8 @@ func TestSearchByISBN(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := domain.Book{ISBN: mustISBN(t, "9784003101018"), Title: "吾輩は猫である", Author: "夏目漱石 著", Publisher: "岩波書店"}
+	// dcndl:ISBN と dcndl:ISBN13 の両方に10桁の値が入っている。dcndl:ISBN の値を13桁に正規化して使う。
+	want := domain.Book{ISBN: mustISBN(t, "9784003101018"), Title: "吾輩は猫である", Author: "夏目, 漱石, 1867-1916", Publisher: "岩波書店"}
 	if len(got) != 1 || got[0] != want {
 		t.Fatalf("got %+v, want [%+v]", got, want)
 	}
