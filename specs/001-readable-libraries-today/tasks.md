@@ -293,7 +293,7 @@ description: "Task list for 今日読める図書館の検索"
 - [X] T043 Run the `check` target in `Makefile` (gofmt, go vet, staticcheck, go test) and fix every warning.
   - **進捗 (2026-10-29)**: 完了。gofmt・go vet・staticcheck・go test のいずれも警告なし（`go test -race ./...` も成功）。修正が必要な箇所はなかった。
 - [X] T044 Run quickstart.md steps 2 and 3 against the real services with a temporary `LIBREAD_DATA_DIR`, and record any differences in `specs/001-readable-libraries-today/quickstart.md`.
-  - **進捗 (2026-10-30)**: 完了。期待結果との食い違いはなかった。注意点（所蔵館を登録しないと「読める」館が出ないこと、NDL サーチの一時的なタイムアウト、holidays-jp は確認環境から接続できなかったこと）を quickstart.md の「実サービスでの確認結果」に記録した。
+  - **進捗 (2026-10-30)**: 完了。期待結果との食い違いはなかった。注意点（所蔵館を登録しないと「読める」館が出ないこと、NDL サーチの一時的なタイムアウト、祝日休館の館で holidays-jp から祝日を取得してキャッシュすること）を quickstart.md の「実サービスでの確認結果」に記録した。
 
 ---
 
