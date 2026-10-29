@@ -281,7 +281,7 @@ description: "Task list for 今日読める図書館の検索"
 
 **Purpose**: Cross-story checks
 
-- [ ] T041 [P] Add a test in `internal/cli/check_perf_test.go` for SC-002:
+- [X] T041 [P] Add a test in `internal/cli/check_perf_test.go` for SC-002:
   - 10 libraries across 10 systems and 5 books.
   - A fake Calil server that never completes (stays Running).
   - Assert `check` returns within 10 seconds of injected time and marks the libraries 不明（取得タイムアウト）.
