@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"libread/internal/domain"
 	"libread/internal/store"
@@ -371,5 +372,23 @@ func TestBookFindShowsNormalizedISBN(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), isbn.String()) {
 		t.Errorf("stdout = %q, want %s を含む", stdout.String(), isbn)
+	}
+}
+
+// NDL サーチは応答が遅いことがあるので、NDL への要求だけタイムアウトを30秒にする（research.md R3）。
+// 他のサービスに使う env.HTTPClient は変えず、Transport はそのまま使う。
+func TestNDLClientTimeout(t *testing.T) {
+	transport := &http.Transport{}
+	env := Env{HTTPClient: &http.Client{Timeout: 10 * time.Second, Transport: transport}}
+
+	c := ndlClient(env)
+	if c.HTTP.Timeout != 30*time.Second {
+		t.Errorf("NDL のタイムアウト = %v, want 30s", c.HTTP.Timeout)
+	}
+	if c.HTTP.Transport != transport {
+		t.Error("NDL のクライアントが env.HTTPClient の Transport を使っていない")
+	}
+	if env.HTTPClient.Timeout != 10*time.Second {
+		t.Errorf("env.HTTPClient のタイムアウトが変わった: %v", env.HTTPClient.Timeout)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 
 	"libread/internal/domain"
 	"libread/internal/ndl"
@@ -47,8 +48,15 @@ func runBook(ctx context.Context, args []string, env Env) error {
 	return usageErrorf("不明なコマンドです: book %s\n%s", args[0], bookUsage)
 }
 
+// ndlTimeout は NDL サーチへの要求のタイムアウト。NDL サーチは同じ要求でも応答が数十秒かかることがあるので、
+// 他のサービスより長くする（research.md R3）。
+const ndlTimeout = 30 * time.Second
+
+// ndlClient は env.HTTPClient の写しのタイムアウトだけを ndlTimeout にして使う。
 func ndlClient(env Env) *ndl.Client {
-	return &ndl.Client{HTTP: env.HTTPClient, UserAgent: userAgent}
+	hc := *env.HTTPClient
+	hc.Timeout = ndlTimeout
+	return &ndl.Client{HTTP: &hc, UserAgent: userAgent}
 }
 
 // runBookFind は書名または ISBN で書誌を探し、候補を表示する（FR-009）。

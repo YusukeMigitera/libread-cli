@@ -232,6 +232,7 @@ description: "Task list for 今日読める図書館の検索"
   - In `internal/ndl/ndl_test.go`: requests use `cnt=20`; `--author` and `--publisher` become `creator` and `publisher`; titles that equal the query come first, then titles that start with it, keeping NDL's order within each group; at most 10 books are returned; the total match count is returned, and the result says whether some matches were not shown.
   - In `internal/cli/book_test.go`: golden files for `book find` with and without the 「N件中M件を表示」 note, and `--author` / `--publisher` given before or after the title.
 - [X] T046 [US2] Implement the ranking, `--author` / `--publisher` and the match-count note in `internal/ndl/ndl.go` and `internal/cli/book.go`. Depends on T045.
+- [X] T047 [US2] Give NDL requests a 30-second timeout, leaving the 10-second timeout of `env.HTTPClient` for the other services (research.md R3「Decision（タイムアウト）」). Test in `internal/cli/book_test.go` that the NDL client has the 30-second timeout and reuses the same Transport, and that `env.HTTPClient` is unchanged.
 
 **Checkpoint**: Books can be registered from the CLI, and `libread` (US1) uses them without editing `data.json` by hand.
 
