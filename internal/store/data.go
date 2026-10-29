@@ -192,6 +192,7 @@ func (l libraryJSON) toDomain() (domain.RegisteredLibrary, error) {
 		}
 		lib.Closures = append(lib.Closures, cp)
 	}
+	domain.SortClosures(lib.Closures) // 手で編集されても、番号（lib closure list）が開始日の順になるようにする
 	return lib, nil
 }
 

@@ -2,12 +2,10 @@ package cli
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"time"
 
-	"libread/internal/calil"
 	"libread/internal/domain"
 	"libread/internal/holiday"
 	"libread/internal/store"
@@ -55,10 +53,8 @@ func runCheck(ctx context.Context, args []string, env Env) error {
 		}
 		books = []domain.ReadingBook{b}
 	}
-	if env.CalilAppKey == "" {
-		return errors.New("カーリルのアプリケーションキーが設定されていません。" +
-			"カーリルの開発者ダッシュボード（https://calil.jp/api/dashboard/）でキーを取得し、" +
-			"環境変数 LIBREAD_CALIL_APPKEY に設定してください")
+	if err := requireAppKey(env); err != nil {
+		return err
 	}
 
 	now := env.Now()
@@ -145,14 +141,7 @@ func loadHoldings(ctx context.Context, env Env, cache store.Cache, books []domai
 		return out, nil
 	}
 
-	client := &calil.Client{
-		AppKey:    env.CalilAppKey,
-		HTTP:      env.HTTPClient,
-		Now:       env.Now,
-		Sleep:     env.Sleep,
-		UserAgent: userAgent,
-	}
-	fetched, fetchErr := client.Check(ctx, isbns, systemIDs)
+	fetched, fetchErr := calilClient(env).Check(ctx, isbns, systemIDs)
 	if fetchErr != nil {
 		usable := false
 		for _, isbn := range isbns {

@@ -123,29 +123,35 @@ type systemState struct {
 }
 
 func (c *Client) get(ctx context.Context, q url.Values) (checkResponse, error) {
+	q.Set("callback", "no")
+	return getJSON[checkResponse](ctx, c, "/check", q, "所蔵情報")
+}
+
+// getJSON は base+path に q（appkey と format=json を加える）で要求し、応答の JSON を T に読む。
+// what はエラーメッセージで取得しようとしたものを表す。
+func getJSON[T any](ctx context.Context, c *Client, path string, q url.Values, what string) (T, error) {
+	var out T
 	q.Set("appkey", c.AppKey)
 	q.Set("format", "json")
-	q.Set("callback", "no")
 	base := c.BaseURL
 	if base == "" {
 		base = DefaultBaseURL
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, base+"/check?"+q.Encode(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, base+path+"?"+q.Encode(), nil)
 	if err != nil {
-		return checkResponse{}, fmt.Errorf("カーリルへの要求を作れません: %w", err)
+		return out, fmt.Errorf("カーリルへの要求を作れません: %w", err)
 	}
 	req.Header.Set("User-Agent", c.UserAgent)
 	resp, err := c.HTTP.Do(req)
 	if err != nil {
-		return checkResponse{}, fmt.Errorf("カーリルに接続できません: %w", redactAppKey(err, c.AppKey))
+		return out, fmt.Errorf("カーリルに接続できません: %w", redactAppKey(err, c.AppKey))
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return checkResponse{}, fmt.Errorf("カーリルから所蔵情報を取得できません: %s", resp.Status)
+		return out, fmt.Errorf("カーリルから%sを取得できません: %s", what, resp.Status)
 	}
-	var out checkResponse
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
-		return checkResponse{}, fmt.Errorf("カーリルの応答の形式が正しくありません: %w", err)
+		return out, fmt.Errorf("カーリルの応答の形式が正しくありません: %w", err)
 	}
 	return out, nil
 }

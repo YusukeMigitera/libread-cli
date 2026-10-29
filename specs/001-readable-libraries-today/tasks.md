@@ -252,11 +252,12 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests for User Story 3 (write first, confirm they fail)
 
-- [ ] T036 [P] [US3] Record a real Calil library search response (e.g. `pref=東京都&city=世田谷区`) to `internal/calil/testdata/library_*.json`, removing the `appkey` value. These files are covered by `TestFixturesHaveNoAppKey` in `internal/calil/fixtures_test.go`; if T022 is not done yet, create that test first as T022 step 2 describes. Then write tests in `internal/calil/library_test.go`:
+- [X] T036 [P] [US3] Record a real Calil library search response (e.g. `pref=東京都&city=世田谷区`) to `internal/calil/testdata/library_*.json`, removing the `appkey` value. These files are covered by `TestFixturesHaveNoAppKey` in `internal/calil/fixtures_test.go`; if T022 is not done yet, create that test first as T022 step 2 describes. Then write tests in `internal/calil/library_test.go`:
+  - **進捗 (2026-10-30)**: 完了。`pref=東京都&city=世田谷区` の実際の応答（35館。世田谷区立の21館と区内の大学図書館など）を `internal/calil/testdata/library_setagaya.json` に、`systemid=Tokyo_Setagaya` の実際の応答（21館）を `library_system_setagaya.json` に記録し、テストで使っている。応答は JSON の配列で、項目名は想定どおりだった。存在しない `systemid` には空の配列 `[]` が返る。館キーは `中央図書館` のような館名で、大学図書館は `本館`・`中央` などになる。
   - Parse `systemid`, `libkey`, `formal`, `pref`, `city` and `address`.
   - `pref` is required.
   - `appkey` and `User-Agent` are sent.
-- [ ] T037 [P] [US3] Write tests in `internal/cli/lib_test.go`:
+- [X] T037 [P] [US3] Write tests in `internal/cli/lib_test.go`:
   - `lib find` requires `--pref` (exit code 2 without it) and filters by `--name` 部分一致 locally.
   - `lib add` rejects duplicates and unknown IDs.
   - `lib hours`: `HH:MM-HH:MM` or `closed` per day; days not given keep their current value, or become 休館 when no schedule exists yet; `--holiday same|closed|HH:MM-HH:MM` defaults to `same`; `UpdatedOn` = today.
@@ -266,11 +267,11 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Implementation for User Story 3
 
-- [ ] T038 [P] [US3] Implement the Calil library search in `internal/calil/library.go`:
+- [X] T038 [P] [US3] Implement the Calil library search in `internal/calil/library.go`:
   - `Libraries(ctx, pref, city string) ([]LibraryInfo, error)` against `https://api.calil.jp/library` with `format=json&callback=`.
   - Decode into typed structs.
-- [ ] T039 [US3] Implement the `lib find`, `lib add`, `lib list`, `lib rm` and `lib hours` subcommands in `internal/cli/lib.go`, and register them in `internal/cli/cli.go`. Depends on T038.
-- [ ] T040 [US3] Implement the `lib closure add|list|rm` subcommands in `internal/cli/closure.go`, and register them in `internal/cli/cli.go`. Depends on T039.
+- [X] T039 [US3] Implement the `lib find`, `lib add`, `lib list`, `lib rm` and `lib hours` subcommands in `internal/cli/lib.go`, and register them in `internal/cli/cli.go`. Depends on T038.
+- [X] T040 [US3] Implement the `lib closure add|list|rm` subcommands in `internal/cli/closure.go`, and register them in `internal/cli/cli.go`. Depends on T039.
 
 **Checkpoint**: Every operation works from the CLI without editing `data.json` by hand.
 
@@ -286,7 +287,7 @@ description: "Task list for 今日読める図書館の検索"
   - Assert `check` returns within 10 seconds of injected time and marks the libraries 不明（取得タイムアウト）.
 - [ ] T042 [P] Add a test in `internal/cli/outbound_test.go` that records every outgoing HTTP request across all commands and asserts (Constitution 技術的制約):
   - No request contains a book note.
-  - Per command, requests stay within the limits in research.md R9: `check` sends one Calil session (initial request plus polls ≥2秒 apart) and at most one holidays-jp request per year, and sends no Calil request when the holdings cache is ≤30分 old; `lib find` sends one Calil library request; `book find` and `book add` send one NDL request.
+  - Per command, requests stay within the limits in research.md R9: `check` sends one Calil session (initial request plus polls ≥2秒 apart) and at most one holidays-jp request per year, and sends no Calil request when the holdings cache is ≤30分 old; `lib find` and `lib add` each send one Calil library request; `book find` and `book add` send one NDL request.
   - At most one request to each service is in flight at a time.
   - Every request carries `User-Agent: libread/<version>`.
 - [ ] T043 Run the `check` target in `Makefile` (gofmt, go vet, staticcheck, go test) and fix every warning.
