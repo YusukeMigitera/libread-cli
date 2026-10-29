@@ -44,7 +44,7 @@
 ## R3. 本の検索（書名 → ISBN）
 
 - **Decision**: 国立国会図書館サーチ OpenSearch API（`https://ndlsearch.ndl.go.jp/api/opensearch`）を
-  `title` / `isbn` / `cnt` パラメータで使う。応答の RSS（XML）は `encoding/xml` で読む。
+  `title` / `isbn` / `creator` / `publisher` / `cnt` パラメータで使う。応答の RSS（XML）は `encoding/xml` で読む。
 - **Rationale**: キー不要で、国内の書誌（ISBN・書名・著者・出版社）の網羅性が高い。
   カーリルには書名検索がない。
 - **Alternatives considered**: Google Books API は国内書籍の ISBN 欠落が多いため不採用。
@@ -55,6 +55,15 @@
     出版社は `dc:publisher`（複数あり）、ISBN は `dc:identifier xsi:type="dcndl:ISBN"`（10桁・ハイフン付きのこともある）に入る。
     `dcndl:ISBN13` にも10桁の値が入ることがあるため、ISBN は `dcndl:ISBN` から読んで13桁に正規化する。
     ISBN のない記録（古い全集など）も返る。
+  - **検索結果の並び (2026-10-29)**: OpenSearch も SRU も、結果を書名の読み（`dcndl:titleTranscription`）の五十音順で返す。
+    `sort`・`mediatype`、SRU の `title exact`・`sortBy` を指定しても順序は変わらなかった。
+    `title` は収録作品名にも一致するため、`title=吾輩は猫である` は345件になり、本体（読み「ワガハイ…」）は末尾近くに来る。
+    全345件を1回で取ると 1.1MB・46秒かかり、使えない。`creator=夏目漱石&publisher=岩波書店` を足すと15件まで絞れる。
+    応答時間は同じ要求でも2秒〜40秒程度ばらつく。
+  - **Decision（並べ替えと絞り込み）**: 1回の要求で `cnt=20` を取得し、libread 側で「書名の完全一致 → 前方一致 → その他」の順に
+    安定ソートして上位10件を表示する。`book find` に `--author`・`--publisher` を設け、`creator`・`publisher` に渡す。
+    一致件数（`openSearch:totalResults`）が表示件数より多ければ、絞り込みと ISBN での検索を案内する（contracts/cli.md）。
+    取得件数を増やすほど応答が遅くなるので、20件（絞り込んだ検索が1回で収まる程度）にとどめる。
 - **データプロバイダの限定**: `dpid=iss-ndl-opac`（国立国会図書館の蔵書）を指定し、
   メタデータの利用条件が1つのプロバイダの条件だけになるようにする（R10）。
   国内出版物は納本制度により国立国会図書館が網羅的に所蔵しているので、検索の網羅性は保てる。

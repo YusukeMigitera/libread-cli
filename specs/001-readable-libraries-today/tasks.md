@@ -227,6 +227,12 @@ description: "Task list for 今日読める図書館の検索"
 - [X] T035 [US2] Implement the `book find`, `book add <ISBN> [--note]`, `book list`, `book note <本> <テキスト>` and `book rm <本>` subcommands in `internal/cli/book.go`, and register them in `internal/cli/cli.go`. Depends on T034.
   - Print the NDL attribution line from contracts/cli.md at the end of `book find` and `book add`, and add it to the end of `writeUsage` in `internal/cli/cli.go` (research.md R10).
 
+- [X] T045 [US2] Write tests for ranking and narrowing the title search (research.md R3「検索結果の並び」, contracts/cli.md「`book find` / `book add` の補足」):
+  - Record real responses for `title=吾輩は猫である` and for the same title with `creator=夏目漱石&publisher=岩波書店`, both with `cnt=20`, to `internal/ndl/testdata/`.
+  - In `internal/ndl/ndl_test.go`: requests use `cnt=20`; `--author` and `--publisher` become `creator` and `publisher`; titles that equal the query come first, then titles that start with it, keeping NDL's order within each group; at most 10 books are returned; the total match count is returned, and the result says whether some matches were not shown.
+  - In `internal/cli/book_test.go`: golden files for `book find` with and without the 「N件中M件を表示」 note, and `--author` / `--publisher` given before or after the title.
+- [X] T046 [US2] Implement the ranking, `--author` / `--publisher` and the match-count note in `internal/ndl/ndl.go` and `internal/cli/book.go`. Depends on T045.
+
 **Checkpoint**: Books can be registered from the CLI, and `libread` (US1) uses them without editing `data.json` by hand.
 
 ---

@@ -1,12 +1,12 @@
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" xmlns:dcndl="http://ndl.go.jp/dcndl/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="2.0">
   <channel>
-    <title>吾輩は猫である iss-ndl-opac - 国立国会図書館サーチ OpenSearch</title>
-    <link>https://ios-v2-prod-eks-alb.ndlsearch.ndl.go.jp/api/opensearch?title=%E5%90%BE%E8%BC%A9%E3%81%AF%E7%8C%AB%E3%81%A7%E3%81%82%E3%82%8B&amp;cnt=10&amp;dpid=iss-ndl-opac</link>
-    <description>Search results for title=吾輩は猫である cnt=10 dpid=iss-ndl-opac</description>
+    <title>iss-ndl-opac 吾輩は猫である - 国立国会図書館サーチ OpenSearch</title>
+    <link>https://ios-v2-prod-eks-alb.ndlsearch.ndl.go.jp/api/opensearch?cnt=20&amp;dpid=iss-ndl-opac&amp;title=%E5%90%BE%E8%BC%A9%E3%81%AF%E7%8C%AB%E3%81%A7%E3%81%82%E3%82%8B</link>
+    <description>Search results for cnt=20 dpid=iss-ndl-opac title=吾輩は猫である</description>
     <language>ja</language>
     <openSearch:totalResults>345</openSearch:totalResults>
     <openSearch:startIndex>1</openSearch:startIndex>
-    <openSearch:itemsPerPage>10</openSearch:itemsPerPage>
+    <openSearch:itemsPerPage>20</openSearch:itemsPerPage>
     <item>
       <title>赤い実 : ほか</title>
       <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000008036046</link>
@@ -475,6 +475,367 @@
       <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-Ia1000089198"/>
       <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971993809689508364"/>
       <dc:description> 2001</dc:description>
+    </item>
+    <item>
+      <title>画譜吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000928188</link>
+      <description><![CDATA[<p>竜星閣,1954,<p><ul><li>タイトル：画譜吾輩は猫である</li><li>タイトル（読み）：ガフ ワガハイ ワ ネコ デ アル</li><li>責任表示：近藤浩一路 [画並に文]</li></ul>]]></description>
+      <author>近藤, 浩一路, 1884-1962,夏目, 漱石, 1867-1916,近藤浩一路 [画並に文]</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000000928188</guid>
+      <pubDate>Mon, 7 Sep 2026 18:36:19 +0900</pubDate>
+      <dc:title>画譜吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ガフ ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>近藤, 浩一路, 1884-1962</dc:creator>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>コンドウ, コウイチロ, 1884-1962</dcndl:creatorTranscription>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dc:publisher>竜星閣</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1954</dc:date>
+      <dcterms:issued>1954</dcterms:issued>
+      <dc:extent>図版100p (解説共)</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000000928188</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">55001006</dc:identifier>
+      <dc:subject>イラストレーション</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC">913.6</dc:subject>
+      <dc:description>原作は夏目漱石</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hokkaido.jp/wo/opc_srh/"/>
+      <rdfs:seeAlso rdf:resource="https://www.plib.pref.aomori.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100069865"/>
+      <rdfs:seeAlso rdf:resource="https://catalog.library.metro.tokyo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100468567"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.yamanashi.jp/licsxp-opac/WOpacMnuTopInitAction.do"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.gifu.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100310876"/>
+      <rdfs:seeAlso rdf:resource="https://www.ehimetosyokan.jp/winj/opac/switch-detail-iccap.do?bibid=1100360875"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kumamoto.jp/winj/opac/switch-detail-iccap.do?bibid=1104168434"/>
+      <rdfs:seeAlso rdf:resource="https://www2.library.pref.kagoshima.jp/kento/opac/switch-detail-iccap.do?bibid=1137043797"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000000928188"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/1643903"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971430859736459534"/>
+      <dc:description> 1954</dc:description>
+    </item>
+    <item>
+      <title>贋作吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000865917</link>
+      <description><![CDATA[<p>新潮社,1950,<p><ul><li>タイトル：贋作吾輩は猫である</li><li>タイトル（読み）：ガンサク ワガハイ ワ ネコ デアル</li><li>責任表示：内田百間 著</li></ul>]]></description>
+      <author>内田, 百間, 1889-1971,内田百間 著</author>
+      <category>図書</category>
+      <category>マイクロ</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000000865917</guid>
+      <pubDate>Fri, 12 May 2000 09:00:00 +0900</pubDate>
+      <dc:title>贋作吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ガンサク ワガハイ ワ ネコ デアル</dcndl:titleTranscription>
+      <dc:creator>内田, 百間, 1889-1971</dc:creator>
+      <dcndl:creatorTranscription>ウチダ, ヒャッケン, 1889-1971</dcndl:creatorTranscription>
+      <dc:publisher>新潮社</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1950</dc:date>
+      <dcterms:issued>1950</dcterms:issued>
+      <dc:extent>305p</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000000865917</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">50001109</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hokkaido.jp/wo/opc_srh/"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.pref.yamagata.jp/winj/opac/switch-detail-iccap.do?bibid=1101507817"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.ibaraki.jp/licsxp-kopac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001000153291"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.tochigi.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1101381534"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.saitama.jp//winj/opac/switch-detail-iccap.do?bibid=1124096439"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.nagoya.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001110109643"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kyoto.jp/bib/?B10624803"/>
+      <rdfs:seeAlso rdf:resource="https://opacsvr01.library.pref.nara.jp/opac/volume/130180"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.city.hiroshima.jp/winj/opac/switch-detail-iccap.do?bibid=1100032132"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.yamaguchi.lg.jp//wo/opc_srh/srh_detail/9410055260/"/>
+      <rdfs:seeAlso rdf:resource="https://opac.library.kochi.jp/winj/opac/switch-detail-iccap.do?bibid=1108207586"/>
+      <rdfs:seeAlso rdf:resource="https://opac.miraionlibrary.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1007015208128"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kumamoto.jp/winj/opac/switch-detail-iccap.do?bibid=1131069494"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000000865917"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/1706550"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00236429"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971430859833841986"/>
+      <dc:description> 1950</dc:description>
+    </item>
+    <item>
+      <title>贋作吾輩ハ猫デアル</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000001477587</link>
+      <description><![CDATA[<p>六興出版,1980,<p><ul><li>タイトル：贋作吾輩ハ猫デアル</li><li>タイトル（読み）：ガンサク ワガハイ ワ ネコ デ アル</li><li>責任表示：内田百間 著</li></ul>]]></description>
+      <author>内田, 百間, 1889-1971,内田百間 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000001477587</guid>
+      <pubDate>Tue, 6 Jan 1981 09:00:00 +0900</pubDate>
+      <dc:title>贋作吾輩ハ猫デアル</dc:title>
+      <dcndl:titleTranscription>ガンサク ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>内田, 百間, 1889-1971</dc:creator>
+      <dcndl:creatorTranscription>ウチダ, ヒャッケン, 1889-1971</dcndl:creatorTranscription>
+      <dc:publisher>六興出版</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1980</dc:date>
+      <dcterms:issued>1980.10</dcterms:issued>
+      <dcndl:price>1000円</dcndl:price>
+      <dc:extent>222p</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000001477587</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">81001870</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH677</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">913.6</dc:subject>
+      <dc:description>奥付等の書名: 贋作吾輩は猫である</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.plib.pref.aomori.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100111222"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.saitama.jp//winj/opac/switch-detail-iccap.do?bibid=1123515669"/>
+      <rdfs:seeAlso rdf:resource="https://catalog.library.metro.tokyo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100178330"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1190066717"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.nagoya.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009210190808"/>
+      <rdfs:seeAlso rdf:resource="https://www.shiga-pref-library.jp/wo/opc_srh/srh_detail/1780329/"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1103027600"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000001477587"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/12566661"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00341092"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1970586434936422959"/>
+      <dc:description> 1980</dc:description>
+    </item>
+    <item>
+      <title>贋作吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000001663086</link>
+      <description><![CDATA[<p>旺文社,1984,4-01-061402-1<p><ul><li>タイトル：贋作吾輩は猫である</li><li>タイトル（読み）：ガンサク ワガハイ ワ ネコ デ アル</li><li>責任表示：内田百間 著</li><li>シリーズ名：旺文社文庫</li></ul>]]></description>
+      <author>内田, 百間, 1889-1971,内田百間 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000001663086</guid>
+      <pubDate>Tue, 12 Jun 1984 09:00:00 +0900</pubDate>
+      <dc:title>贋作吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ガンサク ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>内田, 百間, 1889-1971</dc:creator>
+      <dcndl:creatorTranscription>ウチダ, ヒャッケン, 1889-1971</dcndl:creatorTranscription>
+      <dcndl:seriesTitle>旺文社文庫</dcndl:seriesTitle>
+      <dc:publisher>旺文社</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1984</dc:date>
+      <dcterms:issued>1984.1</dcterms:issued>
+      <dcndl:price>380円</dcndl:price>
+      <dc:extent>277p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">4-01-061402-1</dc:identifier>
+      <dc:identifier xsi:type="dcndl:ISBN13">4-01-061402-1</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000001663086</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">84026707</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH677</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://www.apl.pref.akita.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009810140301"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.yamanashi.jp/licsxp-opac/WOpacMnuTopInitAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.yamaguchi.lg.jp//wo/opc_srh/srh_detail/1000161325/"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000001663086"/>
+      <rdfs:seeAlso rdf:resource="https://library.sapie.or.jp/cgi-bin/CN1MN1?S00101=J00DTL04&amp;S00222=1814051"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/12566759"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00282828"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971149384786949398"/>
+      <rdfs:seeAlso rdf:resource="https://www.books.or.jp/book-details/9784010614020"/>
+      <dc:description> 1984</dc:description>
+    </item>
+    <item>
+      <title>贋作吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000002006037</link>
+      <description><![CDATA[<p>河出書房,1954,<p><ul><li>タイトル：贋作吾輩は猫である</li><li>タイトル（読み）：ガンサク ワガハイ ワ ネコ デ アル</li><li>責任表示：内田百間 著</li><li>シリーズ名：河出文庫</li></ul>]]></description>
+      <author>内田, 百間, 1889-1971,内田百間 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000002006037</guid>
+      <pubDate>Wed, 22 Mar 2000 22:05:00 +0900</pubDate>
+      <dc:title>贋作吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ガンサク ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>内田, 百間, 1889-1971</dc:creator>
+      <dcndl:creatorTranscription>ウチダ, ヒャッケン, 1889-1971</dcndl:creatorTranscription>
+      <dcndl:seriesTitle>河出文庫</dcndl:seriesTitle>
+      <dc:publisher>河出書房</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1954</dc:date>
+      <dcterms:issued>1954.7</dcterms:issued>
+      <dc:extent>269p</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000002006037</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">89090356</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH677</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000002006037"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/13457120"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00276206"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1970586434805925129"/>
+      <dc:description> 1954</dc:description>
+    </item>
+    <item>
+      <title>贋作吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000876392</link>
+      <description><![CDATA[<p>河出書房,1951,<p><ul><li>タイトル：贋作吾輩は猫である</li><li>タイトル（読み）：ガンサク ワガハイ ワ ネコ デ アル</li><li>責任表示：内田百間 著</li><li>シリーズ名：市民文庫 ; 第5</li><li>シリーズ名（読み）：シミン ブンコ ; 5</li></ul>]]></description>
+      <author>内田, 百間, 1889-1971,内田百間 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000000876392</guid>
+      <pubDate>Wed, 15 Aug 2001 01:47:00 +0900</pubDate>
+      <dc:title>贋作吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ガンサク ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>内田, 百間, 1889-1971</dc:creator>
+      <dcndl:creatorTranscription>ウチダ, ヒャッケン, 1889-1971</dcndl:creatorTranscription>
+      <dcndl:seriesTitle>市民文庫 ; 第5</dcndl:seriesTitle>
+      <dcndl:seriesTitleTranscription>シミン ブンコ ; 5</dcndl:seriesTitleTranscription>
+      <dc:publisher>河出書房</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1951</dc:date>
+      <dcterms:issued>1951</dcterms:issued>
+      <dc:extent>269p</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000000876392</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">51003818</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hokkaido.jp/wo/opc_srh/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.fcs.ed.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001100759201"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.ishikawa.lg.jp/wo/opc_srh/srh_detail/1005010305431/"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.yamaguchi.lg.jp//wo/opc_srh/srh_detail/9410055261/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kagawa.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1101068067"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000000876392"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/1659278"/>
+      <rdfs:seeAlso rdf:resource="https://opac.shirayuri.ac.jp/lib/resources/jbunko/28251/"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00271420"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B01166780"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1970023484976758041"/>
+      <dc:description> 1951</dc:description>
+    </item>
+    <item>
+      <title>贋作吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000004147251</link>
+      <description><![CDATA[<p>筑摩書房,2003,4-480-03768-3<p><ul><li>タイトル：贋作吾輩は猫である</li><li>タイトル（読み）：ガンサク ワガハイ ワ ネコ デ アル</li><li>責任表示：内田百間 著</li><li>シリーズ名：ちくま文庫. 内田百間集成 ; 8</li><li>シリーズ名（読み）：チクマ ブンコ. ウチダ ヒャクケン シュウセイ</li><li>NDC(9)：913.6</li></ul>]]></description>
+      <author>内田, 百間, 1889-1971,内田百間 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000004147251</guid>
+      <pubDate>Thu, 24 Jul 2003 23:32:27 +0900</pubDate>
+      <dc:title>贋作吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ガンサク ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>内田, 百間, 1889-1971</dc:creator>
+      <dcndl:creatorTranscription>ウチダ, ヒャッケン, 1889-1971</dcndl:creatorTranscription>
+      <dcndl:seriesTitle>ちくま文庫. 内田百間集成 ; 8</dcndl:seriesTitle>
+      <dcndl:seriesTitleTranscription>チクマ ブンコ. ウチダ ヒャクケン シュウセイ</dcndl:seriesTitleTranscription>
+      <dcndl:seriesCreator>内田百間 著</dcndl:seriesCreator>
+      <dc:publisher>筑摩書房</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">2003</dc:date>
+      <dcterms:issued>2003.5</dcterms:issued>
+      <dcndl:price>1000円</dcndl:price>
+      <dc:extent>300p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">4-480-03768-3</dc:identifier>
+      <dc:identifier xsi:type="dcndl:ISBN13">4-480-03768-3</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000004147251</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">20412030</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH677</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC9">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.sapporo.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1006300035568"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.city.saitama.jp/bookdetail?num=1209857&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.chiba.jp/licsxp-opac/WOpacTifSchCmpdDispAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://catalog.library.metro.tokyo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1152015144"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1103033778"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.kawasaki.jp/bookdetail?num=214987&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.sagamihara.kanagawa.jp/TOSHOW/asp/WwShousaiKen.aspx?FCode=1017587"/>
+      <rdfs:seeAlso rdf:resource="https://www.library-archives.pref.fukui.lg.jp/wo/opc_srh/srh_detail/1104349077/"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001101725294"/>
+      <rdfs:seeAlso rdf:resource="http://websv.aichi-pref-library.jp/winj/opac/switch-detail-iccap.do?bibid=1160396959"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.osaka.jp/bib/?B11110005"/>
+      <rdfs:seeAlso rdf:resource="https://www.oml.city.osaka.lg.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000010528539"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib-sakai.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000001606179"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.tottori.jp/winj/opac/switch-detail-iccap.do?bibid=1101082911"/>
+      <rdfs:seeAlso rdf:resource="https://opac.libnet.pref.okayama.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009810463484"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.city.hiroshima.jp/winj/opac/switch-detail-iccap.do?bibid=1102112066"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.fukuoka.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102726770"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1109412588"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000004147251"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971430859850019330"/>
+      <dc:description> 2003</dc:description>
+    </item>
+    <item>
+      <title>贋作吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000002167024</link>
+      <description><![CDATA[<p>福武書店,1992,4-8288-3244-0<p><ul><li>タイトル：贋作吾輩は猫である</li><li>タイトル（読み）：ガンサク ワガハイ ワ ネコ デ アル</li><li>責任表示：内田百間 著</li><li>シリーズ名：福武文庫</li></ul>]]></description>
+      <author>内田, 百間, 1889-1971,内田百間 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000002167024</guid>
+      <pubDate>Wed, 20 May 1992 09:00:00 +0900</pubDate>
+      <dc:title>贋作吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ガンサク ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>内田, 百間, 1889-1971</dc:creator>
+      <dcndl:creatorTranscription>ウチダ, ヒャッケン, 1889-1971</dcndl:creatorTranscription>
+      <dcndl:seriesTitle>福武文庫</dcndl:seriesTitle>
+      <dc:publisher>福武書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1992</dc:date>
+      <dcterms:issued>1992.3</dcterms:issued>
+      <dcndl:price>650円 (税込)</dcndl:price>
+      <dc:extent>271p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">4-8288-3244-0</dc:identifier>
+      <dc:identifier xsi:type="dcndl:ISBN13">4-8288-3244-0</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000002167024</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">92029809</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH677</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.tochigi.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100861797"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.chiba.jp/licsxp-opac/WOpacTifSchCmpdDispAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1190418287"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001100970096"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.nagoya.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009917047745"/>
+      <rdfs:seeAlso rdf:resource="https://www.shiga-pref-library.jp/wo/opc_srh/srh_detail/0664330/"/>
+      <rdfs:seeAlso rdf:resource="https://www.oml.city.osaka.lg.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000258305"/>
+      <rdfs:seeAlso rdf:resource="https://alislibopac.bunmori.tokushima.jp/winj/opac/switch-detail-iccap.do?bibid=1100464611"/>
+      <rdfs:seeAlso rdf:resource="https://opac.miraionlibrary.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009810355742"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kumamoto.jp/winj/opac/switch-detail-iccap.do?bibid=1131066986"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000002167024"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/13630531"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971149384784033176"/>
+      <dc:description> 1992</dc:description>
+    </item>
+    <item>
+      <title>贋説吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000001603479</link>
+      <description><![CDATA[<p>梓書院,1982,<p><ul><li>タイトル：贋説吾輩は猫である</li><li>タイトル（読み）：ガンセツ ワガハイ ワ ネコ デ アル</li><li>責任表示：麻生義剛 著</li></ul>]]></description>
+      <author>麻生, 義剛, 1934-,麻生義剛 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000001603479</guid>
+      <pubDate>Wed, 3 Mar 2021 19:20:42 +0900</pubDate>
+      <dc:title>贋説吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ガンセツ ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>麻生, 義剛, 1934-</dc:creator>
+      <dcndl:creatorTranscription>アソウ, ヨシタカ, 1934-</dcndl:creatorTranscription>
+      <dc:publisher>梓書院</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1982</dc:date>
+      <dcterms:issued>1982.10</dcterms:issued>
+      <dcndl:price>980円</dcndl:price>
+      <dc:extent>194p</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000001603479</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">83020591</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH68</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://catalog.library.metro.tokyo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100177968"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.fukuoka.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1103744100"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000001603479"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/12471240"/>
+      <dc:description> 1982</dc:description>
+    </item>
+    <item>
+      <title>聞いて楽しむ日本の名作</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I029856587</link>
+      <description><![CDATA[<p>第4巻 (1904-1906),ユーキャン (製作),2008,<p><ul><li>タイトル：聞いて楽しむ日本の名作</li><li>タイトル（読み）：キイテ タノシム ニホン ノ メイサク</li></ul>]]></description>
+      <author/>
+      <category>録音資料</category>
+      <category>記録メディア</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I029856587</guid>
+      <pubDate>Thu, 7 Nov 2019 02:14:55 +0900</pubDate>
+      <dc:title>聞いて楽しむ日本の名作</dc:title>
+      <dcndl:titleTranscription>キイテ タノシム ニホン ノ メイサク</dcndl:titleTranscription>
+      <dcndl:volume>第4巻 (1904-1906)</dcndl:volume>
+      <dc:publisher>ユーキャン (製作)</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">2008</dc:date>
+      <dcterms:issued>[2008]</dcterms:issued>
+      <dc:extent>録音ディスク 1枚</dc:extent>
+      <dc:identifier xsi:type="dcndl:RIS502">LDQD-04</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">029856587</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">23287100</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">YMC11</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I029856587"/>
+      <dc:description> 2008</dc:description>
     </item>
   </channel>
 </rss>

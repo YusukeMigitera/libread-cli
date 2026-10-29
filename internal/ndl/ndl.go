@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -20,6 +21,9 @@ const DefaultBaseURL = "https://ndlsearch.ndl.go.jp/api/opensearch"
 const (
 	// maxResults は1回の検索で返す候補の上限（contracts/cli.md の book find）。
 	maxResults = 10
+	// fetchCount は1回の要求で取得する件数。NDL サーチは書名の読みの五十音順で返すので、
+	// 多めに取得して書名の一致度で並べ替える。増やすほど応答が遅くなる（research.md R3）。
+	fetchCount = 20
 	// dataProvider は検索対象を国立国会図書館の蔵書に限る（research.md R3・R10）。
 	dataProvider = "iss-ndl-opac"
 )
@@ -31,25 +35,49 @@ type Client struct {
 	UserAgent string
 }
 
-// Search は query を書名として（ISBN として読めるなら ISBN として）検索し、最大10件の書誌を返す。
+// Query は書誌の検索条件。Author・Publisher は空なら指定しない。
+type Query struct {
+	Text      string // 書名、または ISBN
+	Author    string
+	Publisher string
+}
+
+// Result は検索結果。Total は NDL サーチで一致した件数（ISBN のない記録も含む）。
+// Truncated は、一致した本の一部しか Books に入っていないことを表す。
+type Result struct {
+	Books     []domain.Book
+	Total     int
+	Truncated bool
+}
+
+// Search は q.Text を書名として（ISBN として読めるなら ISBN として）検索し、最大10件の書誌を返す。
 // ISBN や書名のない記録は除き、同じ ISBN の記録は最初の1件だけを返す。
-func (c *Client) Search(ctx context.Context, query string) ([]domain.Book, error) {
-	query = strings.TrimSpace(query)
-	if query == "" {
-		return nil, errors.New("検索語が空です")
+// 書名で探すときは、書名が検索語と完全一致 → 検索語で始まる → その他の順に並べる（同じ順位の中は NDL の順）。
+func (c *Client) Search(ctx context.Context, q Query) (Result, error) {
+	text := strings.TrimSpace(q.Text)
+	if text == "" {
+		return Result{}, errors.New("検索語が空です")
 	}
-	q := url.Values{
-		"cnt":  {strconv.Itoa(maxResults)},
+	params := url.Values{
+		"cnt":  {strconv.Itoa(fetchCount)},
 		"dpid": {dataProvider},
 	}
-	if isbn, err := domain.ParseISBN(query); err == nil {
-		q.Set("isbn", isbn.String())
+	isbn, err := domain.ParseISBN(text)
+	byISBN := err == nil
+	if byISBN {
+		params.Set("isbn", isbn.String())
 	} else {
-		q.Set("title", query)
+		params.Set("title", text)
 	}
-	resp, err := c.get(ctx, q)
+	if a := strings.TrimSpace(q.Author); a != "" {
+		params.Set("creator", a)
+	}
+	if p := strings.TrimSpace(q.Publisher); p != "" {
+		params.Set("publisher", p)
+	}
+	resp, err := c.get(ctx, params)
 	if err != nil {
-		return nil, err
+		return Result{}, err
 	}
 
 	var books []domain.Book
@@ -61,18 +89,37 @@ func (c *Client) Search(ctx context.Context, query string) ([]domain.Book, error
 		}
 		seen[b.ISBN] = true
 		books = append(books, b)
-		if len(books) == maxResults {
-			break
-		}
 	}
-	return books, nil
+	if !byISBN {
+		slices.SortStableFunc(books, func(a, b domain.Book) int { return titleRank(a.Title, text) - titleRank(b.Title, text) })
+	}
+	// totalResults のない応答では、取得した件数を一致件数とする。
+	total := max(resp.Channel.TotalResults, len(resp.Channel.Items))
+	truncated := total > len(resp.Channel.Items) || len(books) > maxResults
+	if len(books) > maxResults {
+		books = books[:maxResults]
+	}
+	return Result{Books: books, Total: total, Truncated: truncated}, nil
+}
+
+// titleRank は書名と検索語の一致度。小さいほど先に並べる。
+func titleRank(title, query string) int {
+	switch {
+	case title == query:
+		return 0
+	case strings.HasPrefix(title, query):
+		return 1
+	default:
+		return 2
+	}
 }
 
 // 以下は OpenSearch の応答（RSS 2.0 + DC-NDL）のうち libread が使う要素。
 
 type rssResponse struct {
 	Channel struct {
-		Items []rssItem `xml:"item"`
+		TotalResults int       `xml:"http://a9.com/-/spec/opensearchrss/1.0/ totalResults"`
+		Items        []rssItem `xml:"item"`
 	} `xml:"channel"`
 }
 

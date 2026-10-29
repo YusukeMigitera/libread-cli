@@ -51,7 +51,10 @@ func TestBookWorkflow(t *testing.T) {
 		t.Fatalf("find: exit code = %d, stderr = %s", code, stderr)
 	}
 	assertGolden(t, "book_find.golden", stdout.String())
-	if q := svc.recorded()[0].url.Query(); q.Get("title") != "吾輩は猫である" || q.Get("dpid") != "iss-ndl-opac" {
+	if !strings.Contains(stdout.String(), "345件中10件を表示") || !strings.Contains(stdout.String(), "--author") {
+		t.Errorf("一致件数と絞り込みの案内がない: %q", stdout.String())
+	}
+	if q := svc.recorded()[0].url.Query(); q.Get("title") != "吾輩は猫である" || q.Get("dpid") != "iss-ndl-opac" || q.Has("creator") {
 		t.Errorf("find の要求 = %v", q)
 	}
 
@@ -181,6 +184,25 @@ func TestBookAddErrors(t *testing.T) {
 
 const emptyRSS = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel></channel></rss>`
 
+// 著者・出版社で絞り込むと、書名が一致する本が先頭に来て、すべて表示できたときは件数の案内を出さない。
+func TestBookFindNarrowed(t *testing.T) {
+	for _, args := range [][]string{
+		{"book", "find", "吾輩は猫である", "--author", "夏目漱石", "--publisher", "岩波書店"},
+		{"book", "find", "--author", "夏目漱石", "--publisher=岩波書店", "吾輩は猫である"},
+	} {
+		svc := &fakeServices{ndl: ndlFixture(t, "opensearch_title_author_publisher.xml")}
+		env, stdout, stderr := newCheckEnv(t, "", svc)
+		if code := run(env, stdout, stderr, args...); code != ExitOK {
+			t.Fatalf("%v: exit code = %d, stderr = %s", args, code, stderr)
+		}
+		assertGolden(t, "book_find_narrowed.golden", stdout.String())
+		q := svc.recorded()[0].url.Query()
+		if q.Get("title") != "吾輩は猫である" || q.Get("creator") != "夏目漱石" || q.Get("publisher") != "岩波書店" {
+			t.Errorf("%v: 要求 = %v", args, q)
+		}
+	}
+}
+
 func TestBookFindNoResults(t *testing.T) {
 	svc := &fakeServices{ndl: emptyRSS}
 	env, stdout, stderr := newCheckEnv(t, "", svc)
@@ -199,8 +221,14 @@ func TestBookFindNoResults(t *testing.T) {
 func TestBookFindUsage(t *testing.T) {
 	svc := &fakeServices{}
 	env, stdout, stderr := newCheckEnv(t, "", svc)
-	if code := run(env, stdout, stderr, "book", "find"); code != ExitUsage {
-		t.Errorf("exit code = %d, want %d", code, ExitUsage)
+	for _, args := range [][]string{
+		{"book", "find"},
+		{"book", "find", "--author", "夏目漱石"},
+		{"book", "find", "吾輩は猫である", "--no-such-flag"},
+	} {
+		if code := run(env, stdout, stderr, args...); code != ExitUsage {
+			t.Errorf("%v: exit code = %d, want %d", args, code, ExitUsage)
+		}
 	}
 	if n := len(svc.recorded()); n != 0 {
 		t.Errorf("要求 = %d, want 0", n)
