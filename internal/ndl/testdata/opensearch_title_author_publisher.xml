@@ -1,0 +1,704 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" xmlns:dcndl="http://ndl.go.jp/dcndl/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="2.0">
+  <channel>
+    <title>夏目漱石 iss-ndl-opac 岩波書店 吾輩は猫である - 国立国会図書館サーチ OpenSearch</title>
+    <link>https://ios-v2-prod-eks-alb.ndlsearch.ndl.go.jp/api/opensearch?cnt=20&amp;creator=%E5%A4%8F%E7%9B%AE%E6%BC%B1%E7%9F%B3&amp;dpid=iss-ndl-opac&amp;publisher=%E5%B2%A9%E6%B3%A2%E6%9B%B8%E5%BA%97&amp;title=%E5%90%BE%E8%BC%A9%E3%81%AF%E7%8C%AB%E3%81%A7%E3%81%82%E3%82%8B</link>
+    <description>Search results for cnt=20 creator=夏目漱石 dpid=iss-ndl-opac publisher=岩波書店 title=吾輩は猫である</description>
+    <language>ja</language>
+    <openSearch:totalResults>15</openSearch:totalResults>
+    <openSearch:startIndex>1</openSearch:startIndex>
+    <openSearch:itemsPerPage>20</openSearch:itemsPerPage>
+    <item>
+      <title>漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000689986</link>
+      <description><![CDATA[<p>第1-14巻,岩波書店,1947,<p><ul><li>タイトル：漱石全集</li><li>タイトル（読み）：ソウセキ ゼンシュウ</li><li>責任表示：夏目漱石 著</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 著</author>
+      <category>図書</category>
+      <category>マイクロ</category>
+      <category>デジタル</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000000689986</guid>
+      <pubDate>Mon, 7 Sep 2026 18:36:42 +0900</pubDate>
+      <dc:title>漱石全集</dc:title>
+      <dcndl:titleTranscription>ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第1-14巻</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1947</dc:date>
+      <dcterms:issued>昭和22-23</dcterms:issued>
+      <dc:extent>14冊 図版</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000000689986</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">46028803</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">918</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000000689986"/>
+      <dc:description> 1947</dc:description>
+    </item>
+    <item>
+      <title>漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000001250391</link>
+      <description><![CDATA[<p>第1巻 (吾輩は猫である),岩波書店,1974,<p><ul><li>タイトル：漱石全集</li><li>タイトル（読み）：ソウセキ ゼンシュウ</li><li>責任表示：夏目漱石 著</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000001250391</guid>
+      <pubDate>Mon, 7 Sep 2026 18:37:37 +0900</pubDate>
+      <dc:title>漱石全集</dc:title>
+      <dcndl:titleTranscription>ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第1巻 (吾輩は猫である)</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1974</dc:date>
+      <dcterms:issued>1974</dcterms:issued>
+      <dcndl:price>2800円</dcndl:price>
+      <dc:extent>613p 図 肖像</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000001250391</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">75005122</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">918.6</dc:subject>
+      <dc:subject xsi:type="dcndl:NDLC">KH426</dc:subject>
+      <dc:description>第2刷 (初版: 昭和40年刊)</dc:description>
+      <dc:description>解説 (小宮豊隆)</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.apl.pref.akita.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009510017649"/>
+      <rdfs:seeAlso rdf:resource="https://www.library-archives.pref.fukui.lg.jp/wo/opc_srh/srh_detail/1103107636/"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1103080186"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000001250391"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/12543652"/>
+      <dc:description> 1974</dc:description>
+    </item>
+    <item>
+      <title>漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000001703146</link>
+      <description><![CDATA[<p>第1巻 (吾輩は猫である),岩波書店,1984,<p><ul><li>タイトル：漱石全集</li><li>タイトル（読み）：ソウセキ ゼンシュウ</li><li>責任表示：夏目漱石 著</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000001703146</guid>
+      <pubDate>Mon, 7 Sep 2026 18:38:23 +0900</pubDate>
+      <dc:title>漱石全集</dc:title>
+      <dcndl:titleTranscription>ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第1巻 (吾輩は猫である)</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1984</dc:date>
+      <dcterms:issued>1984.10</dcterms:issued>
+      <dcndl:price>3500円</dcndl:price>
+      <dc:extent>605p</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000001703146</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">85007253</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH426</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">918.68</dc:subject>
+      <dc:description>第3刷 (第1刷: 昭和40年)</dc:description>
+      <dc:description>著者の肖像あり</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hokkaido.jp/wo/opc_srh/"/>
+      <rdfs:seeAlso rdf:resource="https://opac.pref-lib.niigata.niigata.jp/winj/opac/switch-detail-iccap.do?bibid=1100168195"/>
+      <rdfs:seeAlso rdf:resource="https://www.library-archives.pref.fukui.lg.jp/wo/opc_srh/srh_detail/1103154731/"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.wakayama-c.ed.jp/winj/opac/switch-detail-iccap.do?bibid=1100252879"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000001703146"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/12543761"/>
+      <dc:description> 1984</dc:description>
+    </item>
+    <item>
+      <title>漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000002305201</link>
+      <description><![CDATA[<p>第1巻,岩波書店,1993,4-00-091801-X<p><ul><li>タイトル：漱石全集</li><li>タイトル（読み）：ソウセキ ゼンシュウ</li><li>責任表示：夏目金之助 著</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目金之助 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000002305201</guid>
+      <pubDate>Mon, 7 Sep 2026 18:36:40 +0900</pubDate>
+      <dc:title>漱石全集</dc:title>
+      <dcndl:titleTranscription>ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第1巻</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1993</dc:date>
+      <dcterms:issued>1993.12</dcterms:issued>
+      <dcndl:price>3400円 (税込)</dcndl:price>
+      <dc:extent>743p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">4-00-091801-X</dc:identifier>
+      <dc:identifier xsi:type="dcndl:ISBN13">4-00-091801-X</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000002305201</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">94026879</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH426</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">918.68</dc:subject>
+      <dc:description>著者の肖像あり</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hokkaido.jp/wo/opc_srh/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.sapporo.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001000790923"/>
+      <rdfs:seeAlso rdf:resource="https://www.plib.pref.aomori.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100365793"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.iwate.jp/opac/advanced-search"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.miyagi.jp/winj/opac/switch-detail-iccap.do?bibid=1104229122"/>
+      <rdfs:seeAlso rdf:resource="https://www.apl.pref.akita.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009410009176"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.fcs.ed.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001100660572"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.ibaraki.jp/licsxp-kopac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001000130225"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.tochigi.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1101170131"/>
+      <rdfs:seeAlso rdf:resource="https://www1.library.pref.gunma.jp/winj/opac/switch-detail-iccap.do?bibid=1101428549"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.saitama.jp//winj/opac/switch-detail-iccap.do?bibid=1123519124"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.city.saitama.jp/bookdetail?num=1987501&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.chiba.lg.jp/licsxp-iopac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000547316"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.chiba.jp/licsxp-opac/WOpacTifSchCmpdDispAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://catalog.library.metro.tokyo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102029086"/>
+      <rdfs:seeAlso rdf:resource="https://www.klnet.pref.kanagawa.jp/winj/opac/switch-detail-iccap.do?bibid=1100457571"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1193080457"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.kawasaki.jp/bookdetail?num=1120940&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.sagamihara.kanagawa.jp/TOSHOW/asp/WwShousaiKen.aspx?FCode=273895"/>
+      <rdfs:seeAlso rdf:resource="https://opac.pref-lib.niigata.niigata.jp/winj/opac/switch-detail-iccap.do?bibid=1104037396"/>
+      <rdfs:seeAlso rdf:resource="https://lib2.lib.pref.toyama.jp/opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009310052748"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.ishikawa.lg.jp/wo/opc_srh/srh_detail/1005010259627/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library-archives.pref.fukui.lg.jp/wo/opc_srh/srh_detail/1103145741/"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.yamanashi.jp/licsxp-opac/WOpacMnuTopInitAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.nagano.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009310067867"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.gifu.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100372835"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001101010956"/>
+      <rdfs:seeAlso rdf:resource="http://websv.aichi-pref-library.jp/winj/opac/switch-detail-iccap.do?bibid=1110274728"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.nagoya.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009410208557"/>
+      <rdfs:seeAlso rdf:resource="http://opac1.library.pref.mie.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100879544"/>
+      <rdfs:seeAlso rdf:resource="https://www.shiga-pref-library.jp/wo/opc_srh/srh_detail/0804677/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kyoto.jp/bib/?B10169459"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.osaka.jp/bib/?B10704561"/>
+      <rdfs:seeAlso rdf:resource="https://www.oml.city.osaka.lg.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000367443"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hyogo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1101579864"/>
+      <rdfs:seeAlso rdf:resource="https://opacsvr01.library.pref.nara.jp/opac/volume/56057"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.wakayama-c.ed.jp/winj/opac/switch-detail-iccap.do?bibid=1102344445"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.tottori.jp/winj/opac/switch-detail-iccap.do?bibid=1100116077"/>
+      <rdfs:seeAlso rdf:resource="https://www2.library.pref.shimane.lg.jp/opac/switch-detail-iccap.do?bibid=1100466955"/>
+      <rdfs:seeAlso rdf:resource="https://opac.libnet.pref.okayama.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1005010184448"/>
+      <rdfs:seeAlso rdf:resource="https://www2.hplibra.pref.hiroshima.jp/bib/?B11086413"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.city.hiroshima.jp/winj/opac/switch-detail-iccap.do?bibid=1100418906"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.yamaguchi.lg.jp//wo/opc_srh/srh_detail/9310082762/"/>
+      <rdfs:seeAlso rdf:resource="https://alislibopac.bunmori.tokushima.jp/winj/opac/switch-detail-iccap.do?bibid=1100077547"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kagawa.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1104016855"/>
+      <rdfs:seeAlso rdf:resource="https://www.ehimetosyokan.jp/winj/opac/switch-detail-iccap.do?bibid=1100132666"/>
+      <rdfs:seeAlso rdf:resource="https://opac.library.kochi.jp/winj/opac/switch-detail-iccap.do?bibid=1108142554"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.fukuoka.jp/winj/opac/switch-detail-iccap.do?bibid=1104018712"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.fukuoka.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1103644999"/>
+      <rdfs:seeAlso rdf:resource="https://www2.tosyo-saga.jp/kentosyo2/opac/switch-detail-iccap.do?bibid=1100323016"/>
+      <rdfs:seeAlso rdf:resource="https://opac.miraionlibrary.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009810475317"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kumamoto.jp/winj/opac/switch-detail-iccap.do?bibid=1114418580"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1104314766"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.miyazaki.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100682889"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.okinawa.jp/winj/opac/switch-detail-iccap.do?bibid=1100018166"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000002305201"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/13502463"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00032127"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00376303"/>
+      <rdfs:seeAlso rdf:resource="https://www.books.or.jp/book-details/9784000918015"/>
+      <dc:description> 1993</dc:description>
+    </item>
+    <item>
+      <title>漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000952861</link>
+      <description><![CDATA[<p>第1巻 (吾輩は猫である),岩波書店,1965,<p><ul><li>タイトル：漱石全集</li><li>タイトル（読み）：ソウセキ ゼンシュウ</li><li>責任表示：夏目漱石 著</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000000952861</guid>
+      <pubDate>Mon, 7 Sep 2026 18:36:04 +0900</pubDate>
+      <dc:title>漱石全集</dc:title>
+      <dcndl:titleTranscription>ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第1巻 (吾輩は猫である)</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1965</dc:date>
+      <dcterms:issued>1965</dcterms:issued>
+      <dcndl:price>1200円 (税込)</dcndl:price>
+      <dc:extent>613p 図版</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000000952861</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">56011384</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">918.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000000952861"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/1664306"/>
+      <dc:description> 1965</dc:description>
+    </item>
+    <item>
+      <title>漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000003607091</link>
+      <description><![CDATA[<p>第1巻 (吾輩は猫である 上),岩波書店,1956,<p><ul><li>タイトル：漱石全集</li><li>タイトル（読み）：ソウセキ ゼンシュウ</li><li>責任表示：夏目漱石 著</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000003607091</guid>
+      <pubDate>Mon, 7 Sep 2026 18:34:31 +0900</pubDate>
+      <dc:title>漱石全集</dc:title>
+      <dcndl:titleTranscription>ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第1巻 (吾輩は猫である 上)</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1956</dc:date>
+      <dcterms:issued>1956</dcterms:issued>
+      <dc:extent>247p 図版</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000003607091</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">20354948</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">918.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000003607091"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/1675211"/>
+      <dc:description> 1956</dc:description>
+    </item>
+    <item>
+      <title>漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000955105</link>
+      <description><![CDATA[<p>第2巻 (吾輩は猫である 下),岩波書店,1956,<p><ul><li>タイトル：漱石全集</li><li>タイトル（読み）：ソウセキ ゼンシュウ</li><li>責任表示：夏目漱石 著</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000000955105</guid>
+      <pubDate>Mon, 7 Sep 2026 18:35:54 +0900</pubDate>
+      <dc:title>漱石全集</dc:title>
+      <dcndl:titleTranscription>ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第2巻 (吾輩は猫である 下)</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1956</dc:date>
+      <dcterms:issued>1956</dcterms:issued>
+      <dc:extent>273p 図版</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000000955105</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">56013628</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">918.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hokkaido.jp/wo/opc_srh/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.chiba.lg.jp/licsxp-iopac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000100250064"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.fukuoka.jp/winj/opac/switch-detail-iccap.do?bibid=1105242217"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000000955105"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/1664930"/>
+      <dc:description> 1956</dc:description>
+    </item>
+    <item>
+      <title>漱石文学作品集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000002082476</link>
+      <description><![CDATA[<p>1 (吾輩は猫である),岩波書店,1990,4-00-009001-1<p><ul><li>タイトル：漱石文学作品集</li><li>タイトル（読み）：ソウセキ ブンガク サクヒンシュウ</li><li>責任表示：夏目漱石 作</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 作</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000002082476</guid>
+      <pubDate>Mon, 7 Sep 2026 18:37:20 +0900</pubDate>
+      <dc:title>漱石文学作品集</dc:title>
+      <dcndl:titleTranscription>ソウセキ ブンガク サクヒンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>1 (吾輩は猫である)</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1990</dc:date>
+      <dcterms:issued>1990.11</dcterms:issued>
+      <dcndl:price>2400円 (税込)</dcndl:price>
+      <dc:extent>563p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">4-00-009001-1</dc:identifier>
+      <dc:identifier xsi:type="dcndl:ISBN13">4-00-009001-1</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000002082476</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">91017111</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH426</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">918.68</dc:subject>
+      <dc:description>付 (1枚) : 漱石文学地図</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.sapporo.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001000562570"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.miyagi.jp/winj/opac/switch-detail-iccap.do?bibid=1107054999"/>
+      <rdfs:seeAlso rdf:resource="https://www.apl.pref.akita.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1005010222635"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.city.saitama.jp/bookdetail?num=683382&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.chiba.lg.jp/licsxp-iopac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000494276"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.chiba.jp/licsxp-opac/WOpacTifSchCmpdDispAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1190389952"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.kawasaki.jp/bookdetail?num=995403&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.library-archives.pref.fukui.lg.jp/wo/opc_srh/srh_detail/1103154746/"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.gifu.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100326738"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001100939604"/>
+      <rdfs:seeAlso rdf:resource="http://websv.aichi-pref-library.jp/winj/opac/switch-detail-iccap.do?bibid=1100467742"/>
+      <rdfs:seeAlso rdf:resource="http://opac1.library.pref.mie.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100601903"/>
+      <rdfs:seeAlso rdf:resource="https://www.shiga-pref-library.jp/wo/opc_srh/srh_detail/0572225/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.osaka.jp/bib/?B10096395"/>
+      <rdfs:seeAlso rdf:resource="https://www.oml.city.osaka.lg.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000191321"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib-sakai.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000090392"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hyogo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1103367991"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.wakayama-c.ed.jp/winj/opac/switch-detail-iccap.do?bibid=1100162761"/>
+      <rdfs:seeAlso rdf:resource="https://opac.libnet.pref.okayama.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1005010137832"/>
+      <rdfs:seeAlso rdf:resource="https://www2.hplibra.pref.hiroshima.jp/bib/?B11036713"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kumamoto.jp/winj/opac/switch-detail-iccap.do?bibid=1129045973"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kumamoto.jp/winj/opac/switch-detail-iccap.do?bibid=1130003943"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1103159839"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.miyazaki.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100836286"/>
+      <rdfs:seeAlso rdf:resource="https://www2.library.pref.kagoshima.jp/kento/opac/switch-detail-iccap.do?bibid=1132310497"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000002082476"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/13525912"/>
+      <rdfs:seeAlso rdf:resource="https://www.books.or.jp/book-details/9784000090018"/>
+      <dc:description> 1990</dc:description>
+    </item>
+    <item>
+      <title>定本漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I027753508</link>
+      <description><![CDATA[<p>第1巻,岩波書店,2016,978-4-00-092821-2<p><ul><li>タイトル：定本漱石全集</li><li>タイトル（読み）：テイホン ソウセキ ゼンシュウ</li><li>責任表示：夏目金之助 著</li><li>NDC(9)：918.68</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目金之助 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I027753508</guid>
+      <pubDate>Mon, 7 Sep 2026 18:32:32 +0900</pubDate>
+      <dc:title>定本漱石全集</dc:title>
+      <dcndl:titleTranscription>テイホン ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第1巻</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">2016</dc:date>
+      <dcterms:issued>2016.12</dcterms:issued>
+      <dcndl:price>4600円</dcndl:price>
+      <dc:extent>749p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">978-4-00-092821-2</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">027753508</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">22839008</dc:identifier>
+      <dc:identifier xsi:type="dcndl:TOHANMARCNO">33536222</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH884</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC9">918.68</dc:subject>
+      <dc:description>付属資料: 8p : 月報 1</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hokkaido.jp/wo/opc_srh/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.sapporo.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1008001117413"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.miyagi.jp/winj/opac/switch-detail-iccap.do?bibid=1101914254"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.pref.yamagata.jp/winj/opac/switch-detail-iccap.do?bibid=1103596788"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.ibaraki.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1003000198555"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.tochigi.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102146878"/>
+      <rdfs:seeAlso rdf:resource="https://www1.library.pref.gunma.jp/winj/opac/switch-detail-iccap.do?bibid=1110491570"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.saitama.jp//winj/opac/switch-detail-iccap.do?bibid=1101823353"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.city.saitama.jp/bookdetail?num=2644303&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.chiba.lg.jp/licsxp-iopac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000100461257"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.chiba.jp/licsxp-opac/WOpacTifSchCmpdDispAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://catalog.library.metro.tokyo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1152925265"/>
+      <rdfs:seeAlso rdf:resource="https://www.klnet.pref.kanagawa.jp/winj/opac/switch-detail-iccap.do?bibid=1106178670"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1113443873"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.kawasaki.jp/bookdetail?num=2858377&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://opac.pref-lib.niigata.niigata.jp/winj/opac/switch-detail-iccap.do?bibid=1107974182"/>
+      <rdfs:seeAlso rdf:resource="https://lib2.lib.pref.toyama.jp/opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000626697"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.ishikawa.lg.jp/wo/opc_srh/srh_detail/1000001005501/"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.yamanashi.jp/licsxp-opac/WOpacMnuTopInitAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.nagano.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000001100304"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.gifu.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1190181186"/>
+      <rdfs:seeAlso rdf:resource="https://www.tosyokan.pref.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1006000165656"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001103385144"/>
+      <rdfs:seeAlso rdf:resource="http://websv.aichi-pref-library.jp/winj/opac/switch-detail-iccap.do?bibid=1190281766"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.nagoya.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001610081530"/>
+      <rdfs:seeAlso rdf:resource="https://www.shiga-pref-library.jp/wo/opc_srh/srh_detail/4465237/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kyoto.jp/bib/?B11281586"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.osaka.jp/bib/?B13382371"/>
+      <rdfs:seeAlso rdf:resource="https://www.oml.city.osaka.lg.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000014222992"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib-sakai.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1007000692522"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hyogo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1103388671"/>
+      <rdfs:seeAlso rdf:resource="https://opacsvr01.library.pref.nara.jp/opac/volume/1193027"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.wakayama-c.ed.jp/winj/opac/switch-detail-iccap.do?bibid=1102914261"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.tottori.jp/winj/opac/switch-detail-iccap.do?bibid=1120075054"/>
+      <rdfs:seeAlso rdf:resource="https://www2.library.pref.shimane.lg.jp/opac/switch-detail-iccap.do?bibid=1130145358"/>
+      <rdfs:seeAlso rdf:resource="https://opac.libnet.pref.okayama.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009812078025"/>
+      <rdfs:seeAlso rdf:resource="https://www2.hplibra.pref.hiroshima.jp/bib/?B12327792"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.city.hiroshima.jp/winj/opac/switch-detail-iccap.do?bibid=1110119771"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.yamaguchi.lg.jp//wo/opc_srh/srh_detail/1001435072/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kagawa.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1110432219"/>
+      <rdfs:seeAlso rdf:resource="https://www.ehimetosyokan.jp/winj/opac/switch-detail-iccap.do?bibid=1120014251"/>
+      <rdfs:seeAlso rdf:resource="https://opac.library.kochi.jp/winj/opac/switch-detail-iccap.do?bibid=1120157985"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.fukuoka.jp/winj/opac/switch-detail-iccap.do?bibid=1111312822"/>
+      <rdfs:seeAlso rdf:resource="https://opac.miraionlibrary.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000002525781"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1102650616"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.miyazaki.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102098027"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.okinawa.jp/winj/opac/switch-detail-iccap.do?bibid=1101391119"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I027753508"/>
+      <rdfs:seeAlso rdf:resource="https://www.books.or.jp/book-details/9784000928212"/>
+      <dc:description> 2016</dc:description>
+    </item>
+    <item>
+      <title>定本漱石全集</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I029449631</link>
+      <description><![CDATA[<p>第16巻,岩波書店,2019,978-4-00-092836-6<p><ul><li>タイトル：定本漱石全集</li><li>タイトル（読み）：テイホン ソウセキ ゼンシュウ</li><li>責任表示：夏目金之助 著</li><li>NDC(10)：918.68</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目金之助 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I029449631</guid>
+      <pubDate>Mon, 7 Sep 2026 18:32:11 +0900</pubDate>
+      <dc:title>定本漱石全集</dc:title>
+      <dcndl:titleTranscription>テイホン ソウセキ ゼンシュウ</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>第16巻</dcndl:volume>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">2019</dc:date>
+      <dcterms:issued>2019.2</dcterms:issued>
+      <dcndl:price>5200円</dcndl:price>
+      <dc:extent>871p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">978-4-00-092836-6</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">029449631</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">23191482</dc:identifier>
+      <dc:identifier xsi:type="dcndl:TOHANMARCNO">33874595</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH971</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC10">918.68</dc:subject>
+      <dc:description>付属資料: 10p : 月報 23</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hokkaido.jp/wo/opc_srh/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.sapporo.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1008001358048"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.pref.yamagata.jp/winj/opac/switch-detail-iccap.do?bibid=1120181876"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.fcs.ed.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001103584586"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.ibaraki.jp/licsxp-kopac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1003000423398"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.tochigi.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102323025"/>
+      <rdfs:seeAlso rdf:resource="https://www1.library.pref.gunma.jp/winj/opac/switch-detail-iccap.do?bibid=1110690504"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.saitama.jp//winj/opac/switch-detail-iccap.do?bibid=1198023244"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.city.saitama.jp/bookdetail?num=2886443&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.chiba.lg.jp/licsxp-iopac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000100695114"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.chiba.jp/licsxp-opac/WOpacTifSchCmpdDispAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://catalog.library.metro.tokyo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1153326321"/>
+      <rdfs:seeAlso rdf:resource="https://www.klnet.pref.kanagawa.jp/winj/opac/switch-detail-iccap.do?bibid=1106589342"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1113668713"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.kawasaki.jp/bookdetail?num=3173146&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://opac.pref-lib.niigata.niigata.jp/winj/opac/switch-detail-iccap.do?bibid=1120200613"/>
+      <rdfs:seeAlso rdf:resource="https://lib2.lib.pref.toyama.jp/opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000769770"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.ishikawa.lg.jp/wo/opc_srh/srh_detail/1000001211124/"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.yamanashi.jp/licsxp-opac/WOpacMnuTopInitAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.nagano.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000001300824"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.gifu.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1190385238"/>
+      <rdfs:seeAlso rdf:resource="https://www.tosyokan.pref.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1006000367788"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001103583007"/>
+      <rdfs:seeAlso rdf:resource="http://websv.aichi-pref-library.jp/winj/opac/switch-detail-iccap.do?bibid=1190484697"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.nagoya.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001810104000"/>
+      <rdfs:seeAlso rdf:resource="https://www.shiga-pref-library.jp/wo/opc_srh/srh_detail/4635604/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kyoto.jp/bib/?B11680419"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.osaka.jp/bib/?B13666029"/>
+      <rdfs:seeAlso rdf:resource="https://www.oml.city.osaka.lg.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000014650566"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib-sakai.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1007000912260"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hyogo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1103406181"/>
+      <rdfs:seeAlso rdf:resource="https://opacsvr01.library.pref.nara.jp/opac/volume/1280226"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.wakayama-c.ed.jp/winj/opac/switch-detail-iccap.do?bibid=1120019255"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.tottori.jp/winj/opac/switch-detail-iccap.do?bibid=1120250687"/>
+      <rdfs:seeAlso rdf:resource="https://www2.library.pref.shimane.lg.jp/opac/switch-detail-iccap.do?bibid=1130350099"/>
+      <rdfs:seeAlso rdf:resource="https://opac.libnet.pref.okayama.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009812292641"/>
+      <rdfs:seeAlso rdf:resource="https://www2.hplibra.pref.hiroshima.jp/bib/?B12531675"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.city.hiroshima.jp/winj/opac/switch-detail-iccap.do?bibid=1110320294"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.yamaguchi.lg.jp//wo/opc_srh/srh_detail/1001632538/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kagawa.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1130116268"/>
+      <rdfs:seeAlso rdf:resource="https://www.ehimetosyokan.jp/winj/opac/switch-detail-iccap.do?bibid=1120040761"/>
+      <rdfs:seeAlso rdf:resource="https://opac.library.kochi.jp/winj/opac/switch-detail-iccap.do?bibid=1120361737"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.fukuoka.jp/winj/opac/switch-detail-iccap.do?bibid=1111516692"/>
+      <rdfs:seeAlso rdf:resource="https://opac.miraionlibrary.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000002735734"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1110142067"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.miyazaki.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102267837"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I029449631"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B01118382"/>
+      <rdfs:seeAlso rdf:resource="https://www.books.or.jp/book-details/9784000928366"/>
+      <dc:description> 2019</dc:description>
+    </item>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000009210137</link>
+      <description><![CDATA[<p>岩波書店,1930,<p><ul><li>タイトル：吾輩は猫である</li><li>タイトル（読み）：ワガハイ ワ ネコ デ アル</li><li>責任表示：夏目漱石 著</li></ul>]]></description>
+      <author>夏目漱石 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000009210137</guid>
+      <pubDate>Wed, 14 Jul 2010 23:25:15 +0900</pubDate>
+      <dc:title>吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1930</dc:date>
+      <dcterms:issued>1930</dcterms:issued>
+      <dc:extent>466p</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000009210137</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">21343205</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">913.6</dc:subject>
+      <dc:description>奥付の責任表示: 夏目金之助</dc:description>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.iwate.jp/opac/advanced-search"/>
+      <rdfs:seeAlso rdf:resource="https://opacsvr01.library.pref.nara.jp/opac/volume/549858"/>
+      <rdfs:seeAlso rdf:resource="https://opac.library.kochi.jp/winj/opac/switch-detail-iccap.do?bibid=1108533584"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1104413534"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000009210137"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/1184660"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971712334726804784"/>
+      <dc:description> 1930</dc:description>
+    </item>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000001024616</link>
+      <description><![CDATA[<p>岩波書店,1961,<p><ul><li>タイトル：吾輩は猫である</li><li>タイトル（読み）：ワガハイ ワ ネコ デ アル</li><li>責任表示：夏目漱石 著</li><li>シリーズ名：岩波文庫</li><li>シリーズ名（読み）：イワナミ ブンコ</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <category>デジタル</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000001024616</guid>
+      <pubDate>Mon, 7 Sep 2026 18:35:53 +0900</pubDate>
+      <dc:title>吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:edition>改版</dcndl:edition>
+      <dcndl:seriesTitle>岩波文庫</dcndl:seriesTitle>
+      <dcndl:seriesTitleTranscription>イワナミ ブンコ</dcndl:seriesTitleTranscription>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1961</dc:date>
+      <dcterms:issued>1961 23,24刷</dcterms:issued>
+      <dc:extent>2冊</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000001024616</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">61010421</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000001024616"/>
+      <dc:description> 1961</dc:description>
+    </item>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000002041889</link>
+      <description><![CDATA[<p>岩波書店,1990,4-00-310101-4<p><ul><li>タイトル：吾輩は猫である</li><li>タイトル（読み）：ワガハイ ワ ネコ デ アル</li><li>責任表示：夏目漱石 作</li><li>シリーズ名：岩波文庫</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 作</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000002041889</guid>
+      <pubDate>Mon, 7 Sep 2026 18:37:23 +0900</pubDate>
+      <dc:title>吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:edition>改版</dcndl:edition>
+      <dcndl:seriesTitle>岩波文庫</dcndl:seriesTitle>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1990</dc:date>
+      <dcterms:issued>1990.4</dcterms:issued>
+      <dcndl:price>410円 (税込)</dcndl:price>
+      <dc:extent>563p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">4-00-310101-4</dc:identifier>
+      <dc:identifier xsi:type="dcndl:ISBN13">4-00-310101-4</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000002041889</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">90035836</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH426</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC8">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.sapporo.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001000260880"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.tochigi.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100915105"/>
+      <rdfs:seeAlso rdf:resource="https://www1.library.pref.gunma.jp/winj/opac/switch-detail-iccap.do?bibid=1100150906"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.city.saitama.jp/bookdetail?num=647208&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.chiba.jp/licsxp-opac/WOpacTifSchCmpdDispAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://catalog.library.metro.tokyo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1101692721"/>
+      <rdfs:seeAlso rdf:resource="https://www.klnet.pref.kanagawa.jp/winj/opac/switch-detail-iccap.do?bibid=1100366019"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1190350177"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.kawasaki.jp/bookdetail?num=971117&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.sagamihara.kanagawa.jp/TOSHOW/asp/WwShousaiKen.aspx?FCode=2643024"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.sagamihara.kanagawa.jp/TOSHOW/asp/WwShousaiKen.aspx?FCode=476057"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.ishikawa.lg.jp/wo/opc_srh/srh_detail/1005010212085/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library-archives.pref.fukui.lg.jp/wo/opc_srh/srh_detail/1103916857/"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.yamanashi.jp/licsxp-opac/WOpacMnuTopInitAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.nagano.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000001523577"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.gifu.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102871506"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001100925804"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.nagoya.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009410171055"/>
+      <rdfs:seeAlso rdf:resource="http://opac1.library.pref.mie.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100577616"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.osaka.jp/bib/?B10078433"/>
+      <rdfs:seeAlso rdf:resource="https://www.oml.city.osaka.lg.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000191279"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib-sakai.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000000066074"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.hyogo.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1101754650"/>
+      <rdfs:seeAlso rdf:resource="https://opacsvr01.library.pref.nara.jp/opac/volume/512784"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.wakayama-c.ed.jp/winj/opac/switch-detail-iccap.do?bibid=1100516984"/>
+      <rdfs:seeAlso rdf:resource="https://www2.hplibra.pref.hiroshima.jp/bib/?B12062071"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.city.hiroshima.jp/winj/opac/switch-detail-iccap.do?bibid=1100375966"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.yamaguchi.lg.jp//wo/opc_srh/srh_detail/9810106854/"/>
+      <rdfs:seeAlso rdf:resource="https://alislibopac.bunmori.tokushima.jp/winj/opac/switch-detail-iccap.do?bibid=1100301156"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kagawa.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1101241643"/>
+      <rdfs:seeAlso rdf:resource="https://www.ehimetosyokan.jp/winj/opac/switch-detail-iccap.do?bibid=1100568639"/>
+      <rdfs:seeAlso rdf:resource="https://opac.library.kochi.jp/winj/opac/switch-detail-iccap.do?bibid=1109732343"/>
+      <rdfs:seeAlso rdf:resource="https://opac.miraionlibrary.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001000696385"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1105010266"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000002041889"/>
+      <rdfs:seeAlso rdf:resource="https://library.sapie.or.jp/cgi-bin/CN1MN1?S00101=J00DTL04&amp;S00222=1246377"/>
+      <rdfs:seeAlso rdf:resource="https://library.sapie.or.jp/cgi-bin/CN1MN1?S00101=J00DTL04&amp;S00222=2981973"/>
+      <rdfs:seeAlso rdf:resource="https://dl.ndl.go.jp/pid/13503380"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00046947"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971712334769450903"/>
+      <rdfs:seeAlso rdf:resource="https://www.books.or.jp/book-details/00000000000000000214"/>
+      <rdfs:seeAlso rdf:resource="https://www.books.or.jp/book-details/9784003101018"/>
+      <dc:description> 1990</dc:description>
+    </item>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000003683425</link>
+      <description><![CDATA[<p>岩波書店,2002,4-00-007215-3<p><ul><li>タイトル：吾輩は猫である</li><li>タイトル（読み）：ワガハイ ワ ネコ デ アル</li><li>責任表示：夏目漱石 作</li><li>シリーズ名：ワイド版岩波文庫</li><li>シリーズ名（読み）：ワイドバン イワナミ ブンコ</li><li>NDC(9)：913.6</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 作</author>
+      <category>図書</category>
+      <category>紙</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000003683425</guid>
+      <pubDate>Mon, 7 Sep 2026 18:34:33 +0900</pubDate>
+      <dc:title>吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:seriesTitle>ワイド版岩波文庫</dcndl:seriesTitle>
+      <dcndl:seriesTitleTranscription>ワイドバン イワナミ ブンコ</dcndl:seriesTitleTranscription>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">2002</dc:date>
+      <dcterms:issued>2002.9</dcterms:issued>
+      <dcndl:price>1600円</dcndl:price>
+      <dc:extent>563p</dc:extent>
+      <dc:identifier xsi:type="dcndl:ISBN">4-00-007215-3</dc:identifier>
+      <dc:identifier xsi:type="dcndl:ISBN13">4-00-007215-3</dc:identifier>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000003683425</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">20318783</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDLC">KH426</dc:subject>
+      <dc:subject xsi:type="dcndl:NDC9">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://www.plib.pref.aomori.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102347340"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.iwate.jp/opac/advanced-search"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.miyagi.jp/winj/opac/switch-detail-iccap.do?bibid=1100104511"/>
+      <rdfs:seeAlso rdf:resource="https://www.apl.pref.akita.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009810386298"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.pref.yamagata.jp/winj/opac/switch-detail-iccap.do?bibid=1100406133"/>
+      <rdfs:seeAlso rdf:resource="http://www.lib.pref.tochigi.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1100201295"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.city.saitama.jp/bookdetail?num=1174269&amp;ctg=1"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.city.chiba.jp/licsxp-opac/WOpacTifSchCmpdDispAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://opac.lib.city.yokohama.lg.jp/winj/opac/switch-detail-iccap.do?bibid=1102059126"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.sagamihara.kanagawa.jp/TOSHOW/asp/WwShousaiKen.aspx?FCode=972627"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.ishikawa.lg.jp/wo/opc_srh/srh_detail/1009910356858/"/>
+      <rdfs:seeAlso rdf:resource="https://www.library-archives.pref.fukui.lg.jp/wo/opc_srh/srh_detail/1104005976/"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib.pref.yamanashi.jp/licsxp-opac/WOpacMnuTopInitAction.do"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.nagano.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009910329564"/>
+      <rdfs:seeAlso rdf:resource="https://www.tosyokan.pref.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009910355863"/>
+      <rdfs:seeAlso rdf:resource="https://www.toshokan.city.shizuoka.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1001100224643"/>
+      <rdfs:seeAlso rdf:resource="http://websv.aichi-pref-library.jp/winj/opac/switch-detail-iccap.do?bibid=1160329914"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.osaka.jp/bib/?B11084476"/>
+      <rdfs:seeAlso rdf:resource="https://www.oml.city.osaka.lg.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000010375547"/>
+      <rdfs:seeAlso rdf:resource="https://www.lib-sakai.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1000001537334"/>
+      <rdfs:seeAlso rdf:resource="http://www.library.pref.tottori.jp/winj/opac/switch-detail-iccap.do?bibid=1101002126"/>
+      <rdfs:seeAlso rdf:resource="https://opac.libnet.pref.okayama.jp/licsxp-opac/WOpacMsgNewListToTifTilDetailAction.do?tilcod=1009810398940"/>
+      <rdfs:seeAlso rdf:resource="https://www2.hplibra.pref.hiroshima.jp/bib/?B11418435"/>
+      <rdfs:seeAlso rdf:resource="https://www2.tosyo-saga.jp/kentosyo2/opac/switch-detail-iccap.do?bibid=1100526308"/>
+      <rdfs:seeAlso rdf:resource="https://www.library.pref.kumamoto.jp/winj/opac/switch-detail-iccap.do?bibid=1108104726"/>
+      <rdfs:seeAlso rdf:resource="https://library.pref.oita.jp/winj/opac/switch-detail-iccap.do?bibid=1109350138"/>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000003683425"/>
+      <rdfs:seeAlso rdf:resource="https://www.kanabun.or.jp/CARIN/CARINOPACLINK.HTM?ID=B00093954"/>
+      <rdfs:seeAlso rdf:resource="https://cir.nii.ac.jp/crid/1971430859777919244"/>
+      <rdfs:seeAlso rdf:resource="https://www.books.or.jp/book-details/9784000072151"/>
+      <dc:description> 2002</dc:description>
+    </item>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000874302</link>
+      <description><![CDATA[<p>上,下,岩波書店,1950,<p><ul><li>タイトル：吾輩は猫である</li><li>タイトル（読み）：ワガハイ ワ ネコ デ アル</li><li>責任表示：夏目漱石 著</li><li>シリーズ名：岩波文庫</li><li>シリーズ名（読み）：イワナミ ブンコ</li></ul>]]></description>
+      <author>夏目, 漱石, 1867-1916,夏目漱石 著</author>
+      <category>図書</category>
+      <category>紙</category>
+      <category>デジタル</category>
+      <guid isPermaLink="true">https://ndlsearch.ndl.go.jp/books/R100000002-I000000874302</guid>
+      <pubDate>Mon, 7 Sep 2026 18:36:53 +0900</pubDate>
+      <dc:title>吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>夏目, 漱石, 1867-1916</dc:creator>
+      <dcndl:creatorTranscription>ナツメ, ソウセキ, 1867-1916</dcndl:creatorTranscription>
+      <dcndl:volume>上,下</dcndl:volume>
+      <dcndl:seriesTitle>岩波文庫</dcndl:seriesTitle>
+      <dcndl:seriesTitleTranscription>イワナミ ブンコ</dcndl:seriesTitleTranscription>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcndl:publicationPlace>JP</dcndl:publicationPlace>
+      <dc:date xsi:type="dcterms:W3CDTF">1950</dc:date>
+      <dcterms:issued>1950</dcterms:issued>
+      <dc:extent>2冊</dc:extent>
+      <dc:identifier xsi:type="dcndl:NDLBibID">000000874302</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">51001726</dc:identifier>
+      <dc:subject xsi:type="dcndl:NDC">913.6</dc:subject>
+      <rdfs:seeAlso rdf:resource="https://ndlsearch.ndl.go.jp/books/R100000002-I000000874302"/>
+      <dc:description> 1950</dc:description>
+    </item>
+  </channel>
+</rss>

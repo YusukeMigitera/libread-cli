@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"libread/internal/domain"
 	"libread/internal/store"
@@ -51,7 +52,10 @@ func TestBookWorkflow(t *testing.T) {
 		t.Fatalf("find: exit code = %d, stderr = %s", code, stderr)
 	}
 	assertGolden(t, "book_find.golden", stdout.String())
-	if q := svc.recorded()[0].url.Query(); q.Get("title") != "吾輩は猫である" || q.Get("dpid") != "iss-ndl-opac" {
+	if !strings.Contains(stdout.String(), "345件中10件を表示") || !strings.Contains(stdout.String(), "--author") || strings.Contains(stdout.String(), "上位") {
+		t.Errorf("一致件数と絞り込みの案内がない: %q", stdout.String())
+	}
+	if q := svc.recorded()[0].url.Query(); q.Get("title") != "吾輩は猫である" || q.Get("dpid") != "iss-ndl-opac" || q.Has("creator") {
 		t.Errorf("find の要求 = %v", q)
 	}
 
@@ -65,7 +69,7 @@ func TestBookWorkflow(t *testing.T) {
 		t.Fatalf("登録された本 = %d, want 1", len(d.Books))
 	}
 	got := d.Books[0]
-	if got.Book.ISBN != "9784003101018" || got.Book.Title != "吾輩は猫である" || got.Book.Author != "夏目漱石 著" || got.Book.Publisher != "岩波書店" {
+	if got.Book.ISBN != "9784003101018" || got.Book.Title != "吾輩は猫である" || got.Book.Author != "夏目, 漱石, 1867-1916" || got.Book.Publisher != "岩波書店" {
 		t.Errorf("登録された書誌 = %+v", got.Book)
 	}
 	if got.Note != "p.120 まで" || got.AddedOn.String() != "2026-10-21" {
@@ -181,6 +185,25 @@ func TestBookAddErrors(t *testing.T) {
 
 const emptyRSS = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel></channel></rss>`
 
+// 著者・出版社で絞り込むと、書名が一致する本が先頭に来て、すべて表示できたときは件数の案内を出さない。
+func TestBookFindNarrowed(t *testing.T) {
+	for _, args := range [][]string{
+		{"book", "find", "吾輩は猫である", "--author", "夏目漱石", "--publisher", "岩波書店"},
+		{"book", "find", "--author", "夏目漱石", "--publisher=岩波書店", "吾輩は猫である"},
+	} {
+		svc := &fakeServices{ndl: ndlFixture(t, "opensearch_title_author_publisher.xml")}
+		env, stdout, stderr := newCheckEnv(t, "", svc)
+		if code := run(env, stdout, stderr, args...); code != ExitOK {
+			t.Fatalf("%v: exit code = %d, stderr = %s", args, code, stderr)
+		}
+		assertGolden(t, "book_find_narrowed.golden", stdout.String())
+		q := svc.recorded()[0].url.Query()
+		if q.Get("title") != "吾輩は猫である" || q.Get("creator") != "夏目漱石" || q.Get("publisher") != "岩波書店" {
+			t.Errorf("%v: 要求 = %v", args, q)
+		}
+	}
+}
+
 func TestBookFindNoResults(t *testing.T) {
 	svc := &fakeServices{ndl: emptyRSS}
 	env, stdout, stderr := newCheckEnv(t, "", svc)
@@ -188,19 +211,59 @@ func TestBookFindNoResults(t *testing.T) {
 	if code := run(env, stdout, stderr, "book", "find", "存在しない本"); code != ExitUsage {
 		t.Errorf("exit code = %d, want %d", code, ExitUsage)
 	}
-	if !strings.Contains(stderr.String(), "存在しない本") {
+	if !strings.Contains(stderr.String(), "「存在しない本」に一致する本は見つかりませんでした") {
 		t.Errorf("stderr = %q", stderr.String())
 	}
-	if !strings.HasSuffix(stdout.String(), wantAttribution) {
-		t.Errorf("stdout = %q, want 出典表示で終わる", stdout.String())
+	// 一致がないので、絞り込みの案内は出さない。
+	if stdout.String() != wantAttribution {
+		t.Errorf("stdout = %q, want 出典表示だけ", stdout.String())
+	}
+}
+
+// 絞り込みで0件になったときは、指定した著者・出版社もメッセージに含める。
+func TestBookFindNoResultsShowsFilters(t *testing.T) {
+	svc := &fakeServices{ndl: emptyRSS}
+	env, stdout, stderr := newCheckEnv(t, "", svc)
+
+	if code := run(env, stdout, stderr, "book", "find", "吾輩は猫である", "--author", "夏目 漱石", "--publisher", "岩波書店"); code != ExitUsage {
+		t.Errorf("exit code = %d, want %d", code, ExitUsage)
+	}
+	if !strings.Contains(stderr.String(), "「吾輩は猫である」（著者: 夏目 漱石、出版社: 岩波書店）に一致する本は見つかりませんでした") {
+		t.Errorf("stderr = %q", stderr.String())
+	}
+}
+
+// 一致はあるのに、取得した記録に ISBN のある本が1件もないときも、絞り込みの案内を出す。
+func TestBookFindNoISBNInFetchedRecords(t *testing.T) {
+	const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
+		`<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" version="2.0"><channel>` +
+		`<openSearch:totalResults>345</openSearch:totalResults>` +
+		`<item><dc:title>内田百間全集</dc:title></item>` +
+		`<item><dc:title>漱石全集</dc:title></item>` +
+		`</channel></rss>`
+	svc := &fakeServices{ndl: rss}
+	env, stdout, stderr := newCheckEnv(t, "", svc)
+
+	if code := run(env, stdout, stderr, "book", "find", "吾輩は猫である"); code != ExitUsage {
+		t.Errorf("exit code = %d, want %d", code, ExitUsage)
+	}
+	assertGolden(t, "book_find_no_isbn.golden", stdout.String())
+	if !strings.Contains(stderr.String(), "吾輩は猫である") {
+		t.Errorf("stderr = %q", stderr.String())
 	}
 }
 
 func TestBookFindUsage(t *testing.T) {
 	svc := &fakeServices{}
 	env, stdout, stderr := newCheckEnv(t, "", svc)
-	if code := run(env, stdout, stderr, "book", "find"); code != ExitUsage {
-		t.Errorf("exit code = %d, want %d", code, ExitUsage)
+	for _, args := range [][]string{
+		{"book", "find"},
+		{"book", "find", "--author", "夏目漱石"},
+		{"book", "find", "吾輩は猫である", "--no-such-flag"},
+	} {
+		if code := run(env, stdout, stderr, args...); code != ExitUsage {
+			t.Errorf("%v: exit code = %d, want %d", args, code, ExitUsage)
+		}
 	}
 	if n := len(svc.recorded()); n != 0 {
 		t.Errorf("要求 = %d, want 0", n)
@@ -343,5 +406,23 @@ func TestBookFindShowsNormalizedISBN(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), isbn.String()) {
 		t.Errorf("stdout = %q, want %s を含む", stdout.String(), isbn)
+	}
+}
+
+// NDL サーチは応答が遅いことがあるので、NDL への要求だけタイムアウトを30秒にする（research.md R3）。
+// 他のサービスに使う env.HTTPClient は変えず、Transport はそのまま使う。
+func TestNDLClientTimeout(t *testing.T) {
+	transport := &http.Transport{}
+	env := Env{HTTPClient: &http.Client{Timeout: 10 * time.Second, Transport: transport}}
+
+	c := ndlClient(env)
+	if c.HTTP.Timeout != 30*time.Second {
+		t.Errorf("NDL のタイムアウト = %v, want 30s", c.HTTP.Timeout)
+	}
+	if c.HTTP.Transport != transport {
+		t.Error("NDL のクライアントが env.HTTPClient の Transport を使っていない")
+	}
+	if env.HTTPClient.Timeout != 10*time.Second {
+		t.Errorf("env.HTTPClient のタイムアウトが変わった: %v", env.HTTPClient.Timeout)
 	}
 }

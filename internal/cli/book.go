@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 
 	"libread/internal/domain"
 	"libread/internal/ndl"
@@ -16,7 +17,7 @@ import (
 const ndlAttribution = "書誌情報: 国立国会図書館サーチ API を利用しています（https://ndlsearch.ndl.go.jp/）"
 
 const bookUsage = `使い方:
-  libread book find <書名|ISBN>
+  libread book find <書名|ISBN> [--author <著者>] [--publisher <出版社>]
   libread book add <ISBN> [--note <テキスト>]
   libread book list
   libread book note <本> <テキスト>
@@ -47,29 +48,57 @@ func runBook(ctx context.Context, args []string, env Env) error {
 	return usageErrorf("不明なコマンドです: book %s\n%s", args[0], bookUsage)
 }
 
+// ndlTimeout は NDL サーチへの要求のタイムアウト。NDL サーチは同じ要求でも応答が数十秒かかることがあるので、
+// 他のサービスより長くする（research.md R3）。
+const ndlTimeout = 30 * time.Second
+
+// ndlClient は env.HTTPClient の写しのタイムアウトだけを ndlTimeout にして使う。
 func ndlClient(env Env) *ndl.Client {
-	return &ndl.Client{HTTP: env.HTTPClient, UserAgent: userAgent}
+	hc := *env.HTTPClient
+	hc.Timeout = ndlTimeout
+	return &ndl.Client{HTTP: &hc, UserAgent: userAgent}
 }
 
 // runBookFind は書名または ISBN で書誌を探し、候補を表示する（FR-009）。
 func runBookFind(ctx context.Context, args []string, env Env) error {
-	query := strings.TrimSpace(strings.Join(args, " "))
-	if query == "" {
-		return usageErrorf("使い方: libread book find <書名|ISBN>")
+	const usage = "使い方: libread book find <書名|ISBN> [--author <著者>] [--publisher <出版社>]"
+	fs := flag.NewFlagSet("book find", flag.ContinueOnError)
+	fs.SetOutput(io.Discard)
+	author := fs.String("author", "", "著者で絞り込む")
+	publisher := fs.String("publisher", "", "出版社で絞り込む")
+	pos, err := parseInterspersed(fs, args)
+	if err != nil {
+		return usageErrorf("%s", usage)
 	}
-	books, err := ndlClient(env).Search(ctx, query)
+	query := strings.TrimSpace(strings.Join(pos, " "))
+	if query == "" {
+		return usageErrorf("%s", usage)
+	}
+	q := ndl.Query{Text: query, Author: strings.TrimSpace(*author), Publisher: strings.TrimSpace(*publisher)}
+	res, err := ndlClient(env).Search(ctx, q)
 	if err != nil {
 		return err
 	}
-	if len(books) == 0 {
+	if len(res.Books) == 0 {
+		// 一致はあるのに取得した記録に ISBN のある本がないときは、絞り込めば見つかるかもしれない。
+		if res.Truncated {
+			fmt.Fprintf(env.Stdout, "%d件の一致がありますが、取得した中に ISBN のある本がありませんでした。%s\n\n", res.Total, narrowingHint)
+		}
 		fmt.Fprintln(env.Stdout, ndlAttribution)
-		return usageErrorf("「%s」に一致する本は見つかりませんでした", query)
+		return usageErrorf("%sに一致する本は見つかりませんでした", describeQuery(q))
 	}
-	fmt.Fprintf(env.Stdout, "「%s」の検索結果（%d件）\n", query, len(books))
-	for i, b := range books {
+	if res.Truncated {
+		fmt.Fprintf(env.Stdout, "%sの検索結果（%d件中%d件を表示）\n", describeQuery(q), res.Total, len(res.Books))
+	} else {
+		fmt.Fprintf(env.Stdout, "%sの検索結果（%d件）\n", describeQuery(q), len(res.Books))
+	}
+	for i, b := range res.Books {
 		fmt.Fprintf(env.Stdout, "%d. %s %s\n", i+1, b.ISBN, describeBook(b))
 	}
 	fmt.Fprintln(env.Stdout)
+	if res.Truncated {
+		fmt.Fprintf(env.Stdout, "表示しきれていない本があります。見つからないときは %s\n", narrowingHint)
+	}
 	fmt.Fprintln(env.Stdout, "登録するには: libread book add <ISBN> [--note <テキスト>]")
 	fmt.Fprintln(env.Stdout)
 	fmt.Fprintln(env.Stdout, ndlAttribution)
@@ -100,12 +129,12 @@ func runBookAdd(ctx context.Context, args []string, env Env) error {
 		}
 	}
 
-	found, err := ndlClient(env).Search(ctx, isbn.String())
+	found, err := ndlClient(env).Search(ctx, ndl.Query{Text: isbn.String()})
 	if err != nil {
 		return err
 	}
 	var book domain.Book
-	for _, b := range found {
+	for _, b := range found.Books {
 		if b.ISBN == isbn {
 			book = b
 			break
@@ -207,6 +236,25 @@ func runBookRm(args []string, env Env) error {
 	}
 	fmt.Fprintf(env.Stdout, "読みかけの本から外しました: 『%s』\n", target.Book.Title)
 	return nil
+}
+
+// narrowingHint は、一致した本を表示しきれなかったときの案内（contracts/cli.md）。
+const narrowingHint = "--author <著者> や --publisher <出版社> で絞り込むか、ISBN で探してください"
+
+// describeQuery は「書名」（著者: …、出版社: …）の形で検索条件を表す。指定しなかった条件は省く。
+func describeQuery(q ndl.Query) string {
+	s := "「" + q.Text + "」"
+	var filters []string
+	if q.Author != "" {
+		filters = append(filters, "著者: "+q.Author)
+	}
+	if q.Publisher != "" {
+		filters = append(filters, "出版社: "+q.Publisher)
+	}
+	if len(filters) > 0 {
+		s += "（" + strings.Join(filters, "、") + "）"
+	}
+	return s
 }
 
 // describeBook は『書名』 著者 / 出版社 の形で本を表す。著者・出版社が空なら省く。

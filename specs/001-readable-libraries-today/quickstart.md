@@ -38,7 +38,7 @@ go build -o ./bin/libread ./cmd/libread
   --holiday same
 
 # 読みかけの本の登録（User Story 2）
-./bin/libread book find 吾輩は猫である
+./bin/libread book find 吾輩は猫である --author 夏目漱石 --publisher 岩波書店
 ./bin/libread book add <表示された ISBN> --note "p.120まで"
 
 # 検索（User Story 1）

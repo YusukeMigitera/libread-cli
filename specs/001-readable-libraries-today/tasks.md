@@ -202,8 +202,8 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests for User Story 2 (write first, confirm they fail)
 
-- [ ] T032 [P] [US2] After the NDL row of research.md R10 is filled in, record real NDL OpenSearch responses (a title search and an ISBN search) to `internal/ndl/testdata/*.xml`. Then write tests in `internal/ndl/ndl_test.go`:
-  - **進捗 (2026-10-29)**: テストは完了。実応答の記録は未完了: 作業環境のネットワーク制限で `ndlsearch.ndl.go.jp` に接続できなかったため、DC-NDL 形式の仕様（RSS 2.0 の `dc:title`・`dc:creator`・`dc:publisher`・`dc:identifier xsi:type="dcndl:ISBN"`）に沿って手書きした仮の応答を `internal/ndl/testdata/opensearch_title.xml`・`opensearch_isbn.xml` に置き、テストで使っている（各ファイルの先頭に「仮の応答」と注記）。実応答を同じ要求（ファイル先頭の注記を参照）で記録して差し替え、要素の位置が違えば `internal/ndl/ndl.go` を直したら完了とする。
+- [X] T032 [P] [US2] After the NDL row of research.md R10 is filled in, record real NDL OpenSearch responses (a title search and an ISBN search) to `internal/ndl/testdata/*.xml`. Then write tests in `internal/ndl/ndl_test.go`:
+  - **進捗 (2026-10-29)**: 完了。書名検索（`title=吾輩は猫である`）と ISBN 検索（`isbn=9784003101018`）の実際の応答を `internal/ndl/testdata/opensearch_title.xml`・`opensearch_isbn.xml` に記録し、テストで使っている。要素の位置は想定どおりで、`internal/ndl/ndl.go` の変更は不要だった。著者の `dc:creator` は典拠形（例: `夏目, 漱石, 1867-1916`）で、そのまま表示している。
   - Parse ISBN, title, author and publisher (the elements are confirmed from the recording, research.md R3).
   - Skip entries without an ISBN.
   - Return at most 10 results.
@@ -226,6 +226,17 @@ description: "Task list for 今日読める図書館の検索"
   - Base URL is injectable.
 - [X] T035 [US2] Implement the `book find`, `book add <ISBN> [--note]`, `book list`, `book note <本> <テキスト>` and `book rm <本>` subcommands in `internal/cli/book.go`, and register them in `internal/cli/cli.go`. Depends on T034.
   - Print the NDL attribution line from contracts/cli.md at the end of `book find` and `book add`, and add it to the end of `writeUsage` in `internal/cli/cli.go` (research.md R10).
+
+- [X] T045 [US2] Write tests for ranking and narrowing the title search (research.md R3「検索結果の並び」, contracts/cli.md「`book find` / `book add` の補足」):
+  - Record real responses for `title=吾輩は猫である` and for the same title with `creator=夏目漱石&publisher=岩波書店`, both with `cnt=20`, to `internal/ndl/testdata/`.
+  - In `internal/ndl/ndl_test.go`: requests use `cnt=20`; `--author` and `--publisher` become `creator` and `publisher`; titles that equal the query come first, then titles that start with it, keeping NDL's order within each group; at most 10 books are returned; the total match count is returned, and the result says whether some matches were not shown.
+  - In `internal/cli/book_test.go`: golden files for `book find` with and without the 「N件中M件を表示」 note, and `--author` / `--publisher` given before or after the title.
+- [X] T046 [US2] Implement the ranking, `--author` / `--publisher` and the match-count note in `internal/ndl/ndl.go` and `internal/cli/book.go`. Depends on T045.
+- [X] T047 [US2] Give NDL requests a 30-second timeout, leaving the 10-second timeout of `env.HTTPClient` for the other services (research.md R3「Decision（タイムアウト）」). Test in `internal/cli/book_test.go` that the NDL client has the 30-second timeout and reuses the same Transport, and that `env.HTTPClient` is unchanged.
+- [X] T048 [US2] Fix the `book find` messages found in review (contracts/cli.md「`book find` / `book add` の補足」), with tests in `internal/cli/book_test.go` first:
+  - When NDL reports more matches but none of the fetched records has an ISBN, show the narrowing hint too (exit code 2).
+  - Replace 「N件のうち上位M件」, which suggests ranking across all matches, with 「表示しきれていない本があります」.
+  - Include `--author` and `--publisher` in the heading and in the not-found message.
 
 **Checkpoint**: Books can be registered from the CLI, and `libread` (US1) uses them without editing `data.json` by hand.
 
