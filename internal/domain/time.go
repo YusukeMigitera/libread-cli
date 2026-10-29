@@ -86,6 +86,9 @@ func DateOf(t time.Time) Date {
 func (d Date) String() string { return d.start().Format(dateLayout) }
 
 func (d Date) Before(o Date) bool { return d.start().Before(o.start()) }
+
+// Compare は d が o より前なら -1、同じ日なら 0、後なら 1 を返す。
+func (d Date) Compare(o Date) int { return d.start().Compare(o.start()) }
 func (d Date) After(o Date) bool  { return d.start().After(o.start()) }
 
 // Weekday はその日の曜日。

@@ -117,9 +117,6 @@ func TestLibrariesErrors(t *testing.T) {
 	for name, h := range map[string]http.HandlerFunc{
 		"HTTP エラー": func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusServiceUnavailable) },
 		"形式の誤り":    func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("{")) },
-		"ID の欠落": func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte(`[{"systemid": "", "libkey": "中央", "formal": "名前"}]`))
-		},
 	} {
 		srv := httptest.NewServer(h)
 		c := &Client{BaseURL: srv.URL, HTTP: srv.Client()}
@@ -127,5 +124,24 @@ func TestLibrariesErrors(t *testing.T) {
 			t.Errorf("%s: エラーにならない", name)
 		}
 		srv.Close()
+	}
+}
+
+// 上流のデータに ID の欠けた館が1館あっても、他の館は使えるようにする。
+func TestLibrariesSkipsEntriesWithoutID(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`[
+		  {"systemid": "", "libkey": "中央", "formal": "システムIDなし"},
+		  {"systemid": "Tokyo_Setagaya", "libkey": "", "formal": "館キーなし"},
+		  {"systemid": "Tokyo_Setagaya", "libkey": "中央図書館", "formal": "世田谷区立中央図書館"}]`))
+	}))
+	defer srv.Close()
+	c := &Client{BaseURL: srv.URL, HTTP: srv.Client()}
+	libs, err := c.Libraries(context.Background(), "東京都", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(libs) != 1 || libs[0].ID.String() != "Tokyo_Setagaya:中央図書館" {
+		t.Errorf("libs = %+v, want ID のある1館だけ", libs)
 	}
 }

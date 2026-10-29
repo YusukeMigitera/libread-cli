@@ -445,3 +445,100 @@ func TestLibUsage(t *testing.T) {
 		}
 	}
 }
+
+// 登録済みの館を指定しても、キーがなければ設定方法を案内して終了コード 1 にする（contracts/cli.md「共通」）。
+func TestLibAddChecksAppKeyBeforeDuplicate(t *testing.T) {
+	env, stdout, stderr := newCheckEnv(t, "", &fakeServices{})
+	registerLibraries(t, env)
+	env.CalilAppKey = ""
+	if code := run(env, stdout, stderr, "lib", "add", "Tokyo_Setagaya:中央図書館"); code != ExitError {
+		t.Errorf("exit code = %d, want %d", code, ExitError)
+	}
+	if !strings.Contains(stderr.String(), "LIBREAD_CALIL_APPKEY") {
+		t.Errorf("stderr = %q", stderr)
+	}
+}
+
+// スケジュールのない館に --holiday だけを指定すると全曜日が休館になってしまうので、曜日の指定を求める。
+func TestLibHoursNewScheduleNeedsWeekday(t *testing.T) {
+	env, stdout, stderr := newCheckEnv(t, "", &fakeServices{})
+	registerLibraries(t, env)
+	if code := run(env, stdout, stderr, "lib", "hours", "中央", "--holiday", "closed"); code != ExitUsage {
+		t.Errorf("exit code = %d, want %d", code, ExitUsage)
+	}
+	if !strings.Contains(stderr.String(), "--sun 〜 --sat") {
+		t.Errorf("stderr = %q", stderr)
+	}
+	if findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Schedule != nil {
+		t.Error("曜日を指定していないのにスケジュールが保存された")
+	}
+
+	// スケジュールがあれば --holiday だけでも変えられる。
+	if code := run(env, stdout, stderr, "lib", "hours", "中央", "--sun", "09:00-17:00"); code != ExitOK {
+		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
+	}
+	if code := run(env, stdout, stderr, "lib", "hours", "中央", "--holiday", "closed"); code != ExitOK {
+		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
+	}
+	if m := findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Schedule.Holiday.Mode(); m != domain.HolidayClosed {
+		t.Errorf("祝日 = %v, want 休館", m)
+	}
+}
+
+func TestLibClosureAddRejectsDuplicate(t *testing.T) {
+	env, stdout, stderr := newCheckEnv(t, "", &fakeServices{})
+	registerLibraries(t, env)
+	args := []string{"lib", "closure", "add", "中央", "2026-11-01", "2026-11-05", "--reason", "蔵書点検"}
+	if code := run(env, stdout, stderr, args...); code != ExitOK {
+		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
+	}
+	if code := run(env, stdout, stderr, args...); code != ExitUsage {
+		t.Errorf("同じ期間: exit code = %d, want %d", code, ExitUsage)
+	}
+	if !strings.Contains(stderr.String(), "すでに登録されています") {
+		t.Errorf("stderr = %q", stderr)
+	}
+	// 理由が違う、または期間が重なるだけなら追加できる。
+	for _, args := range [][]string{
+		{"lib", "closure", "add", "中央", "2026-11-01", "2026-11-05"},
+		{"lib", "closure", "add", "中央", "2026-11-03", "2026-11-04", "--reason", "蔵書点検"},
+	} {
+		if code := run(env, stdout, stderr, args...); code != ExitOK {
+			t.Errorf("%v: exit code = %d, stderr = %s", args, code, stderr)
+		}
+	}
+	if n := len(findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Closures); n != 3 {
+		t.Errorf("臨時休館期間 = %d, want 3", n)
+	}
+}
+
+// data.json を手で編集して期間の順が崩れていても、list の番号と rm は開始日の順に従う。
+func TestLibClosureOrderFollowsStartDate(t *testing.T) {
+	env, stdout, stderr := newCheckEnv(t, "", &fakeServices{})
+	raw := `{"version": 1, "books": [], "libraries": [
+	  {"systemId": "Tokyo_Setagaya", "libKey": "中央図書館", "name": "世田谷区立中央図書館", "closures": [
+	    {"start": "2026-12-28", "end": "2027-01-04", "reason": "年末年始"},
+	    {"start": "2026-11-10", "end": "2026-11-14", "reason": "特別整理期間"}]}]}`
+	if err := os.WriteFile(filepath.Join(env.DataDir, "data.json"), []byte(raw), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if code := run(env, stdout, stderr, "lib", "closure", "list", "中央"); code != ExitOK {
+		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
+	}
+	if !strings.Contains(stdout.String(), "1. 2026-11-10〜2026-11-14（特別整理期間）\n2. 2026-12-28〜2027-01-04（年末年始）") {
+		t.Errorf("list の順 = %q", stdout)
+	}
+	if code := run(env, stdout, stderr, "lib", "list"); code != ExitOK {
+		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
+	}
+	if !strings.Contains(stdout.String(), "臨時休館: 2026-11-10〜2026-11-14（特別整理期間） / 2026-12-28〜2027-01-04（年末年始）") {
+		t.Errorf("lib list の順 = %q", stdout)
+	}
+	if code := run(env, stdout, stderr, "lib", "closure", "rm", "中央", "1"); code != ExitOK {
+		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
+	}
+	closures := findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Closures
+	if len(closures) != 1 || closures[0].Reason() != "年末年始" {
+		t.Errorf("rm 1 の後 = %+v, want 年末年始だけが残る", closures)
+	}
+}

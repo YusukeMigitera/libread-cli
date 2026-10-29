@@ -108,4 +108,7 @@ func TestDateCompare(t *testing.T) {
 	if !b.After(a) || a.After(b) || a.After(a) {
 		t.Error("After の結果が不正")
 	}
+	if a.Compare(b) != -1 || b.Compare(a) != 1 || a.Compare(a) != 0 {
+		t.Errorf("Compare = %d, %d, %d, want -1, 1, 0", a.Compare(b), b.Compare(a), a.Compare(a))
+	}
 }

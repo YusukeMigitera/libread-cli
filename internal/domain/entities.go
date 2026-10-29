@@ -3,6 +3,7 @@ package domain
 import (
 	"errors"
 	"fmt"
+	"slices"
 )
 
 // Book は書誌情報。ISBN で同一性を判断する。
@@ -93,6 +94,11 @@ func NewClosurePeriod(start, end Date, reason string) (ClosurePeriod, error) {
 func (c ClosurePeriod) Start() Date    { return c.start }
 func (c ClosurePeriod) End() Date      { return c.end }
 func (c ClosurePeriod) Reason() string { return c.reason }
+
+// SortClosures は期間を開始日の順に並べる。開始日が同じなら元の順のまま。
+func SortClosures(cs []ClosurePeriod) {
+	slices.SortStableFunc(cs, func(a, b ClosurePeriod) int { return a.start.Compare(b.start) })
+}
 
 // Contains は d が期間内（両端を含む）かを返す。
 func (c ClosurePeriod) Contains(d Date) bool { return !d.Before(c.start) && !d.After(c.end) }

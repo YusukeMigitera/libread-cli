@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"libread/internal/calil"
 	"libread/internal/domain"
 	"libread/internal/holiday"
 	"libread/internal/store"
@@ -142,14 +141,7 @@ func loadHoldings(ctx context.Context, env Env, cache store.Cache, books []domai
 		return out, nil
 	}
 
-	client := &calil.Client{
-		AppKey:    env.CalilAppKey,
-		HTTP:      env.HTTPClient,
-		Now:       env.Now,
-		Sleep:     env.Sleep,
-		UserAgent: userAgent,
-	}
-	fetched, fetchErr := client.Check(ctx, isbns, systemIDs)
+	fetched, fetchErr := calilClient(env).Check(ctx, isbns, systemIDs)
 	if fetchErr != nil {
 		usable := false
 		for _, isbn := range isbns {

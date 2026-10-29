@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"libread/internal/calil"
 	"libread/internal/domain"
 )
 
@@ -71,6 +72,27 @@ func writeUsage(w io.Writer) {
 	fmt.Fprintf(w, "  %-8s %s\n", "help", "この説明を表示する")
 	fmt.Fprintln(w)
 	fmt.Fprintln(w, ndlAttribution)
+}
+
+// requireAppKey は、カーリルのアプリケーションキーが未設定なら設定方法を案内するエラーを返す（contracts/cli.md「共通」）。
+func requireAppKey(env Env) error {
+	if env.CalilAppKey != "" {
+		return nil
+	}
+	return errors.New("カーリルのアプリケーションキーが設定されていません。" +
+		"カーリルの開発者ダッシュボード（https://calil.jp/api/dashboard/）でキーを取得し、" +
+		"環境変数 LIBREAD_CALIL_APPKEY に設定してください")
+}
+
+// calilClient は env の HTTP クライアント・時計・待ち方を使うカーリルのクライアントを返す。
+func calilClient(env Env) *calil.Client {
+	return &calil.Client{
+		AppKey:    env.CalilAppKey,
+		HTTP:      env.HTTPClient,
+		Now:       env.Now,
+		Sleep:     env.Sleep,
+		UserAgent: userAgent,
+	}
 }
 
 // usageError は使い方の誤り（引数不足・該当なし・候補が複数など）。終了コード 2 になる。

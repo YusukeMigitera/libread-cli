@@ -32,7 +32,7 @@ func runLibClosure(args []string, env Env) error {
 	return usageErrorf("不明なコマンドです: lib closure %s\n%s", args[0], closureUsage)
 }
 
-// runClosureAdd は期間を追加する。期間は開始日の順に並べておき、list と rm の番号がその順になるようにする。
+// runClosureAdd は期間を追加する。期間は開始日の順に並べて保存し、list と rm の番号がその順になるようにする。
 func runClosureAdd(args []string, env Env) error {
 	fs := flag.NewFlagSet("lib closure add", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
@@ -62,16 +62,12 @@ func runClosureAdd(args []string, env Env) error {
 	if err != nil {
 		return err
 	}
+	// 開始日・終了日・理由がすべて同じ期間は二重に登録しない。重なるだけの期間は意図して入れることがあるので認める。
+	if slices.Contains(target.Closures, period) {
+		return usageErrorf("%sの臨時休館期間 %s はすでに登録されています", target.Name, describeClosure(period))
+	}
 	closures := append(slices.Clone(target.Closures), period)
-	slices.SortStableFunc(closures, func(a, b domain.ClosurePeriod) int {
-		switch {
-		case a.Start().Before(b.Start()):
-			return -1
-		case a.Start().After(b.Start()):
-			return 1
-		}
-		return 0
-	})
+	domain.SortClosures(closures)
 	setClosures(&data, target.ID, closures)
 	if err := store.Save(env.DataDir, data); err != nil {
 		return err

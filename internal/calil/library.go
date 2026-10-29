@@ -3,7 +3,6 @@ package calil
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/url"
 
 	"libread/internal/domain"
@@ -45,7 +44,7 @@ func (c *Client) libraries(ctx context.Context, q url.Values) ([]LibraryInfo, er
 	for _, l := range raw {
 		id, err := domain.ParseLibraryID(l.SystemID + ":" + l.LibKey)
 		if err != nil {
-			return nil, fmt.Errorf("カーリルの応答の図書館 %q: %w", l.Formal, err)
+			continue // ID の欠けた館は登録も所蔵確認もできないので飛ばす。他の館は使えるようにする
 		}
 		out = append(out, LibraryInfo{ID: id, Formal: l.Formal, Pref: l.Pref, City: l.City, Address: l.Address})
 	}

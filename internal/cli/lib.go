@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -55,20 +54,6 @@ func runLib(ctx context.Context, args []string, env Env) error {
 	return usageErrorf("不明なコマンドです: lib %s\n%s", args[0], libUsage)
 }
 
-// requireAppKey は、カーリルのアプリケーションキーが未設定なら設定方法を案内するエラーを返す（contracts/cli.md「共通」）。
-func requireAppKey(env Env) error {
-	if env.CalilAppKey != "" {
-		return nil
-	}
-	return errors.New("カーリルのアプリケーションキーが設定されていません。" +
-		"カーリルの開発者ダッシュボード（https://calil.jp/api/dashboard/）でキーを取得し、" +
-		"環境変数 LIBREAD_CALIL_APPKEY に設定してください")
-}
-
-func calilLibraryClient(env Env) *calil.Client {
-	return &calil.Client{AppKey: env.CalilAppKey, HTTP: env.HTTPClient, UserAgent: userAgent}
-}
-
 // runLibFind は都道府県（必須）と市区町村でカーリルの図書館を探し、名前の部分一致で絞って表示する（FR-011）。
 func runLibFind(ctx context.Context, args []string, env Env) error {
 	const usage = "使い方: libread lib find --pref <都道府県> [--city <市区町村>] [--name <部分一致>]"
@@ -88,7 +73,7 @@ func runLibFind(ctx context.Context, args []string, env Env) error {
 	if err := requireAppKey(env); err != nil {
 		return err
 	}
-	found, err := calilLibraryClient(env).Libraries(ctx, p, c)
+	found, err := calilClient(env).Libraries(ctx, p, c)
 	if err != nil {
 		return err
 	}
@@ -130,6 +115,9 @@ func runLibAdd(ctx context.Context, args []string, env Env) error {
 	if err != nil {
 		return usageErrorf("%v。図書館は libread lib find --pref <都道府県> で探してください", err)
 	}
+	if err := requireAppKey(env); err != nil {
+		return err
+	}
 	data, err := store.Load(env.DataDir)
 	if err != nil {
 		return err
@@ -139,10 +127,7 @@ func runLibAdd(ctx context.Context, args []string, env Env) error {
 			return usageErrorf("%s（%s）はすでに利用図書館に登録されています", l.Name, id)
 		}
 	}
-	if err := requireAppKey(env); err != nil {
-		return err
-	}
-	found, err := calilLibraryClient(env).LibrariesOfSystem(ctx, id.SystemID)
+	found, err := calilClient(env).LibrariesOfSystem(ctx, id.SystemID)
 	if err != nil {
 		return err
 	}
@@ -297,6 +282,9 @@ func runLibHours(args []string, env Env) error {
 	var s domain.Schedule // 新しく作るときは、全曜日が休館（ゼロ値）で祝日は曜日どおり
 	if target.Schedule != nil {
 		s = *target.Schedule
+	} else if !given["sun"] && !given["mon"] && !given["tue"] && !given["wed"] && !given["thu"] && !given["fri"] && !given["sat"] {
+		// 曜日を指定せずに作ると全曜日が休館になり、「開館情報未入力」だった館が毎日休館と判定されてしまう。
+		return usageErrorf("%sの開館スケジュールはまだありません。初めて設定するときは --sun 〜 --sat で曜日の開館時間を1つ以上指定してください\n%s", target.Name, libHoursUsage)
 	}
 	for i, name := range weekdayFlags {
 		if !given[name] {
