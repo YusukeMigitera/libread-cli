@@ -48,16 +48,17 @@ func (c *fakeClock) Sleep(ctx context.Context, d time.Duration) error {
 
 // fakeServices はカーリル・holidays-jp・NDL サーチの代わりに応答する。Host ヘッダでサービスを見分ける。
 type fakeServices struct {
-	mu             sync.Mutex
-	calil          []string // i 番目の要求に返す応答。尽きたら最後の応答を返し続ける
-	calilStatus    int
-	calilLibrary   string // 図書館検索（/library）の応答
-	holidays       string
-	holidaysStatus int
-	ndl            string
-	ndlStatus      int
-	requests       []recordedRequest
-	calilRequests  int
+	mu                 sync.Mutex
+	calil              []string // i 番目の要求に返す応答。尽きたら最後の応答を返し続ける
+	calilStatus        int
+	calilLibrary       string // 図書館検索（/library）の応答
+	calilSystemLibrary string // systemid を指定した図書館検索の応答
+	holidays           string
+	holidaysStatus     int
+	ndl                string
+	ndlStatus          int
+	requests           []recordedRequest
+	calilRequests      int
 }
 
 type recordedRequest struct {
@@ -72,6 +73,10 @@ func (f *fakeServices) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	f.requests = append(f.requests, recordedRequest{host: r.Host, url: r.URL, agent: r.Header.Get("User-Agent")})
 	switch r.Host {
 	case "api.calil.jp":
+		if r.URL.Path == "/library" && r.URL.Query().Has("systemid") {
+			w.Write([]byte(f.calilSystemLibrary))
+			return
+		}
 		if r.URL.Path == "/library" {
 			w.Write([]byte(f.calilLibrary))
 			return

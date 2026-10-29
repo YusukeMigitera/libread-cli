@@ -41,10 +41,10 @@ func dayText(rule domain.DayRule) string {
 
 // US3 受け入れシナリオ 1・3: 都道府県を選んで図書館を探して登録し、開館スケジュールと臨時休館期間を入力する。
 func TestLibWorkflow(t *testing.T) {
-	svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json")}
+	svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json"), calilSystemLibrary: calilFixture(t, "library_system_setagaya.json")}
 	env, stdout, stderr := newCheckEnv(t, "", svc)
 
-	if code := run(env, stdout, stderr, "lib", "find", "--pref", "東京都", "--city", "世田谷区", "--name", "区立"); code != ExitOK {
+	if code := run(env, stdout, stderr, "lib", "find", "--pref", "東京都", "--city", "世田谷区", "--name", "中央"); code != ExitOK {
 		t.Fatalf("find: exit code = %d, stderr = %s", code, stderr)
 	}
 	assertGolden(t, "lib_find.golden", stdout.String())
@@ -53,7 +53,7 @@ func TestLibWorkflow(t *testing.T) {
 		t.Errorf("find の要求 = %v", q)
 	}
 
-	for _, id := range []string{"Tokyo_Setagaya:中央", "Tokyo_Setagaya:経堂"} {
+	for _, id := range []string{"Tokyo_Setagaya:中央図書館", "Tokyo_Setagaya:経堂図書館"} {
 		if code := run(env, stdout, stderr, "lib", "add", id); code != ExitOK {
 			t.Fatalf("add %s: exit code = %d, stderr = %s", id, code, stderr)
 		}
@@ -64,7 +64,7 @@ func TestLibWorkflow(t *testing.T) {
 	if q := svc.recorded()[1].url.Query(); q.Get("systemid") != "Tokyo_Setagaya" || q.Get("appkey") != testAppKey {
 		t.Errorf("add の要求 = %v", q)
 	}
-	lib := findLibrary(t, env, "Tokyo_Setagaya:中央")
+	lib := findLibrary(t, env, "Tokyo_Setagaya:中央図書館")
 	if lib.Name != "世田谷区立中央図書館" || lib.Pref != "東京都" || lib.City != "世田谷区" || lib.Schedule != nil {
 		t.Errorf("登録された図書館 = %+v", lib)
 	}
@@ -72,7 +72,7 @@ func TestLibWorkflow(t *testing.T) {
 	if code := run(env, stdout, stderr, "lib", "hours", "中央", "--sun", "09:00-17:00", "--mon", "closed", "--wed", "09:00-19:00"); code != ExitOK {
 		t.Fatalf("hours: exit code = %d, stderr = %s", code, stderr)
 	}
-	s := findLibrary(t, env, "Tokyo_Setagaya:中央").Schedule
+	s := findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Schedule
 	if s == nil {
 		t.Fatal("開館スケジュールが保存されていない")
 	}
@@ -86,13 +86,13 @@ func TestLibWorkflow(t *testing.T) {
 	}
 
 	// 指定しなかった曜日と祝日の扱いは変わらない。
-	if code := run(env, stdout, stderr, "lib", "hours", "Tokyo_Setagaya:中央", "--holiday", "closed"); code != ExitOK {
+	if code := run(env, stdout, stderr, "lib", "hours", "Tokyo_Setagaya:中央図書館", "--holiday", "closed"); code != ExitOK {
 		t.Fatalf("hours --holiday: exit code = %d, stderr = %s", code, stderr)
 	}
 	if code := run(env, stdout, stderr, "lib", "hours", "中央", "--wed", "10:00-18:00"); code != ExitOK {
 		t.Fatalf("hours --wed: exit code = %d, stderr = %s", code, stderr)
 	}
-	s = findLibrary(t, env, "Tokyo_Setagaya:中央").Schedule
+	s = findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Schedule
 	if got := dayText(s.Weekly[time.Sunday]); got != "09:00-17:00" {
 		t.Errorf("日曜 = %s, want 09:00-17:00（変わらない）", got)
 	}
@@ -122,7 +122,7 @@ func TestLibWorkflow(t *testing.T) {
 	if code := run(env, stdout, stderr, "lib", "closure", "rm", "中央", "1"); code != ExitOK {
 		t.Fatalf("closure rm: exit code = %d, stderr = %s", code, stderr)
 	}
-	closures := findLibrary(t, env, "Tokyo_Setagaya:中央").Closures
+	closures := findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Closures
 	if len(closures) != 1 || closures[0].Start().String() != "2026-11-10" {
 		t.Errorf("closure rm 後の期間 = %+v", closures)
 	}
@@ -142,18 +142,18 @@ func TestLibWorkflow(t *testing.T) {
 
 // US3 受け入れシナリオ 1〜3: CLI で登録・削除した図書館と入力した開館情報が check の対象と判定に反映される。
 func TestLibChangesCheckTargets(t *testing.T) {
-	svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json")}
+	svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json"), calilSystemLibrary: calilFixture(t, "library_system_setagaya.json")}
 	env, stdout, stderr := newCheckEnv(t, "", svc)
 	if err := os.WriteFile(filepath.Join(env.DataDir, "data.json"), []byte(`{"version": 1, "books": [{"isbn": "9784003101018", "title": "本のタイトルP", "addedOn": "2026-10-01"}], "libraries": []}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	writeHoldingsCache(t, env, `
-	  "9784003101018|Tokyo_Setagaya": {"isbn": "9784003101018", "systemId": "Tokyo_Setagaya", "systemStatus": "OK", "byLibKey": {"中央": "貸出可", "経堂": "貸出可", "奥沢": "貸出可"}, "fetchedAt": "2026-10-21T13:50:00+09:00"}`)
+	  "9784003101018|Tokyo_Setagaya": {"isbn": "9784003101018", "systemId": "Tokyo_Setagaya", "systemStatus": "OK", "byLibKey": {"中央図書館": "貸出可", "経堂図書館": "貸出可", "奥沢図書館": "貸出可"}, "fetchedAt": "2026-10-21T13:50:00+09:00"}`)
 
 	for _, args := range [][]string{
-		{"lib", "add", "Tokyo_Setagaya:中央"},
-		{"lib", "add", "Tokyo_Setagaya:経堂"},
-		{"lib", "add", "Tokyo_Setagaya:奥沢"},
+		{"lib", "add", "Tokyo_Setagaya:中央図書館"},
+		{"lib", "add", "Tokyo_Setagaya:経堂図書館"},
+		{"lib", "add", "Tokyo_Setagaya:奥沢図書館"},
 		{"lib", "hours", "中央", "--wed", "09:00-19:00"},
 		{"lib", "hours", "経堂", "--wed", "09:00-20:00"},
 	} {
@@ -209,7 +209,7 @@ func TestLibFindErrors(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json")}
+			svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json"), calilSystemLibrary: calilFixture(t, "library_system_setagaya.json")}
 			env, stdout, stderr := newCheckEnv(t, "", svc)
 			env.CalilAppKey = tt.appKey
 			if code := run(env, stdout, stderr, tt.args...); code != tt.want {
@@ -226,12 +226,12 @@ func TestLibFindErrors(t *testing.T) {
 }
 
 func TestLibFindWithoutNameShowsAll(t *testing.T) {
-	svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json")}
+	svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json"), calilSystemLibrary: calilFixture(t, "library_system_setagaya.json")}
 	env, stdout, stderr := newCheckEnv(t, "", svc)
 	if code := run(env, stdout, stderr, "lib", "find", "--pref", "東京都"); code != ExitOK {
 		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
 	}
-	if !strings.Contains(stdout.String(), "「東京都」の図書館（4館）") || !strings.Contains(stdout.String(), "Univ_Komazawa:図書館") {
+	if !strings.Contains(stdout.String(), "「東京都」の図書館（35館）") || !strings.Contains(stdout.String(), "Univ_Komazawa:図書館") {
 		t.Errorf("出力 = %s", stdout)
 	}
 	if svc.recorded()[0].url.Query().Has("city") {
@@ -246,7 +246,7 @@ func TestLibAddErrors(t *testing.T) {
 		stderr string
 		sent   bool
 	}{
-		{name: "重複", args: []string{"lib", "add", "Tokyo_Setagaya:中央"}, stderr: "すでに利用図書館に登録されています"},
+		{name: "重複", args: []string{"lib", "add", "Tokyo_Setagaya:中央図書館"}, stderr: "すでに利用図書館に登録されています"},
 		{name: "形式の誤り", args: []string{"lib", "add", "世田谷区立中央図書館"}, stderr: "SystemID:LibKey"},
 		{name: "引数なし", args: []string{"lib", "add"}, stderr: "使い方"},
 		{name: "未知の館", args: []string{"lib", "add", "Tokyo_Setagaya:存在しない館"}, stderr: "カーリルに見つかりませんでした", sent: true},
@@ -254,14 +254,14 @@ func TestLibAddErrors(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json")}
+			svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json"), calilSystemLibrary: calilFixture(t, "library_system_setagaya.json")}
 			env, stdout, stderr := newCheckEnv(t, "", svc)
-			if code := run(env, stdout, stderr, "lib", "add", "Tokyo_Setagaya:中央"); code != ExitOK {
+			if code := run(env, stdout, stderr, "lib", "add", "Tokyo_Setagaya:中央図書館"); code != ExitOK {
 				t.Fatalf("exit code = %d, stderr = %s", code, stderr)
 			}
 			before := len(svc.recorded())
 			if tt.name == "未知のシステム" {
-				svc.calilLibrary = "[]"
+				svc.calilSystemLibrary = "[]" // 実際の応答: 存在しない systemid には空の配列が返る
 			}
 			if code := run(env, stdout, stderr, tt.args...); code != ExitUsage {
 				t.Errorf("exit code = %d, want %d", code, ExitUsage)
@@ -280,10 +280,10 @@ func TestLibAddErrors(t *testing.T) {
 }
 
 func TestLibAddRequiresAppKey(t *testing.T) {
-	svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json")}
+	svc := &fakeServices{calilLibrary: calilFixture(t, "library_setagaya.json"), calilSystemLibrary: calilFixture(t, "library_system_setagaya.json")}
 	env, stdout, stderr := newCheckEnv(t, "", svc)
 	env.CalilAppKey = ""
-	if code := run(env, stdout, stderr, "lib", "add", "Tokyo_Setagaya:中央"); code != ExitError {
+	if code := run(env, stdout, stderr, "lib", "add", "Tokyo_Setagaya:中央図書館"); code != ExitError {
 		t.Errorf("exit code = %d, want %d", code, ExitError)
 	}
 	if !strings.Contains(stderr.String(), "LIBREAD_CALIL_APPKEY") || len(svc.recorded()) != 0 {
@@ -295,8 +295,8 @@ func TestLibAddRequiresAppKey(t *testing.T) {
 func registerLibraries(t *testing.T, env Env) {
 	t.Helper()
 	raw := `{"version": 1, "books": [], "libraries": [
-	  {"systemId": "Tokyo_Setagaya", "libKey": "中央", "name": "世田谷区立中央図書館", "pref": "東京都", "city": "世田谷区", "closures": []},
-	  {"systemId": "Tokyo_Setagaya", "libKey": "経堂", "name": "世田谷区立経堂図書館", "pref": "東京都", "city": "世田谷区", "closures": []}]}`
+	  {"systemId": "Tokyo_Setagaya", "libKey": "中央図書館", "name": "世田谷区立中央図書館", "pref": "東京都", "city": "世田谷区", "closures": []},
+	  {"systemId": "Tokyo_Setagaya", "libKey": "経堂図書館", "name": "世田谷区立経堂図書館", "pref": "東京都", "city": "世田谷区", "closures": []}]}`
 	if err := os.WriteFile(filepath.Join(env.DataDir, "data.json"), []byte(raw), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -309,7 +309,7 @@ func TestLibHoursNewSchedule(t *testing.T) {
 		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
 	}
 	assertGolden(t, "lib_hours.golden", stdout.String())
-	s := findLibrary(t, env, "Tokyo_Setagaya:経堂").Schedule
+	s := findLibrary(t, env, "Tokyo_Setagaya:経堂図書館").Schedule
 	for wd := time.Sunday; wd <= time.Friday; wd++ {
 		if got := dayText(s.Weekly[wd]); got != "closed" {
 			t.Errorf("%s = %s, want closed（指定しなかった曜日）", wd, got)
@@ -318,7 +318,7 @@ func TestLibHoursNewSchedule(t *testing.T) {
 	if h, ok := s.Holiday.CustomHours(); !ok || h.String() != "09:30-16:00" {
 		t.Errorf("祝日 = %v %v", h, ok)
 	}
-	if findLibrary(t, env, "Tokyo_Setagaya:中央").Schedule != nil {
+	if findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Schedule != nil {
 		t.Error("指定していない館のスケジュールが変わった")
 	}
 }
@@ -349,7 +349,7 @@ func TestLibHoursErrors(t *testing.T) {
 			if !strings.Contains(stderr.String(), tt.stderr) {
 				t.Errorf("stderr = %q, want %q を含む", stderr, tt.stderr)
 			}
-			if findLibrary(t, env, "Tokyo_Setagaya:中央").Schedule != nil {
+			if findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Schedule != nil {
 				t.Error("誤った指定でスケジュールが保存された")
 			}
 		})
@@ -384,7 +384,7 @@ func TestLibClosureErrors(t *testing.T) {
 			if !strings.Contains(stderr.String(), tt.stderr) {
 				t.Errorf("stderr = %q, want %q を含む", stderr, tt.stderr)
 			}
-			if n := len(findLibrary(t, env, "Tokyo_Setagaya:中央").Closures); n != 1 {
+			if n := len(findLibrary(t, env, "Tokyo_Setagaya:中央図書館").Closures); n != 1 {
 				t.Errorf("臨時休館期間 = %d, want 1", n)
 			}
 		})
@@ -409,14 +409,14 @@ func TestLibRm(t *testing.T) {
 	if code := run(env, stdout, stderr, "lib", "rm", "世田谷区立"); code != ExitUsage {
 		t.Errorf("複数一致: exit code = %d, want %d", code, ExitUsage)
 	}
-	if code := run(env, stdout, stderr, "lib", "rm", "Tokyo_Setagaya:経堂"); code != ExitOK {
+	if code := run(env, stdout, stderr, "lib", "rm", "Tokyo_Setagaya:経堂図書館"); code != ExitOK {
 		t.Fatalf("exit code = %d, stderr = %s", code, stderr)
 	}
-	if !strings.Contains(stdout.String(), "利用図書館から外しました: 世田谷区立経堂図書館（Tokyo_Setagaya:経堂）") {
+	if !strings.Contains(stdout.String(), "利用図書館から外しました: 世田谷区立経堂図書館（Tokyo_Setagaya:経堂図書館）") {
 		t.Errorf("出力 = %q", stdout)
 	}
 	libs := loadData(t, env).Libraries
-	if len(libs) != 1 || libs[0].ID.LibKey != "中央" {
+	if len(libs) != 1 || libs[0].ID.LibKey != "中央図書館" {
 		t.Errorf("rm 後の利用図書館 = %+v", libs)
 	}
 	if code := run(env, stdout, stderr, "lib", "rm", "経堂"); code != ExitUsage {

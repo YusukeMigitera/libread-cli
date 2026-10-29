@@ -35,21 +35,28 @@ func TestLibrariesParsesResponse(t *testing.T) {
 	if ua := got.Header.Get("User-Agent"); ua != "libread/test" {
 		t.Errorf("User-Agent = %q", ua)
 	}
-	if len(libs) != 4 {
-		t.Fatalf("図書館 = %d, want 4", len(libs))
+	// 記録した応答には、世田谷区立の21館と区内の大学図書館などの14館が含まれる。
+	if len(libs) != 35 {
+		t.Fatalf("図書館 = %d, want 35", len(libs))
 	}
 	want := LibraryInfo{
-		ID:      domain.LibraryID{SystemID: "Tokyo_Setagaya", LibKey: "中央"},
-		Formal:  "世田谷区立中央図書館",
+		ID:      domain.LibraryID{SystemID: "Tokyo_Setagaya", LibKey: "上北沢図書館"},
+		Formal:  "世田谷区立上北沢図書館",
 		Pref:    "東京都",
 		City:    "世田谷区",
-		Address: "東京都世田谷区弦巻3-16-8",
+		Address: "東京都世田谷区上北沢3-8-9 上北沢区民センター地階",
 	}
 	if libs[0] != want {
 		t.Errorf("libs[0] = %+v, want %+v", libs[0], want)
 	}
-	if libs[3].ID.String() != "Univ_Komazawa:図書館" {
-		t.Errorf("libs[3].ID = %s", libs[3].ID)
+	ids := make(map[string]bool, len(libs))
+	for _, l := range libs {
+		ids[l.ID.String()] = true
+	}
+	for _, id := range []string{"Tokyo_Setagaya:中央図書館", "Univ_Komazawa:図書館", "Univ_Kokushikan:中央"} {
+		if !ids[id] {
+			t.Errorf("%s がない", id)
+		}
 	}
 }
 
@@ -84,12 +91,21 @@ func TestLibrariesOfSystem(t *testing.T) {
 	var got *http.Request
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got = r
-		w.Write([]byte(readFixture(t, "library_setagaya.json")))
+		w.Write([]byte(readFixture(t, "library_system_setagaya.json")))
 	}))
 	defer srv.Close()
 	c := &Client{BaseURL: srv.URL, AppKey: "test-key", HTTP: srv.Client(), UserAgent: "libread/test"}
-	if _, err := c.LibrariesOfSystem(context.Background(), "Tokyo_Setagaya"); err != nil {
+	libs, err := c.LibrariesOfSystem(context.Background(), "Tokyo_Setagaya")
+	if err != nil {
 		t.Fatal(err)
+	}
+	if len(libs) != 21 {
+		t.Errorf("図書館 = %d, want 21", len(libs))
+	}
+	for _, l := range libs {
+		if l.ID.SystemID != "Tokyo_Setagaya" {
+			t.Errorf("別のシステムの図書館がある: %s", l.ID)
+		}
 	}
 	q := got.URL.Query()
 	if q.Get("systemid") != "Tokyo_Setagaya" || q.Has("pref") || q.Get("appkey") != "test-key" {
