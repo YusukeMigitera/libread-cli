@@ -285,7 +285,7 @@ description: "Task list for 今日読める図書館の検索"
   - 10 libraries across 10 systems and 5 books.
   - A fake Calil server that never completes (stays Running).
   - Assert `check` returns within 10 seconds of injected time and marks the libraries 不明（取得タイムアウト）.
-- [ ] T042 [P] Add a test in `internal/cli/outbound_test.go` that records every outgoing HTTP request across all commands and asserts (Constitution 技術的制約):
+- [X] T042 [P] Add a test in `internal/cli/outbound_test.go` that records every outgoing HTTP request across all commands and asserts (Constitution 技術的制約):
   - No request contains a book note.
   - Per command, requests stay within the limits in research.md R9: `check` sends one Calil session (initial request plus polls ≥2秒 apart) and at most one holidays-jp request per year, and sends no Calil request when the holdings cache is ≤30分 old; `lib find` and `lib add` each send one Calil library request; `book find` and `book add` send one NDL request.
   - At most one request to each service is in flight at a time.
