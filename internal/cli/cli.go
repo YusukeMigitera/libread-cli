@@ -39,7 +39,7 @@ type command struct {
 }
 
 // commands は実装済みのサブコマンド。各ユーザーストーリーで追加する。
-var commands = []command{checkCommand}
+var commands = []command{checkCommand, bookCommand}
 
 // Run は args（プログラム名を除く）を解析してサブコマンドを実行し、終了コードを返す。
 func Run(ctx context.Context, args []string, env Env) int {
@@ -69,6 +69,8 @@ func writeUsage(w io.Writer) {
 		fmt.Fprintf(w, "  %-8s %s\n", c.name, c.summary)
 	}
 	fmt.Fprintf(w, "  %-8s %s\n", "help", "この説明を表示する")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, ndlAttribution)
 }
 
 // usageError は使い方の誤り（引数不足・該当なし・候補が複数など）。終了コード 2 になる。

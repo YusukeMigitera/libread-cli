@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 仮の応答: 実際の NDL サーチ OpenSearch の応答を記録できるまでの手書き（tasks.md T032 の進捗を参照）。
+     要求: GET /api/opensearch?isbn=9784003101018&cnt=10&dpid=iss-ndl-opac -->
+<rss xmlns:dcndl="http://ndl.go.jp/dcndl/terms/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" xmlns:dcterms="http://purl.org/dc/terms/" version="2.0">
+  <channel>
+    <title>9784003101018 - 国立国会図書館サーチ OpenSearch</title>
+    <link>https://ndlsearch.ndl.go.jp/api/opensearch?isbn=9784003101018&amp;cnt=10&amp;dpid=iss-ndl-opac</link>
+    <description>Search results for isbn=9784003101018 cnt=10 dpid=iss-ndl-opac</description>
+    <language>ja</language>
+    <openSearch:totalResults>1</openSearch:totalResults>
+    <openSearch:startIndex>1</openSearch:startIndex>
+    <openSearch:itemsPerPage>10</openSearch:itemsPerPage>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000000001</link>
+      <author>夏目漱石 著</author>
+      <category>図書</category>
+      <dc:title>吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>夏目漱石 著</dc:creator>
+      <dcndl:edition>改版</dcndl:edition>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcterms:issued xsi:type="dcterms:W3CDTF">1990</dcterms:issued>
+      <dc:identifier xsi:type="dcndl:ISBN">4-00-310101-4</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">90000001</dc:identifier>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 仮の応答: 実際の NDL サーチ OpenSearch の応答を記録できるまでの手書き（tasks.md T032 の進捗を参照）。
+     要求: GET /api/opensearch?title=吾輩は猫である&cnt=10&dpid=iss-ndl-opac -->
+<rss xmlns:dcndl="http://ndl.go.jp/dcndl/terms/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" xmlns:dcterms="http://purl.org/dc/terms/" version="2.0">
+  <channel>
+    <title>吾輩は猫である - 国立国会図書館サーチ OpenSearch</title>
+    <link>https://ndlsearch.ndl.go.jp/api/opensearch?title=%E5%90%BE%E8%BC%A9%E3%81%AF%E7%8C%AB%E3%81%A7%E3%81%82%E3%82%8B&amp;cnt=10&amp;dpid=iss-ndl-opac</link>
+    <description>Search results for title=吾輩は猫である cnt=10 dpid=iss-ndl-opac</description>
+    <language>ja</language>
+    <openSearch:totalResults>5</openSearch:totalResults>
+    <openSearch:startIndex>1</openSearch:startIndex>
+    <openSearch:itemsPerPage>10</openSearch:itemsPerPage>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000000001</link>
+      <author>夏目漱石 著</author>
+      <category>図書</category>
+      <dc:title>吾輩は猫である</dc:title>
+      <dcndl:titleTranscription>ワガハイ ワ ネコ デ アル</dcndl:titleTranscription>
+      <dc:creator>夏目漱石 著</dc:creator>
+      <dcndl:edition>改版</dcndl:edition>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcterms:issued xsi:type="dcterms:W3CDTF">1990</dcterms:issued>
+      <dc:identifier xsi:type="dcndl:ISBN">4-00-310101-4</dc:identifier>
+      <dc:identifier xsi:type="dcndl:JPNO">90000001</dc:identifier>
+    </item>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000000002</link>
+      <author>夏目漱石 著</author>
+      <category>図書</category>
+      <dc:title>吾輩は猫である</dc:title>
+      <dc:creator>夏目漱石 著</dc:creator>
+      <dc:publisher>新潮社</dc:publisher>
+      <dcterms:issued xsi:type="dcterms:W3CDTF">2003</dcterms:issued>
+      <dc:identifier xsi:type="dcndl:ISBN">978-4-10-101001-4</dc:identifier>
+    </item>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000000003</link>
+      <author>夏目漱石</author>
+      <category>図書</category>
+      <dc:title>吾輩は猫である</dc:title>
+      <dc:creator>夏目漱石</dc:creator>
+      <dc:publisher>大倉書店</dc:publisher>
+      <dcterms:issued xsi:type="dcterms:W3CDTF">1905</dcterms:issued>
+      <dc:identifier xsi:type="dcndl:JPNO">40000001</dc:identifier>
+    </item>
+    <item>
+      <title>吾輩は猫である 注釈版</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000000004</link>
+      <author>夏目漱石 著, 注釈者 注</author>
+      <category>図書</category>
+      <dc:title>吾輩は猫である 注釈版</dc:title>
+      <dc:creator>夏目漱石 著</dc:creator>
+      <dc:creator>注釈者 注</dc:creator>
+      <dc:publisher>角川書店</dc:publisher>
+      <dcterms:issued xsi:type="dcterms:W3CDTF">2012</dcterms:issued>
+      <dc:identifier xsi:type="dcndl:ISBN">9784041001141</dc:identifier>
+    </item>
+    <item>
+      <title>吾輩は猫である</title>
+      <link>https://ndlsearch.ndl.go.jp/books/R100000002-I000000000005</link>
+      <author>夏目漱石 著</author>
+      <category>図書</category>
+      <dc:title>吾輩は猫である</dc:title>
+      <dc:creator>夏目漱石 著</dc:creator>
+      <dc:publisher>岩波書店</dc:publisher>
+      <dcterms:issued xsi:type="dcterms:W3CDTF">1990</dcterms:issued>
+      <dc:identifier xsi:type="dcndl:ISBN">9784003101018</dc:identifier>
+    </item>
+  </channel>
+</rss>

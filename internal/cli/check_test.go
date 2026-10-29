@@ -46,13 +46,15 @@ func (c *fakeClock) Sleep(ctx context.Context, d time.Duration) error {
 	return nil
 }
 
-// fakeServices はカーリルと holidays-jp の代わりに応答する。Host ヘッダでサービスを見分ける。
+// fakeServices はカーリル・holidays-jp・NDL サーチの代わりに応答する。Host ヘッダでサービスを見分ける。
 type fakeServices struct {
 	mu             sync.Mutex
 	calil          []string // i 番目の要求に返す応答。尽きたら最後の応答を返し続ける
 	calilStatus    int
 	holidays       string
 	holidaysStatus int
+	ndl            string
+	ndlStatus      int
 	requests       []recordedRequest
 	calilRequests  int
 }
@@ -85,6 +87,12 @@ func (f *fakeServices) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.Write([]byte(f.holidays))
+	case "ndlsearch.ndl.go.jp":
+		if f.ndlStatus != 0 && f.ndlStatus != http.StatusOK {
+			w.WriteHeader(f.ndlStatus)
+			return
+		}
+		w.Write([]byte(f.ndl))
 	default:
 		w.WriteHeader(http.StatusNotFound)
 	}
