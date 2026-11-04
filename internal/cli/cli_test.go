@@ -168,3 +168,61 @@ func TestResolveLibrary(t *testing.T) {
 		})
 	}
 }
+
+// サブコマンドの help・-h・--help は、その階層の使い方を標準出力に書いて終了コード 0 で終わる（contracts/cli.md「共通」）。
+func TestSubcommandHelp(t *testing.T) {
+	tests := []struct {
+		args []string
+		want []string // 標準出力に含まれる行
+	}{
+		{args: []string{"book", "help"}, want: []string{"libread book find", "libread book rm"}},
+		{args: []string{"book", "-h"}, want: []string{"libread book find", "libread book rm"}},
+		{args: []string{"book", "--help"}, want: []string{"libread book find", "libread book rm"}},
+		{args: []string{"lib", "--help"}, want: []string{"libread lib find", "libread lib closure rm"}},
+		{args: []string{"lib", "closure", "--help"}, want: []string{"libread lib closure add", "libread lib closure rm"}},
+		{args: []string{"book", "find", "--help"}, want: []string{"使い方: libread book find <書名|ISBN>"}},
+		{args: []string{"book", "add", "-h"}, want: []string{"使い方: libread book add <ISBN>"}},
+		{args: []string{"book", "rm", "--help"}, want: []string{"使い方: libread book rm <本>"}},
+		{args: []string{"book", "note", "猫", "--help"}, want: []string{"使い方: libread book note <本> <テキスト>"}},
+		{args: []string{"lib", "find", "--help"}, want: []string{"使い方: libread lib find --pref"}},
+		{args: []string{"lib", "hours", "中央", "-h"}, want: []string{"使い方: libread lib hours <図書館>"}},
+		{args: []string{"lib", "closure", "add", "--help"}, want: []string{"使い方: libread lib closure add <図書館>"}},
+		{args: []string{"check", "--help"}, want: []string{"使い方: libread check [<本>]"}},
+		{args: []string{"check", "-h"}, want: []string{"使い方: libread check [<本>]"}},
+	}
+	for _, tt := range tests {
+		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
+			env, stdout, stderr := testEnv(t)
+			if code := Run(context.Background(), tt.args, env); code != ExitOK {
+				t.Errorf("exit code = %d, want %d（stderr = %q）", code, ExitOK, stderr)
+			}
+			for _, w := range tt.want {
+				if !strings.Contains(stdout.String(), w) {
+					t.Errorf("stdout に %q がない: %q", w, stdout)
+				}
+			}
+			if stderr.Len() != 0 {
+				t.Errorf("stderr = %q, want 空", stderr)
+			}
+		})
+	}
+}
+
+// help を求めていなければ、これまでどおり使い方の誤りとして終了コード 2 にする。
+func TestSubcommandUsageErrors(t *testing.T) {
+	for _, args := range [][]string{
+		{"book"},
+		{"book", "frob"},
+		{"lib", "closure"},
+		{"lib", "closure", "frob"},
+		{"book", "list", "余分"},
+	} {
+		env, stdout, stderr := testEnv(t)
+		if code := Run(context.Background(), args, env); code != ExitUsage {
+			t.Errorf("%v: exit code = %d, want %d", args, code, ExitUsage)
+		}
+		if stdout.Len() != 0 || !strings.Contains(stderr.String(), "使い方") {
+			t.Errorf("%v: stdout = %q, stderr = %q", args, stdout, stderr)
+		}
+	}
+}

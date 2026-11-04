@@ -105,6 +105,7 @@ libread
 | `libread lib closure list <図書館>` | 臨時休館期間を番号付きで表示する |
 | `libread lib closure rm <図書館> <番号>` | 臨時休館期間を削除する |
 
+`libread book --help` や `libread lib hours --help` のように `--help` を付けると、そのコマンドの使い方を表示します。
 `<図書館>` は `SystemID:LibKey` か図書館名の一部で指定します。
 候補が複数あるときは一覧を表示して終了します。
 出力の形式や終了コードなど、詳しい仕様は [contracts/cli.md](specs/001-readable-libraries-today/contracts/cli.md) を参照してください。

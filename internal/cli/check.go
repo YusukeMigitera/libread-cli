@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
+	"slices"
 	"time"
 
 	"libread/internal/domain"
@@ -26,8 +28,11 @@ var checkCommand = command{
 }
 
 func runCheck(ctx context.Context, args []string, env Env) error {
+	if slices.ContainsFunc(args, isHelpFlag) {
+		return &helpRequest{usage: "使い方: libread check [<本>]"}
+	}
 	fs := flag.NewFlagSet("check", flag.ContinueOnError)
-	fs.SetOutput(env.Stderr)
+	fs.SetOutput(io.Discard)
 	if err := fs.Parse(args); err != nil {
 		return usageErrorf("使い方: libread check [<本>]")
 	}

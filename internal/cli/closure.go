@@ -1,35 +1,36 @@
 package cli
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
 	"slices"
 	"strconv"
+	"strings"
 
 	"libread/internal/domain"
 	"libread/internal/store"
 )
 
-const closureUsage = `使い方:
-  libread lib closure add <図書館> <開始日> <終了日> [--reason <テキスト>]
-  libread lib closure list <図書館>
-  libread lib closure rm <図書館> <番号>`
+var closureSubcommands = []subcommand{
+	{name: "add", usage: "libread lib closure add <図書館> <開始日> <終了日> [--reason <テキスト>]", run: withoutContext(runClosureAdd)},
+	{name: "list", usage: "libread lib closure list <図書館>", run: withoutContext(runClosureList)},
+	{name: "rm", usage: "libread lib closure rm <図書館> <番号>", run: withoutContext(runClosureRm)},
+}
+
+// closureLines は lib closure の使い方を1行ずつ改行でつなぐ（lib の使い方に含める）。
+func closureLines() string {
+	lines := make([]string, len(closureSubcommands))
+	for i, s := range closureSubcommands {
+		lines[i] = s.usage
+	}
+	return strings.Join(lines, "\n")
+}
 
 // runLibClosure は臨時休館期間を追加・表示・削除する（FR-016）。
-func runLibClosure(args []string, env Env) error {
-	if len(args) == 0 {
-		return usageErrorf("%s", closureUsage)
-	}
-	switch args[0] {
-	case "add":
-		return runClosureAdd(args[1:], env)
-	case "list":
-		return runClosureList(args[1:], env)
-	case "rm":
-		return runClosureRm(args[1:], env)
-	}
-	return usageErrorf("不明なコマンドです: lib closure %s\n%s", args[0], closureUsage)
+func runLibClosure(ctx context.Context, args []string, env Env) error {
+	return dispatch(ctx, "lib closure", closureSubcommands, args, env)
 }
 
 // runClosureAdd は期間を追加する。期間は開始日の順に並べて保存し、list と rm の番号がその順になるようにする。

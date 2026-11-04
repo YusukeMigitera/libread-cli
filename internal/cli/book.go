@@ -16,36 +16,22 @@ import (
 // ndlAttribution は NDL サーチの利用条件で必須の出典表示（contracts/cli.md、research.md R10）。
 const ndlAttribution = "書誌情報: 国立国会図書館サーチ API を利用しています（https://ndlsearch.ndl.go.jp/）"
 
-const bookUsage = `使い方:
-  libread book find <書名|ISBN> [--author <著者>] [--publisher <出版社>]
-  libread book add <ISBN> [--note <テキスト>]
-  libread book list
-  libread book note <本> <テキスト>
-  libread book rm <本>`
-
 var bookCommand = command{
 	name:    "book",
 	summary: "読みかけの本を探す・登録する（find / add / list / note / rm）",
 	run:     runBook,
 }
 
+var bookSubcommands = []subcommand{
+	{name: "find", usage: "libread book find <書名|ISBN> [--author <著者>] [--publisher <出版社>]", run: runBookFind},
+	{name: "add", usage: "libread book add <ISBN> [--note <テキスト>]", run: runBookAdd},
+	{name: "list", usage: "libread book list", run: withoutContext(runBookList)},
+	{name: "note", usage: "libread book note <本> <テキスト>", run: withoutContext(runBookNote)},
+	{name: "rm", usage: "libread book rm <本>", run: withoutContext(runBookRm)},
+}
+
 func runBook(ctx context.Context, args []string, env Env) error {
-	if len(args) == 0 {
-		return usageErrorf("%s", bookUsage)
-	}
-	switch args[0] {
-	case "find":
-		return runBookFind(ctx, args[1:], env)
-	case "add":
-		return runBookAdd(ctx, args[1:], env)
-	case "list":
-		return runBookList(args[1:], env)
-	case "note":
-		return runBookNote(args[1:], env)
-	case "rm":
-		return runBookRm(args[1:], env)
-	}
-	return usageErrorf("不明なコマンドです: book %s\n%s", args[0], bookUsage)
+	return dispatch(ctx, "book", bookSubcommands, args, env)
 }
 
 // ndlTimeout は NDL サーチへの要求のタイムアウト。NDL サーチは同じ要求でも応答が数十秒かかることがあるので、

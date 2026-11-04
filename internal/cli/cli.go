@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -106,8 +107,70 @@ func usageErrorf(format string, a ...any) error {
 	return &usageError{msg: fmt.Sprintf(format, a...)}
 }
 
+// helpRequest は使い方の表示を求められたこと（help・-h・--help）。使い方を標準出力に書き、終了コード 0 にする。
+type helpRequest struct {
+	usage string
+}
+
+func (h *helpRequest) Error() string { return h.usage }
+
+// subcommand は book・lib・lib closure の下のコマンド。
+type subcommand struct {
+	name  string
+	usage string // 使い方（libread から書く）。下にサブコマンドを持つものは、その使い方を1行ずつ改行でつなぐ
+	group bool   // 下にサブコマンドを持つ。help は下の dispatch で扱う
+	run   func(ctx context.Context, args []string, env Env) error
+}
+
+// dispatch は args[0] のサブコマンドを実行する。prefix はメッセージに書くコマンド名（例: "lib closure"）。
+//   - 引数がないか、知らないサブコマンドなら、使い方の誤りにする。
+//   - help・-h・--help なら、この階層の使い方を表示する。
+//   - サブコマンドの引数に -h・--help があれば、そのサブコマンドの使い方を表示する。
+func dispatch(ctx context.Context, prefix string, subs []subcommand, args []string, env Env) error {
+	usage := groupUsage(subs)
+	if len(args) == 0 {
+		return usageErrorf("%s", usage)
+	}
+	if args[0] == "help" || isHelpFlag(args[0]) {
+		return &helpRequest{usage: usage}
+	}
+	for _, s := range subs {
+		if s.name != args[0] {
+			continue
+		}
+		if !s.group && slices.ContainsFunc(args[1:], isHelpFlag) {
+			return &helpRequest{usage: "使い方: " + s.usage}
+		}
+		return s.run(ctx, args[1:], env)
+	}
+	return usageErrorf("不明なコマンドです: %s %s\n%s", prefix, args[0], usage)
+}
+
+// groupUsage は subs の使い方を1行ずつ並べる。
+func groupUsage(subs []subcommand) string {
+	lines := make([]string, len(subs))
+	for i, s := range subs {
+		lines[i] = strings.ReplaceAll(s.usage, "\n", "\n  ")
+	}
+	return "使い方:\n  " + strings.Join(lines, "\n  ")
+}
+
+func isHelpFlag(arg string) bool {
+	return arg == "-h" || arg == "-help" || arg == "--help"
+}
+
+// withoutContext は context を使わないサブコマンドを subcommand.run の形にする。
+func withoutContext(run func(args []string, env Env) error) func(context.Context, []string, Env) error {
+	return func(_ context.Context, args []string, env Env) error { return run(args, env) }
+}
+
 func exitCode(env Env, err error) int {
 	if err == nil {
+		return ExitOK
+	}
+	var h *helpRequest
+	if errors.As(err, &h) {
+		fmt.Fprintln(env.Stdout, h.usage)
 		return ExitOK
 	}
 	fmt.Fprintf(env.Stderr, "libread: %v\n", err)

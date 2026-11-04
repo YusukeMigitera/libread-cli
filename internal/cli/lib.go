@@ -15,17 +15,9 @@ import (
 // calilAttribution はカーリルの利用条件で必須のリンク表示（research.md R1）。
 const calilAttribution = "図書館情報: カーリル（https://calil.jp/）"
 
-const libUsage = `使い方:
-  libread lib find --pref <都道府県> [--city <市区町村>] [--name <部分一致>]
-  libread lib add <SystemID:LibKey>
-  libread lib list
-  libread lib rm <図書館>
-  libread lib hours <図書館> [--sun 〜 --sat <HH:MM-HH:MM|closed>] [--holiday <same|closed|HH:MM-HH:MM>]
-  libread lib closure add <図書館> <開始日> <終了日> [--reason <テキスト>]
-  libread lib closure list <図書館>
-  libread lib closure rm <図書館> <番号>`
+const libHoursLine = "libread lib hours <図書館> [--sun 〜 --sat <HH:MM-HH:MM|closed>] [--holiday <same|closed|HH:MM-HH:MM>]"
 
-const libHoursUsage = "使い方: libread lib hours <図書館> [--sun 〜 --sat <HH:MM-HH:MM|closed>] [--holiday <same|closed|HH:MM-HH:MM>]"
+const libHoursUsage = "使い方: " + libHoursLine
 
 var libCommand = command{
 	name:    "lib",
@@ -33,25 +25,17 @@ var libCommand = command{
 	run:     runLib,
 }
 
+var libSubcommands = []subcommand{
+	{name: "find", usage: "libread lib find --pref <都道府県> [--city <市区町村>] [--name <部分一致>]", run: runLibFind},
+	{name: "add", usage: "libread lib add <SystemID:LibKey>", run: runLibAdd},
+	{name: "list", usage: "libread lib list", run: withoutContext(runLibList)},
+	{name: "rm", usage: "libread lib rm <図書館>", run: withoutContext(runLibRm)},
+	{name: "hours", usage: libHoursLine, run: withoutContext(runLibHours)},
+	{name: "closure", usage: closureLines(), group: true, run: runLibClosure},
+}
+
 func runLib(ctx context.Context, args []string, env Env) error {
-	if len(args) == 0 {
-		return usageErrorf("%s", libUsage)
-	}
-	switch args[0] {
-	case "find":
-		return runLibFind(ctx, args[1:], env)
-	case "add":
-		return runLibAdd(ctx, args[1:], env)
-	case "list":
-		return runLibList(args[1:], env)
-	case "rm":
-		return runLibRm(args[1:], env)
-	case "hours":
-		return runLibHours(args[1:], env)
-	case "closure":
-		return runLibClosure(args[1:], env)
-	}
-	return usageErrorf("不明なコマンドです: lib %s\n%s", args[0], libUsage)
+	return dispatch(ctx, "lib", libSubcommands, args, env)
 }
 
 // runLibFind は都道府県（必須）と市区町村でカーリルの図書館を探し、名前の部分一致で絞って表示する（FR-011）。
