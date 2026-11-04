@@ -15,7 +15,10 @@ import (
 	"libread/internal/store"
 )
 
-const wantAttribution = "書誌情報: 国立国会図書館サーチ API を利用しています（https://ndlsearch.ndl.go.jp/）\n"
+// wantAttribution は NDL サーチの利用条件の出典表示。iss-ndl-opac のメタデータは CC BY なので、
+// データプロバイダとデータ提供機関の名前、ライセンスへのリンクを含める（research.md R10）。
+const wantAttribution = "書誌情報: 国立国会図書館サーチ API から取得した「国立国会図書館蔵書」（国立国会図書館が運営）のデータを利用しています（https://ndlsearch.ndl.go.jp/）\n" +
+	"ライセンス: クリエイティブ・コモンズ 表示 4.0 国際（https://creativecommons.org/licenses/by/4.0/legalcode.ja）\n"
 
 // ndlFixture は internal/ndl/testdata の NDL サーチ OpenSearch の応答。
 func ndlFixture(t *testing.T, name string) string {

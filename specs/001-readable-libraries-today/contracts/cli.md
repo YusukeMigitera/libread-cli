@@ -75,14 +75,18 @@
   表示しきれていない本があります。見つからないときは --author <著者> や --publisher <出版社> で絞り込むか、ISBN で探してください
   登録するには: libread book add <ISBN> [--note <テキスト>]
 
-  書誌情報: 国立国会図書館サーチ API を利用しています（https://ndlsearch.ndl.go.jp/）
+  書誌情報: 国立国会図書館サーチ API から取得した「国立国会図書館蔵書」（国立国会図書館が運営）のデータを利用しています（https://ndlsearch.ndl.go.jp/）
+  ライセンス: クリエイティブ・コモンズ 表示 4.0 国際（https://creativecommons.org/licenses/by/4.0/legalcode.ja）
   ```
 
-- 出典表示（NDL サーチの利用条件, research.md R10）: `book find` と `book add` の出力の末尾に、次の1行を必ず表示する。
-  `libread help` の末尾にも同じ1行を表示する。
+- 出典表示（NDL サーチの利用条件, research.md R10）: `book find` と `book add` の出力の末尾に、次の2行を必ず表示する。
+  `libread help` の末尾にも同じ2行を表示する。
+  NDL サーチの API を使っていることに加え、`iss-ndl-opac` のメタデータは CC BY 4.0 なので、
+  データプロバイダ（国立国会図書館蔵書）とデータ提供機関（国立国会図書館）の名前と、ライセンスへのリンクを示す。
 
   ```text
-  書誌情報: 国立国会図書館サーチ API を利用しています（https://ndlsearch.ndl.go.jp/）
+  書誌情報: 国立国会図書館サーチ API から取得した「国立国会図書館蔵書」（国立国会図書館が運営）のデータを利用しています（https://ndlsearch.ndl.go.jp/）
+  ライセンス: クリエイティブ・コモンズ 表示 4.0 国際（https://creativecommons.org/licenses/by/4.0/legalcode.ja）
   ```
 
 ### `lib find` の補足

@@ -14,7 +14,10 @@ import (
 )
 
 // ndlAttribution は NDL サーチの利用条件で必須の出典表示（contracts/cli.md、research.md R10）。
-const ndlAttribution = "書誌情報: 国立国会図書館サーチ API を利用しています（https://ndlsearch.ndl.go.jp/）"
+// API を使っていることに加え、iss-ndl-opac のメタデータは CC BY なので、データプロバイダとデータ提供機関の名前、
+// ライセンスへのリンクを示す。
+const ndlAttribution = "書誌情報: 国立国会図書館サーチ API から取得した「国立国会図書館蔵書」（国立国会図書館が運営）のデータを利用しています（https://ndlsearch.ndl.go.jp/）\n" +
+	"ライセンス: クリエイティブ・コモンズ 表示 4.0 国際（https://creativecommons.org/licenses/by/4.0/legalcode.ja）"
 
 var bookCommand = command{
 	name:    "book",
