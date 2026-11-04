@@ -294,6 +294,10 @@ description: "Task list for 今日読める図書館の検索"
   - **進捗 (2026-10-29)**: 完了。gofmt・go vet・staticcheck・go test のいずれも警告なし（`go test -race ./...` も成功）。修正が必要な箇所はなかった。
 - [X] T044 Run quickstart.md steps 2 and 3 against the real services with a temporary `LIBREAD_DATA_DIR`, and record any differences in `specs/001-readable-libraries-today/quickstart.md`.
   - **進捗 (2026-10-30)**: 完了。期待結果との食い違いはなかった。注意点（所蔵館を登録しないと「読める」館が出ないこと、NDL サーチの一時的なタイムアウト、祝日休館の館で holidays-jp から祝日を取得してキャッシュすること）を quickstart.md の「実サービスでの確認結果」に記録した。
+- [X] T045 Update `README.md` now that the feature is complete:
+  - Remove the "開発中です。今の時点では、まだ図書館の検索はできません" note.
+  - Add installation, the first-time setup (`lib find` → `lib add` → `lib hours`, then `book find` → `book add`), daily use (`libread`), a command summary, and where data and caches are stored.
+  - Link to `contracts/cli.md` and `quickstart.md` for details.
 
 ---
 
