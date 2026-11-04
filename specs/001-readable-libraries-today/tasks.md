@@ -298,6 +298,7 @@ description: "Task list for 今日読める図書館の検索"
   - Remove the "開発中です。今の時点では、まだ図書館の検索はできません" note.
   - Add installation, the first-time setup (`lib find` → `lib add` → `lib hours`, then `book find` → `book add`), daily use (`libread`), a command summary, and where data and caches are stored.
   - Link to `contracts/cli.md` and `quickstart.md` for details.
+- [X] T046 Change **Status** in `specs/001-readable-libraries-today/spec.md` from `Draft` to `Implemented`, with the completion date.
 
 ---
 

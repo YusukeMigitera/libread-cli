@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-21
 
-**Status**: Draft
+**Status**: Implemented（2026-11-04。tasks.md の T001〜T046 完了）
 
 **Input**: User description: "読みかけの本を登録すると、近隣の図書館のうち今日開館していて館内でその本を読める館が一覧で分かる（コアMVP）"
 
