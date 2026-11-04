@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -32,5 +32,5 @@
 ## Notes
 
 - 利用者が指定した Vite + React は、要件ではなく Assumptions に「plan での技術選定の前提」として記録した。要件・成功基準には技術名を入れていない。
-- FR-117（CLI と Web の関係）が未確定。回答を受けて更新する。
+- FR-117 は「CLI を廃止して Web に一本化し、手元のデータは一度だけ取り込む」で確定（2026-11-04）。FR-118・SC-108 を追加。全項目合格。
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
