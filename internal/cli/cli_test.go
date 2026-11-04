@@ -226,3 +226,14 @@ func TestSubcommandUsageErrors(t *testing.T) {
 		}
 	}
 }
+
+// check は引数に <本> を取るので、check help は使い方の表示ではなく本の指定として扱う（contracts/cli.md「共通」）。
+func TestCheckHelpWordIsBookRef(t *testing.T) {
+	env, stdout, stderr := newCheckEnv(t, "check_single.json", &fakeServices{})
+	if code := Run(context.Background(), []string{"check", "help"}, env); code != ExitUsage {
+		t.Errorf("exit code = %d, want %d", code, ExitUsage)
+	}
+	if stdout.Len() != 0 || !strings.Contains(stderr.String(), "「help」に一致する読みかけの本はありません") {
+		t.Errorf("stdout = %q, stderr = %q", stdout, stderr)
+	}
+}
