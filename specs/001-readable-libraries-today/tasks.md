@@ -281,17 +281,24 @@ description: "Task list for 今日読める図書館の検索"
 
 **Purpose**: Cross-story checks
 
-- [ ] T041 [P] Add a test in `internal/cli/check_perf_test.go` for SC-002:
+- [X] T041 [P] Add a test in `internal/cli/check_perf_test.go` for SC-002:
   - 10 libraries across 10 systems and 5 books.
   - A fake Calil server that never completes (stays Running).
   - Assert `check` returns within 10 seconds of injected time and marks the libraries 不明（取得タイムアウト）.
-- [ ] T042 [P] Add a test in `internal/cli/outbound_test.go` that records every outgoing HTTP request across all commands and asserts (Constitution 技術的制約):
+- [X] T042 [P] Add a test in `internal/cli/outbound_test.go` that records every outgoing HTTP request across all commands and asserts (Constitution 技術的制約):
   - No request contains a book note.
   - Per command, requests stay within the limits in research.md R9: `check` sends one Calil session (initial request plus polls ≥2秒 apart) and at most one holidays-jp request per year, and sends no Calil request when the holdings cache is ≤30分 old; `lib find` and `lib add` each send one Calil library request; `book find` and `book add` send one NDL request.
   - At most one request to each service is in flight at a time.
   - Every request carries `User-Agent: libread/<version>`.
-- [ ] T043 Run the `check` target in `Makefile` (gofmt, go vet, staticcheck, go test) and fix every warning.
-- [ ] T044 Run quickstart.md steps 2 and 3 against the real services with a temporary `LIBREAD_DATA_DIR`, and record any differences in `specs/001-readable-libraries-today/quickstart.md`.
+- [X] T043 Run the `check` target in `Makefile` (gofmt, go vet, staticcheck, go test) and fix every warning.
+  - **進捗 (2026-10-29)**: 完了。gofmt・go vet・staticcheck・go test のいずれも警告なし（`go test -race ./...` も成功）。修正が必要な箇所はなかった。
+- [X] T044 Run quickstart.md steps 2 and 3 against the real services with a temporary `LIBREAD_DATA_DIR`, and record any differences in `specs/001-readable-libraries-today/quickstart.md`.
+  - **進捗 (2026-10-30)**: 完了。期待結果との食い違いはなかった。注意点（所蔵館を登録しないと「読める」館が出ないこと、NDL サーチの一時的なタイムアウト、祝日休館の館で holidays-jp から祝日を取得してキャッシュすること）を quickstart.md の「実サービスでの確認結果」に記録した。
+- [X] T045 Update `README.md` now that the feature is complete:
+  - Remove the "開発中です。今の時点では、まだ図書館の検索はできません" note.
+  - Add installation, the first-time setup (`lib find` → `lib add` → `lib hours`, then `book find` → `book add`), daily use (`libread`), a command summary, and where data and caches are stored.
+  - Link to `contracts/cli.md` and `quickstart.md` for details.
+- [X] T046 Change **Status** in `specs/001-readable-libraries-today/spec.md` from `Draft` to `Implemented`, with the completion date.
 
 ---
 
