@@ -33,4 +33,5 @@
 
 - 利用者が指定した Vite + React は、要件ではなく Assumptions に「plan での技術選定の前提」として記録した。要件・成功基準には技術名を入れていない。
 - FR-117 は「CLI を廃止して Web に一本化し、手元のデータは一度だけ取り込む」で確定（2026-11-04）。FR-118・SC-108 を追加。全項目合格。
+- Constitution 1.1.0（2026-11-04）に合わせて更新: FR-110 に登録の有無を明かさないことを、FR-113 に外部サービスへの問い合わせをサービス側から行うことを加え、FR-119（暗号化された通信のみ）を追加。Assumptions の Constitution との関係の記述を確定した内容に書き換えた。全項目合格。
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
