@@ -28,10 +28,10 @@ description: "Task list for 今日読める図書館の検索"
 
 **Purpose**: Go モジュールと品質ゲートの準備
 
-- [ ] T001 Create `go.mod` with module path `libread` and `go 1.25`. Create the empty package directories `cmd/libread/`, `internal/domain/`, `internal/calil/testdata/`, `internal/ndl/testdata/`, `internal/holiday/testdata/`, `internal/store/` and `internal/cli/testdata/`.
-- [ ] T002 Add staticcheck as a tool dependency with `go get -tool honnef.co/go/tools/cmd/staticcheck@latest`, so that `go tool staticcheck ./...` runs. This updates `go.mod` and `go.sum`.
-- [ ] T003 [P] Create `Makefile` with a `check` target that runs, in order, `test -z "$(gofmt -l .)"`, `go vet ./...`, `go tool staticcheck ./...` and `go test ./...` (the quality gate in quickstart.md step 1).
-- [ ] T004 [P] Create `.gitignore` that ignores `bin/`.
+- [X] T001 Create `go.mod` with module path `libread` and `go 1.25`. Create the empty package directories `cmd/libread/`, `internal/domain/`, `internal/calil/testdata/`, `internal/ndl/testdata/`, `internal/holiday/testdata/`, `internal/store/` and `internal/cli/testdata/`.
+- [X] T002 Add staticcheck as a tool dependency with `go get -tool honnef.co/go/tools/cmd/staticcheck@latest`, so that `go tool staticcheck ./...` runs. This updates `go.mod` and `go.sum`.
+- [X] T003 [P] Create `Makefile` with a `check` target that runs, in order, `test -z "$(gofmt -l .)"`, `go vet ./...`, `go tool staticcheck ./...` and `go test ./...` (the quality gate in quickstart.md step 1).
+- [X] T004 [P] Create `.gitignore` that ignores `bin/`.
 
 ---
 
@@ -43,57 +43,57 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests (write first, confirm they fail)
 
-- [ ] T005 [P] Write table-driven tests for `ISBN` in `internal/domain/isbn_test.go`:
+- [X] T005 [P] Write table-driven tests for `ISBN` in `internal/domain/isbn_test.go`:
   - Hyphens are allowed.
   - A 10-digit ISBN converts to 13 digits.
   - An invalid check digit is an error.
   - Wrong length and non-digit characters are errors.
-- [ ] T006 [P] Write tests for `TimeOfDay`, `Hours` and `Date` parsing in `internal/domain/time_test.go`:
+- [X] T006 [P] Write tests for `TimeOfDay`, `Hours` and `Date` parsing in `internal/domain/time_test.go`:
   - `HH:MM` 形式、00:00〜24:00. Out of range is an error.
   - `Hours` requires 開館 < 閉館.
   - `Date` is `YYYY-MM-DD` in Asia/Tokyo.
-- [ ] T007 [P] Write tests for `LibraryID` in `internal/domain/library_test.go`:
+- [X] T007 [P] Write tests for `LibraryID` in `internal/domain/library_test.go`:
   - Parsing and formatting use `SystemID:LibKey`.
   - An empty `SystemID` or `LibKey` is an error.
   - A `LibKey` may contain `:` (only the first `:` splits).
-- [ ] T008 [P] Write round-trip tests for data.json in `internal/store/data_test.go`:
+- [X] T008 [P] Write round-trip tests for data.json in `internal/store/data_test.go`:
   - Save and load with `version: 1` (data-model.md「永続化形式」).
   - A missing file loads as empty data.
   - An unknown `version` is an error.
   - Writes are atomic (write to a temp file in the same directory, then rename).
   - `LIBREAD_DATA_DIR` overrides the default `os.UserConfigDir()/libread`.
-- [ ] T009 [P] Write tests for `cli.Run` dispatch in `internal/cli/cli_test.go`:
+- [X] T009 [P] Write tests for `cli.Run` dispatch in `internal/cli/cli_test.go`:
   - An unknown subcommand returns exit code `2` with usage on stderr.
   - Resolving `<本>` by ISBN or 書名の部分一致: no match or multiple matches returns exit code `2`, listing the candidates when there are several.
   - Resolving `<図書館>` by `SystemID:LibKey` or 図書館名の部分一致 follows the same rules.
 
 ### Implementation
 
-- [ ] T010 [P] Implement `ISBN` (13桁に正規化; ハイフン許容; 10桁は13桁へ変換; チェックディジット不正はエラー) in `internal/domain/isbn.go`
-- [ ] T011 [P] Implement `TimeOfDay` (minutes since 0:00), `Hours` and `Date` in `internal/domain/time.go`.
+- [X] T010 [P] Implement `ISBN` (13桁に正規化; ハイフン許容; 10桁は13桁へ変換; チェックディジット不正はエラー) in `internal/domain/isbn.go`
+- [X] T011 [P] Implement `TimeOfDay` (minutes since 0:00), `Hours` and `Date` in `internal/domain/time.go`.
   - Load Asia/Tokyo once via `time.LoadLocation`.
   - Add `import _ "time/tzdata"` in this file.
-- [ ] T012 [P] Implement `LibraryID{SystemID, LibKey}` in `internal/domain/library.go`, with `ParseLibraryID` and `String()`.
-- [ ] T013 Define the entities in `internal/domain/entities.go`, following data-model.md:
+- [X] T012 [P] Implement `LibraryID{SystemID, LibKey}` in `internal/domain/library.go`, with `ParseLibraryID` and `String()`.
+- [X] T013 Define the entities in `internal/domain/entities.go`, following data-model.md:
   - `Book{ISBN, Title, Author, Publisher}`. Title is required.
   - `ReadingBook{Book, Note, AddedOn}`.
   - `RegisteredLibrary{ID, Name, Pref, City, Schedule *Schedule, Closures []ClosurePeriod}`.
   - `Schedule{Weekly [7]DayRule, Holiday HolidayRule, UpdatedOn}`. `DayRule` is closed or `Hours`. `HolidayRule` is `SameAsWeekday` / `Closed` / `CustomHours(Hours)`.
   - `ClosurePeriod{Start, End, Reason}` (Start ≤ End, inclusive).
-- [ ] T014 Implement `internal/store/data.go` (depends on T013):
+- [X] T014 Implement `internal/store/data.go` (depends on T013):
   - `Load` and `Save` for `data.json`, using JSON structs with explicit tags.
   - `weekly` omitted days mean 休館.
   - `holiday.mode` is one of `same` / `closed` / `hours`.
   - Convert to and from the domain types at this boundary; do not use `any`.
-- [ ] T015 Implement `internal/cli/cli.go` (depends on T013):
+- [X] T015 Implement `internal/cli/cli.go` (depends on T013):
   - `Run(ctx, args, env Env) int`, where `Env` holds stdout/stderr, `Now func() time.Time`, `*http.Client`, data and cache dirs, and the Calil key.
   - Subcommand dispatch using `flag.FlagSet`.
   - Exit codes `0/1/2` as in contracts/cli.md.
   - Helpers that resolve `<本>` and `<図書館>`.
-- [ ] T016 Implement `cmd/libread/main.go`:
+- [X] T016 Implement `cmd/libread/main.go`:
   - Build `cli.Env` from `os.Getenv` (`LIBREAD_CALIL_APPKEY`, `LIBREAD_DATA_DIR`, `LIBREAD_CACHE_DIR`), `time.Now` and an `http.Client` with a 10s timeout.
   - Call `os.Exit(cli.Run(...))`.
-- [ ] T017 [P] Implement `internal/store/cache.go`, a JSON file cache under `LIBREAD_CACHE_DIR` (default `os.UserCacheDir()/libread`).
+- [X] T017 [P] Implement `internal/store/cache.go`, a JSON file cache under `LIBREAD_CACHE_DIR` (default `os.UserCacheDir()/libread`).
   - Get and put typed values, each with a stored-at time.
   - Write atomically (temp file in the same directory, then rename).
   - Add tests in `internal/store/cache_test.go` first.
@@ -113,28 +113,30 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests for User Story 1 (write first, confirm they fail)
 
-- [ ] T018 [P] [US1] Write tests in `internal/domain/availability_test.go` for mapping a Calil value to `Availability`, covering every row of research.md R2:
+- [X] T018 [P] [US1] Write tests in `internal/domain/availability_test.go` for mapping a Calil value to `Availability`, covering every row of research.md R2:
   - 貸出可→AvailableToLend, 館内のみ→InLibraryOnly, 貸出中→OnLoan, 予約中→Reserved (label is Calil's value 予約中 as-is).
   - 蔵書なし, or a library missing from the response while the system status is OK/Cache → NotHeld.
   - 蔵書あり / 準備中 / 休館中 / unknown values → Unknown.
   - System status Error, or Running at the deadline → Unknown.
   - The raw value is preserved.
-- [ ] T019 [P] [US1] Write tests in `internal/domain/openstatus_test.go` for `OpenStatusOf`, one case per step of data-model.md「OpenStatusOf の判定順」:
+- [X] T019 [P] [US1] Write tests in `internal/domain/openstatus_test.go` for `OpenStatusOf`, one case per step of data-model.md「OpenStatusOf の判定順」:
   - NoSchedule, ClosedPeriod (inclusive bounds), HolidayUnknown (only when the holiday rule is not `SameAsWeekday`).
   - Holiday rule `Closed` and `CustomHours`.
   - ClosedRegular.
   - NotYetOpen / Open / FinishedToday at the boundaries (exactly open time, exactly close time).
   - The 閉館まで30分未満 flag.
-- [ ] T020 [P] [US1] Write tests in `internal/domain/result_test.go` for `Readable` and the result aggregation:
+- [X] T020 [P] [US1] Write tests in `internal/domain/result_test.go` for `Readable` and the result aggregation:
   - Readable only when OpenStatus ∈ {Open, NotYetOpen} and Availability ∈ {AvailableToLend, InLibraryOnly} and the snapshot is not stale (>30分 is stale).
   - Libraries with ≥1 readable book are in `Readable`, sorted by 読める冊数の多い順 → 閉館時刻の遅い順 (FR-008).
   - Other libraries are in `NotReadable`, with their reasons.
-- [ ] T021 [P] [US1] After the holidays-jp row of research.md R10 is filled in, record a real holidays-jp response to `internal/holiday/testdata/2026.json`. Then write tests in `internal/holiday/holiday_test.go`:
+- [X] T021 [P] [US1] After the holidays-jp row of research.md R10 is filled in, record a real holidays-jp response to `internal/holiday/testdata/2026.json`. Then write tests in `internal/holiday/holiday_test.go`:
+  - **進捗 (2026-10-23)**: 実際の応答を `internal/holiday/testdata/2026.json` に記録し、テストで使っている。
   - Holiday lookup by `Date`.
   - The year cache is reused within 30 days and refreshed after.
   - On fetch failure with no cache, the result is `known=false`.
   - The request includes `User-Agent: libread/<version>`.
-- [ ] T022 [P] [US1] Write tests in `internal/calil/check_test.go` for the check client:
+- [X] T022 [P] [US1] Write tests in `internal/calil/check_test.go` for the check client:
+  - **進捗 (2026-10-23)**: 手順 2・3 は完了。手順 1 は Error 以外を記録済み: 初回応答（`continue: 1`、1冊目だけが載っている）・最終応答（`continue: 0`、すべて OK）を `check_initial.json`・`check_final.json` に、Cache と存在しないシステムを含む応答を `check_cache_unknown_system.json` に記録し、テストで使っている。存在しない `systemid` は Error にならず、Running のまま `continue: 1` が続くと分かった（上限の8秒で打ち切り、取得タイムアウトとして表示する）。Error を返させる方法が見つからないため、Error はテスト内で組み立てた応答で確かめている。Error は図書館側の障害時にしか返らないと考えられるため、この状態で完了とする（2026-10-23）。Error の応答が得られたら記録して差し替える。
   1. After the Calil row of research.md R10 is filled in, record real responses: an initial reply with `continue: 1`, a poll reply, and a final reply (`continue: 0`) whose system statuses include OK, Cache and Error. Save them to `internal/calil/testdata/check_*.json`, removing the `appkey` value from every saved URL and body.
   2. Add `TestFixturesHaveNoAppKey` in `internal/calil/fixtures_test.go`. It fails if any file under `internal/calil/testdata/` contains `appkey=` followed by a non-empty value (Constitution 技術的制約: no secrets in the repository).
   3. With `httptest.Server`, assert:
@@ -142,7 +144,7 @@ description: "Task list for 今日読める図書館の検索"
      - Polls use `session` and wait ≥2秒 between requests (use an injected sleep function).
      - Polling stops at the 8-second overall deadline, leaving still-Running systems marked as timed out.
      - The JSON is decoded into typed structs.
-- [ ] T023 [P] [US1] Write tests in `internal/cli/check_test.go` for the `check` command:
+- [X] T023 [P] [US1] Write tests in `internal/cli/check_test.go` for the `check` command:
   - Golden-file tests in `internal/cli/testdata/check_*.golden` for spec US1 acceptance scenarios 1–5.
   - Edge cases from spec.md: 開館前 (counted as readable, shown as `開館前 HH:MM〜HH:MM`), 本日終了, 閉館まで30分未満, 臨時休館, 開館情報未入力, 不明(古い情報), 取得タイムアウト, 予約中 (shown with Calil's value as-is).
   - With no libraries or no books, exit code 2 and the guidance message.
@@ -153,38 +155,38 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Implementation for User Story 1
 
-- [ ] T024 [P] [US1] Implement `Availability` and `AvailabilityOf` in `internal/domain/availability.go`:
+- [X] T024 [P] [US1] Implement `Availability` and `AvailabilityOf` in `internal/domain/availability.go`:
   - Values: `AvailableToLend`, `InLibraryOnly`, `OnLoan`, `Reserved`, `NotHeld`, `Unknown`.
   - Japanese labels: 在架（貸出可）, 在架（館内閲覧のみ）, 貸出中, 予約中 (Calil's value as-is), 所蔵なし, 不明.
   - `HoldingSnapshot{ISBN, SystemID, SystemStatus, ByLibKey, FetchedAt}`.
-- [ ] T025 [P] [US1] Implement `OpenStatus` in `internal/domain/openstatus.go`:
+- [X] T025 [P] [US1] Implement `OpenStatus` in `internal/domain/openstatus.go`:
   - Values: `Open`, `NotYetOpen`, `FinishedToday`, `ClosedRegular`, `ClosedPeriod`, `NoSchedule`, `HolidayUnknown`.
   - `OpenStatusOf(lib, now, isHoliday func(Date) (bool, bool))`, following the order in data-model.md.
-- [ ] T026 [US1] Implement `Readable`, `Result{CheckedAt, Readable, NotReadable}` and the FR-008 sort in `internal/domain/result.go`. Depends on T024 and T025.
-- [ ] T027 [P] [US1] Implement the holidays-jp client in `internal/holiday/holiday.go`:
+- [X] T026 [US1] Implement `Readable`, `Result{CheckedAt, Readable, NotReadable}` and the FR-008 sort in `internal/domain/result.go`. Depends on T024 and T025.
+- [X] T027 [P] [US1] Implement the holidays-jp client in `internal/holiday/holiday.go`:
   - Endpoint `https://holidays-jp.github.io/api/v1/{year}/date.json`.
   - Uses `store` cache files named `holidays-YYYY.json`, with a 30-day refresh.
   - Returns `func(Date) (isHoliday, known bool)`.
   - Base URL is injectable for tests.
-- [ ] T028 [P] [US1] Implement the Calil check client in `internal/calil/check.go`:
+- [X] T028 [P] [US1] Implement the Calil check client in `internal/calil/check.go`:
   - `Check(ctx, isbns []ISBN, systemIDs []string) ([]HoldingSnapshot, error)` against `https://api.calil.jp/check` with `format=json&callback=no`.
   - Poll with `session` at ≥2秒 intervals, under an 8-second overall deadline.
   - Measure the deadline with the injected clock (the start time from `Now` plus 8 seconds), not with `context.WithTimeout` or a real timer, so that T022 and T041 can test it with fake time. Still honour cancellation of the caller's `ctx`.
   - Send `User-Agent: libread/<version>`.
   - Base URL, sleep and clock are injectable.
-- [ ] T029 [US1] Implement the `check` command in `internal/cli/check.go`. Depends on T026–T028 and T017.
+- [X] T029 [US1] Implement the `check` command in `internal/cli/check.go`. Depends on T026–T028 and T017.
   1. Load data and select the target books (all by default, or the resolved `<本>`).
   2. Collect the distinct system IDs.
   3. Use cached holdings `holdings.json`, keyed `ISBN|SystemID`, when ≤30分 old; otherwise refetch.
   4. On refetch failure, keep the stale snapshot marked stale.
   5. Compute `OpenStatusOf` per library and build `Result`.
-- [ ] T030 [US1] Implement the result formatter in `internal/cli/format.go`, exactly matching the output example in contracts/cli.md:
+- [X] T030 [US1] Implement the result formatter in `internal/cli/format.go`, exactly matching the output example in contracts/cli.md:
   - Header `YYYY-MM-DD(曜) HH:MM 時点`.
   - The two sections, with the `今日読める図書館はありません` fallback.
   - Library status: `開館中 〜HH:MM`, `開館前 HH:MM〜HH:MM` for libraries not yet open (FR-004), and the `（閉館まで30分未満）` note.
   - Per-book `（HH:MM 取得）` when fetch times differ.
   - The footer with Calil links, `開館情報: 利用者入力（最終更新 ...）` and `※ 臨時休館は入力済みの情報のみ反映しています`.
-- [ ] T031 [US1] Make `libread` with no arguments run `check` (contracts/cli.md), wiring it in `internal/cli/cli.go`.
+- [X] T031 [US1] Make `libread` with no arguments run `check` (contracts/cli.md), wiring it in `internal/cli/cli.go`.
 
 **Checkpoint**: The US1 golden tests pass. With a hand-written `data.json`, the real `libread` shows today's readable libraries.
 
@@ -200,27 +202,41 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests for User Story 2 (write first, confirm they fail)
 
-- [ ] T032 [P] [US2] After the NDL row of research.md R10 is filled in, record real NDL OpenSearch responses (a title search and an ISBN search) to `internal/ndl/testdata/*.xml`. Then write tests in `internal/ndl/ndl_test.go`:
+- [X] T032 [P] [US2] After the NDL row of research.md R10 is filled in, record real NDL OpenSearch responses (a title search and an ISBN search) to `internal/ndl/testdata/*.xml`. Then write tests in `internal/ndl/ndl_test.go`:
+  - **進捗 (2026-10-29)**: 完了。書名検索（`title=吾輩は猫である`）と ISBN 検索（`isbn=9784003101018`）の実際の応答を `internal/ndl/testdata/opensearch_title.xml`・`opensearch_isbn.xml` に記録し、テストで使っている。要素の位置は想定どおりで、`internal/ndl/ndl.go` の変更は不要だった。著者の `dc:creator` は典拠形（例: `夏目, 漱石, 1867-1916`）で、そのまま表示している。
   - Parse ISBN, title, author and publisher (the elements are confirmed from the recording, research.md R3).
   - Skip entries without an ISBN.
   - Return at most 10 results.
-  - Requests use the `title` or `isbn` parameter, plus `cnt`, and send `User-Agent`.
-- [ ] T033 [P] [US2] Write tests in `internal/cli/book_test.go`:
+  - Requests use the `title` or `isbn` parameter, plus `cnt` and `dpid=iss-ndl-opac` (research.md R3), and send `User-Agent`.
+- [X] T033 [P] [US2] Write tests in `internal/cli/book_test.go`:
   - `book add` rejects a duplicate ISBN (同じ ISBN は1冊しか登録できない) with exit code 2.
   - `book add` looks up the bibliographic record by ISBN and stores `AddedOn` = today.
   - `book note` overwrites the note; an empty string clears it.
   - `book rm` resolves `<本>` and removes the book.
   - The `book list` output format is tested.
   - Notes are never sent in any HTTP request.
+  - `book find` and `book add` end with the NDL attribution line from contracts/cli.md, and so does `libread help` (research.md R10).
 
 ### Implementation for User Story 2
 
-- [ ] T034 [P] [US2] Implement the NDL client in `internal/ndl/ndl.go`:
+- [X] T034 [P] [US2] Implement the NDL client in `internal/ndl/ndl.go`:
   - `Search(ctx, query) ([]domain.Book, error)`. A query that parses as an ISBN uses the `isbn` parameter; otherwise it uses `title`.
-  - Endpoint `https://ndlsearch.ndl.go.jp/api/opensearch`.
+  - Endpoint `https://ndlsearch.ndl.go.jp/api/opensearch`, always with `dpid=iss-ndl-opac`.
   - Decode with `encoding/xml` into typed structs.
   - Base URL is injectable.
-- [ ] T035 [US2] Implement the `book find`, `book add <ISBN> [--note]`, `book list`, `book note <本> <テキスト>` and `book rm <本>` subcommands in `internal/cli/book.go`, and register them in `internal/cli/cli.go`. Depends on T034.
+- [X] T035 [US2] Implement the `book find`, `book add <ISBN> [--note]`, `book list`, `book note <本> <テキスト>` and `book rm <本>` subcommands in `internal/cli/book.go`, and register them in `internal/cli/cli.go`. Depends on T034.
+  - Print the NDL attribution line from contracts/cli.md at the end of `book find` and `book add`, and add it to the end of `writeUsage` in `internal/cli/cli.go` (research.md R10).
+
+- [X] T045 [US2] Write tests for ranking and narrowing the title search (research.md R3「検索結果の並び」, contracts/cli.md「`book find` / `book add` の補足」):
+  - Record real responses for `title=吾輩は猫である` and for the same title with `creator=夏目漱石&publisher=岩波書店`, both with `cnt=20`, to `internal/ndl/testdata/`.
+  - In `internal/ndl/ndl_test.go`: requests use `cnt=20`; `--author` and `--publisher` become `creator` and `publisher`; titles that equal the query come first, then titles that start with it, keeping NDL's order within each group; at most 10 books are returned; the total match count is returned, and the result says whether some matches were not shown.
+  - In `internal/cli/book_test.go`: golden files for `book find` with and without the 「N件中M件を表示」 note, and `--author` / `--publisher` given before or after the title.
+- [X] T046 [US2] Implement the ranking, `--author` / `--publisher` and the match-count note in `internal/ndl/ndl.go` and `internal/cli/book.go`. Depends on T045.
+- [X] T047 [US2] Give NDL requests a 30-second timeout, leaving the 10-second timeout of `env.HTTPClient` for the other services (research.md R3「Decision（タイムアウト）」). Test in `internal/cli/book_test.go` that the NDL client has the 30-second timeout and reuses the same Transport, and that `env.HTTPClient` is unchanged.
+- [X] T048 [US2] Fix the `book find` messages found in review (contracts/cli.md「`book find` / `book add` の補足」), with tests in `internal/cli/book_test.go` first:
+  - When NDL reports more matches but none of the fetched records has an ISBN, show the narrowing hint too (exit code 2).
+  - Replace 「N件のうち上位M件」, which suggests ranking across all matches, with 「表示しきれていない本があります」.
+  - Include `--author` and `--publisher` in the heading and in the not-found message.
 
 **Checkpoint**: Books can be registered from the CLI, and `libread` (US1) uses them without editing `data.json` by hand.
 
@@ -236,11 +252,12 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Tests for User Story 3 (write first, confirm they fail)
 
-- [ ] T036 [P] [US3] Record a real Calil library search response (e.g. `pref=東京都&city=世田谷区`) to `internal/calil/testdata/library_*.json`, removing the `appkey` value. These files are covered by `TestFixturesHaveNoAppKey` in `internal/calil/fixtures_test.go`; if T022 is not done yet, create that test first as T022 step 2 describes. Then write tests in `internal/calil/library_test.go`:
+- [X] T036 [P] [US3] Record a real Calil library search response (e.g. `pref=東京都&city=世田谷区`) to `internal/calil/testdata/library_*.json`, removing the `appkey` value. These files are covered by `TestFixturesHaveNoAppKey` in `internal/calil/fixtures_test.go`; if T022 is not done yet, create that test first as T022 step 2 describes. Then write tests in `internal/calil/library_test.go`:
+  - **進捗 (2026-10-30)**: 完了。`pref=東京都&city=世田谷区` の実際の応答（35館。世田谷区立の21館と区内の大学図書館など）を `internal/calil/testdata/library_setagaya.json` に、`systemid=Tokyo_Setagaya` の実際の応答（21館）を `library_system_setagaya.json` に記録し、テストで使っている。応答は JSON の配列で、項目名は想定どおりだった。存在しない `systemid` には空の配列 `[]` が返る。館キーは `中央図書館` のような館名で、大学図書館は `本館`・`中央` などになる。
   - Parse `systemid`, `libkey`, `formal`, `pref`, `city` and `address`.
   - `pref` is required.
   - `appkey` and `User-Agent` are sent.
-- [ ] T037 [P] [US3] Write tests in `internal/cli/lib_test.go`:
+- [X] T037 [P] [US3] Write tests in `internal/cli/lib_test.go`:
   - `lib find` requires `--pref` (exit code 2 without it) and filters by `--name` 部分一致 locally.
   - `lib add` rejects duplicates and unknown IDs.
   - `lib hours`: `HH:MM-HH:MM` or `closed` per day; days not given keep their current value, or become 休館 when no schedule exists yet; `--holiday same|closed|HH:MM-HH:MM` defaults to `same`; `UpdatedOn` = today.
@@ -250,11 +267,11 @@ description: "Task list for 今日読める図書館の検索"
 
 ### Implementation for User Story 3
 
-- [ ] T038 [P] [US3] Implement the Calil library search in `internal/calil/library.go`:
+- [X] T038 [P] [US3] Implement the Calil library search in `internal/calil/library.go`:
   - `Libraries(ctx, pref, city string) ([]LibraryInfo, error)` against `https://api.calil.jp/library` with `format=json&callback=`.
   - Decode into typed structs.
-- [ ] T039 [US3] Implement the `lib find`, `lib add`, `lib list`, `lib rm` and `lib hours` subcommands in `internal/cli/lib.go`, and register them in `internal/cli/cli.go`. Depends on T038.
-- [ ] T040 [US3] Implement the `lib closure add|list|rm` subcommands in `internal/cli/closure.go`, and register them in `internal/cli/cli.go`. Depends on T039.
+- [X] T039 [US3] Implement the `lib find`, `lib add`, `lib list`, `lib rm` and `lib hours` subcommands in `internal/cli/lib.go`, and register them in `internal/cli/cli.go`. Depends on T038.
+- [X] T040 [US3] Implement the `lib closure add|list|rm` subcommands in `internal/cli/closure.go`, and register them in `internal/cli/cli.go`. Depends on T039.
 
 **Checkpoint**: Every operation works from the CLI without editing `data.json` by hand.
 
@@ -264,17 +281,24 @@ description: "Task list for 今日読める図書館の検索"
 
 **Purpose**: Cross-story checks
 
-- [ ] T041 [P] Add a test in `internal/cli/check_perf_test.go` for SC-002:
+- [X] T041 [P] Add a test in `internal/cli/check_perf_test.go` for SC-002:
   - 10 libraries across 10 systems and 5 books.
   - A fake Calil server that never completes (stays Running).
   - Assert `check` returns within 10 seconds of injected time and marks the libraries 不明（取得タイムアウト）.
-- [ ] T042 [P] Add a test in `internal/cli/outbound_test.go` that records every outgoing HTTP request across all commands and asserts (Constitution 技術的制約):
+- [X] T042 [P] Add a test in `internal/cli/outbound_test.go` that records every outgoing HTTP request across all commands and asserts (Constitution 技術的制約):
   - No request contains a book note.
-  - Per command, requests stay within the limits in research.md R9: `check` sends one Calil session (initial request plus polls ≥2秒 apart) and at most one holidays-jp request per year, and sends no Calil request when the holdings cache is ≤30分 old; `lib find` sends one Calil library request; `book find` and `book add` send one NDL request.
+  - Per command, requests stay within the limits in research.md R9: `check` sends one Calil session (initial request plus polls ≥2秒 apart) and at most one holidays-jp request per year, and sends no Calil request when the holdings cache is ≤30分 old; `lib find` and `lib add` each send one Calil library request; `book find` and `book add` send one NDL request.
   - At most one request to each service is in flight at a time.
   - Every request carries `User-Agent: libread/<version>`.
-- [ ] T043 Run the `check` target in `Makefile` (gofmt, go vet, staticcheck, go test) and fix every warning.
-- [ ] T044 Run quickstart.md steps 2 and 3 against the real services with a temporary `LIBREAD_DATA_DIR`, and record any differences in `specs/001-readable-libraries-today/quickstart.md`.
+- [X] T043 Run the `check` target in `Makefile` (gofmt, go vet, staticcheck, go test) and fix every warning.
+  - **進捗 (2026-10-29)**: 完了。gofmt・go vet・staticcheck・go test のいずれも警告なし（`go test -race ./...` も成功）。修正が必要な箇所はなかった。
+- [X] T044 Run quickstart.md steps 2 and 3 against the real services with a temporary `LIBREAD_DATA_DIR`, and record any differences in `specs/001-readable-libraries-today/quickstart.md`.
+  - **進捗 (2026-10-30)**: 完了。期待結果との食い違いはなかった。注意点（所蔵館を登録しないと「読める」館が出ないこと、NDL サーチの一時的なタイムアウト、祝日休館の館で holidays-jp から祝日を取得してキャッシュすること）を quickstart.md の「実サービスでの確認結果」に記録した。
+- [X] T045 Update `README.md` now that the feature is complete:
+  - Remove the "開発中です。今の時点では、まだ図書館の検索はできません" note.
+  - Add installation, the first-time setup (`lib find` → `lib add` → `lib hours`, then `book find` → `book add`), daily use (`libread`), a command summary, and where data and caches are stored.
+  - Link to `contracts/cli.md` and `quickstart.md` for details.
+- [X] T046 Change **Status** in `specs/001-readable-libraries-today/spec.md` from `Draft` to `Implemented`, with the completion date.
 
 ---
 
