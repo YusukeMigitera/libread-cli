@@ -6,6 +6,8 @@
 
 ## 共通
 
+- 各 API の応答の例は `specs/002-web-mobile-access/contracts/examples/<名前>.json` に置く。この文書に載せた例はそのファイルと同じ内容で、
+  サーバーと画面の両方のテストが同じファイルを使う（Constitution 原則 III）。
 - 画面と API は同じオリジンで配信する。CORS のヘッダーは付けない。
 - 本文は UTF-8 の JSON（`Content-Type: application/json; charset=utf-8`）。日時は RFC 3339 で `+09:00`、日付は `YYYY-MM-DD`、時刻は `HH:MM`。
 - 本人確認（research W2）:
