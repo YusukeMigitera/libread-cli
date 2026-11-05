@@ -69,7 +69,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - `Issue(key, generation, now)` → value `base64url(JSON) + "." + base64url(HMAC-SHA256(key, JSON))`; `ExpiresAt` = `IssuedAt` + 30日.
   - `Verify(key, value, currentGeneration, now)` accepts a fresh cookie and rejects: a changed payload, a changed signature, a different key, `now` ≥ `ExpiresAt`, `Generation` ≠ current generation, malformed values (no `.`, bad base64, bad JSON).
   - `SessionGeneration` is a named type; values < 1 are rejected.
-- [ ] T011 [P] Write tests in `internal/auth/oidc_test.go` for the Google login with a fake token endpoint (`httptest.Server`) (research W2):
+- [X] T011 [P] Write tests in `internal/auth/oidc_test.go` for the Google login with a fake token endpoint (`httptest.Server`) (research W2):
   - `LoginURL(state)` contains `response_type=code`, `client_id`, `redirect_uri=<origin>/auth/callback`, `scope=openid email`, `state`, `prompt=select_account`.
   - `Exchange(ctx, code)` POSTs `code`, `client_id`, `client_secret`, `redirect_uri`, `grant_type=authorization_code` and returns the owner check result.
   - Accepted only when `iss` is `https://accounts.google.com` or `accounts.google.com`, `aud` equals the client ID, `exp` is in the future, `email_verified` is `true`, and `email` equals `LIBREAD_OWNER_EMAIL` ignoring case. Each violation is rejected. A token-endpoint error status is rejected.
