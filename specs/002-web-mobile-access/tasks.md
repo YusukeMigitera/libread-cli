@@ -79,7 +79,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - With a valid session, `POST`/`PUT`/`PATCH`/`DELETE` whose `Origin` differs from `LIBREAD_PUBLIC_ORIGIN` (or is missing) returns `403` `forbidden`; `GET` does not need `Origin`.
   - Every response has `Strict-Transport-Security: max-age=31536000`; `/api/` and `/auth/` responses have `Cache-Control: no-store`.
   - The request log line contains time, method, path (without the query string), status and duration, and never contains the query string, cookies, notes or the owner email (research W11).
-- [ ] T013 [P] Write tests in `internal/server/auth_handlers_test.go` (contracts/http-api.md「本人確認」):
+- [X] T013 [P] Write tests in `internal/server/auth_handlers_test.go` (contracts/http-api.md「本人確認」):
   - `GET /auth/login?return=/books` sets `libread_login` (`HttpOnly`, `Secure`, `SameSite=Lax`, 10分) and redirects to Google with the same `state`.
   - `GET /auth/callback` with matching `state` and an owner token sets `libread_session` (`HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, 30日), clears `libread_login`, and redirects to `/#/books`.
   - Non-owner token, `state` mismatch, missing `libread_login` and `error=` from Google all redirect to `/#/login?error=denied` without `libread_session`, and clear `libread_login`.
