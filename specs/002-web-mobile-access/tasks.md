@@ -35,7 +35,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - `web/package.json` with `"private": true`, `"type": "module"` and scripts `dev` (`vite`), `build` (`tsc --noEmit && vite build`), `typecheck` (`tsc --noEmit`), `lint` (`eslint .`), `format:check` (`prettier --check .`), `format` (`prettier --write .`), `test` (`vitest run`).
   - Runtime dependencies are only `react` and `react-dom` (19). Dev dependencies are only `vite`, `@vitejs/plugin-react`, `typescript`, `@types/react`, `@types/react-dom`, `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `prettier`, `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`. Pin exact versions (no `^`) and commit `web/package-lock.json`.
   - Add `"engines": {"node": ">=22"}`.
-- [ ] T002 [P] Create the TypeScript and tool configs in `web/`:
+- [X] T002 [P] Create the TypeScript and tool configs in `web/`:
   - `web/tsconfig.json`: `"strict": true`, `"noUncheckedIndexedAccess": true`, `"noImplicitOverride": true`, `"jsx": "react-jsx"`, `"moduleResolution": "bundler"`, `"resolveJsonModule": true` (for the shared contract examples in T017), `"types": ["vitest/globals", "@testing-library/jest-dom"]`.
   - `web/eslint.config.js`: `@eslint/js` recommended + `typescript-eslint` `strictTypeChecked` + `eslint-plugin-react-hooks`; `@typescript-eslint/no-explicit-any: "error"` (Constitution 原則 III). Ignore `dist/`.
   - `web/.prettierrc.json` (`{}` is fine) and `web/.prettierignore` (`dist/`, `node_modules/`, `package-lock.json`).
