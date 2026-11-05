@@ -87,7 +87,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - `POST /api/session/logout` clears the cookie (`204`).
   - `POST /api/session/revoke-all` increments the generation in `auth.json`, clears the cookie (`204`), and afterwards a cookie issued before it gets `401` (FR-111).
   - Each success response, and the `401` body, passes `assertMatchesExample` with the matching example file (T017).
-- [ ] T014 [P] Write tests in `internal/server/static_test.go`: `/` returns `index.html` with `Cache-Control: no-cache` without a session; `/assets/x.js` returns the file with `Cache-Control: public, max-age=31536000, immutable`; a missing asset is `404`. Use `fstest.MapFS`.
+- [X] T014 [P] Write tests in `internal/server/static_test.go`: `/` returns `index.html` with `Cache-Control: no-cache` without a session; `/assets/x.js` returns the file with `Cache-Control: public, max-age=31536000, immutable`; a missing asset is `404`. Use `fstest.MapFS`.
 - [ ] T015 [P] Write tests in `web/src/api/http.test.ts` for the fetch wrapper:
   - Requests use `credentials: "same-origin"`, and send `Content-Type: application/json` with a JSON body for writes.
   - A `401` response throws `UnauthenticatedError`.
