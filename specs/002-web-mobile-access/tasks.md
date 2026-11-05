@@ -113,7 +113,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 - [X] T021 [P] Create `internal/checkrun/checkrun.go` by moving `loadHoldings`, `readHoldingsCache`, `saveHoldingsCache`, `systemIDsOf`, `holdingKey` and the per-library loop out of `internal/cli/check.go` (T009). `Deps` holds the Calil client, the holiday client, `store.Cache`, and `Warn`. Change `internal/cli/check.go` to call `checkrun.Run`; the existing CLI tests must still pass unchanged.
 - [X] T022 [P] Implement `internal/auth/session.go` (T010): `SessionGeneration`, `Session`, `Issue`, `Verify`. Compare signatures with `hmac.Equal`. Use only the standard library.
 - [X] T023 [P] Implement `internal/auth/oidc.go` (T011): `Config{ClientID, ClientSecret, PublicOrigin, OwnerEmail, TokenURL, AuthURL, HTTP}`, `LoginURL`, `Exchange`, `ReturnPath`, and `NewState()` (32 bytes from `crypto/rand`, base64url). Decode the ID token payload without signature verification, because it comes directly from the token endpoint over TLS (OpenID Connect Core 1.0 §3.1.3.7; research W2). Use only the standard library.
-- [ ] T024 Implement `internal/server/server.go` (T012–T014):
+- [X] T024 Implement `internal/server/server.go` (T012–T014):
   - `Config` (data dir, cache dir, static `fs.FS`, auth config, session key, Calil app key, `Now func() time.Time`, `HTTP *http.Client`, log `io.Writer`) and `New(Config) http.Handler`.
   - Routing with `http.ServeMux` method patterns (Go 1.22+). Order: security headers → request log → for `/api/`: session check (before routing, so unknown paths also get `401`) → `Origin` check for writes → handler.
   - A `sync.Mutex` that serializes every read-modify-write of `data.json` (research W3): each write handler loads the latest data, applies one change, and saves, all under the lock.
