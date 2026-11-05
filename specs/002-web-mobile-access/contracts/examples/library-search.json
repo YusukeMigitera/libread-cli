@@ -1,0 +1,16 @@
+{
+  "libraries": [
+    {
+      "id": "Tokyo_Setagaya:中央図書館",
+      "name": "世田谷区立中央図書館",
+      "pref": "東京都",
+      "city": "世田谷区",
+      "address": "東京都世田谷区弦巻3-16-8",
+      "registered": false
+    }
+  ],
+  "credit": {
+    "label": "図書館情報: カーリル",
+    "url": "https://calil.jp/"
+  }
+}

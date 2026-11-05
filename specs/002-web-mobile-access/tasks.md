@@ -101,7 +101,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - With a session, the bottom tabs 今日・本・図書館 switch the hash between `#/`, `#/books` and `#/libraries`.
   - When any later API call throws `UnauthenticatedError`, the login screen is shown.
 
-- [ ] T017 [P] Create the shared contract examples in `specs/002-web-mobile-access/contracts/examples/` (contracts/http-api.md「共通」, Constitution 原則 III): `session.json`, `check.json` (the example in contracts/http-api.md), `check-setup-libraries.json`, `check-setup-books.json`, `books.json`, `book-search.json`, `libraries.json`, `library-search.json`, `import.json`, `error-unauthenticated.json`.
+- [X] T017 [P] Create the shared contract examples in `specs/002-web-mobile-access/contracts/examples/` (contracts/http-api.md「共通」, Constitution 原則 III): `session.json`, `check.json` (the example in contracts/http-api.md), `check-setup-libraries.json`, `check-setup-books.json`, `books.json`, `book-search.json`, `libraries.json`, `library-search.json`, `import.json`, `error-unauthenticated.json`.
   - Add a Go helper `assertMatchesExample(t, name, body)` in `internal/server/contract_test.go` that checks the response has exactly the same set of keys at every level as the example file (values may differ).
   - Add a web helper `web/src/test/examples.ts` that loads the same files with `import ... from "../../../specs/002-web-mobile-access/contracts/examples/<name>.json"`.
 
