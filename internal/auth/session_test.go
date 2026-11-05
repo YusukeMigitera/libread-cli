@@ -50,7 +50,7 @@ func TestIssueFormatAndExpiry(t *testing.T) {
 	if !s.IssuedAt.Equal(issuedAt) || !s.ExpiresAt.Equal(issuedAt.Add(30*24*time.Hour)) || s.Generation != mustGen(t, 2) {
 		t.Errorf("session = %+v", s)
 	}
-	payloadB64, sigB64, ok := strings.Cut(value, ".")
+	payloadB64, _, ok := strings.Cut(value, ".")
 	if !ok {
 		t.Fatalf("value %q に . がない", value)
 	}
@@ -64,7 +64,6 @@ func TestIssueFormatAndExpiry(t *testing.T) {
 	if want := sign(testKey, payload); value != want {
 		t.Errorf("署名が HMAC-SHA256(key, JSON) でない\n got %s\nwant %s", value, want)
 	}
-	_ = sigB64
 }
 
 func TestIssueRejectsInvalidGeneration(t *testing.T) {
