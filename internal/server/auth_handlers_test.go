@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -213,5 +215,34 @@ func TestRevokeAll(t *testing.T) {
 	// 取り消した後に発行した Cookie は使える。
 	if rec := s.do(t, http.MethodGet, "/api/session", "", withCookie(s.sessionCookie(t))); rec.Code != http.StatusOK {
 		t.Errorf("新しい世代の Cookie: status = %d, want 200", rec.Code)
+	}
+}
+
+// 保存先（auth.json）を読めないときは、本人確認の失敗ではなく保存先の失敗として扱う（contracts/http-api.md「共通」の 500）。
+func TestUnreadableAuthStateIsInternalError(t *testing.T) {
+	s := newTestServer(t, fakeGoogle(t, testOwner))
+	c := s.sessionCookie(t)
+	lc, state := login(t, s, "/books")
+	if err := os.WriteFile(filepath.Join(s.cfg.DataDir, "auth.json"), []byte(`{"version": 1,`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	// Cookie がなければ、保存先を読まずに一律の 401（FR-110）。
+	if rec := s.do(t, http.MethodGet, "/api/books", ""); rec.Code != http.StatusUnauthorized ||
+		strings.TrimSpace(rec.Body.String()) != unauthenticatedBody {
+		t.Errorf("Cookie なし: %d %s, want 一律の 401", rec.Code, rec.Body)
+	}
+
+	rec := s.do(t, http.MethodGet, "/api/session", "", withCookie(c))
+	if rec.Code != http.StatusInternalServerError || !strings.Contains(rec.Body.String(), `"code":"internal"`) {
+		t.Errorf("Cookie あり: %d %s, want 500 internal", rec.Code, rec.Body)
+	}
+
+	rec = s.do(t, http.MethodGet, "/auth/callback?code=abc&state="+url.QueryEscape(state), "", withCookie(lc))
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("コールバック: status = %d, Location = %q, want 500（本人以外とは扱わない）", rec.Code, rec.Header().Get("Location"))
+	}
+	if sc := cookieNamed(rec, sessionCookieName); sc != nil && sc.MaxAge >= 0 {
+		t.Errorf("libread_session が発行された: %+v", sc)
 	}
 }

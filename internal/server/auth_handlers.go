@@ -68,8 +68,8 @@ func (s *server) handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	gen, err := s.currentGeneration()
 	if err != nil {
-		s.logger.Printf("本人確認の状態を読めません: %v", err)
-		http.Redirect(w, r, deniedLocation, http.StatusFound)
+		// 保存先の失敗。本人以外とは扱わない（ログインできなかった理由をアカウントのせいにしない）。
+		http.Error(w, "保存先を読めませんでした。しばらくしてからやり直してください", http.StatusInternalServerError)
 		return
 	}
 	value, sess, err := auth.Issue(s.cfg.SessionKey, gen, s.cfg.Now())

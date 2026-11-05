@@ -102,8 +102,13 @@ func (s *server) dispatch(w http.ResponseWriter, r *http.Request) {
 // serveAPI は、URL の存在を確かめる前に本人確認を行う。確認できなければ、どの URL・メソッドでも同じ 401 を返す（FR-110）。
 // 状態を変える要求は、Origin が自分のオリジンと一致するときだけ受け付ける（research W2）。
 func (s *server) serveAPI(w http.ResponseWriter, r *http.Request) {
-	sess, ok := s.verifySession(r)
-	if !ok {
+	sess, err := s.verifySession(r)
+	if errors.Is(err, errStorage) {
+		// 保存先の失敗は本人確認の失敗とは扱わない。Cookie のない相手はここに来ない（一律の 401 のまま）。
+		writeError(w, http.StatusInternalServerError, "internal", "保存先を読めませんでした")
+		return
+	}
+	if err != nil {
 		writeError(w, http.StatusUnauthorized, "unauthenticated", "ログインしてください")
 		return
 	}
@@ -127,29 +132,41 @@ func sessionOf(r *http.Request) auth.Session {
 	return s
 }
 
-func (s *server) verifySession(r *http.Request) (auth.Session, bool) {
+// errStorage は auth.json を読めないこと（保存先の失敗）。
+var errStorage = errors.New("本人確認の状態を読めません")
+
+// errNoSession は有効なセッションがないこと（Cookie なし・無効・期限切れ・世代が古い）。理由は区別しない。
+var errNoSession = errors.New("セッションがありません")
+
+// verifySession は要求のセッション Cookie を確かめる。Cookie がなければ、保存先を読まずに errNoSession を返す。
+// Cookie があり auth.json を読めなければ errStorage を返す。
+func (s *server) verifySession(r *http.Request) (auth.Session, error) {
 	c, err := r.Cookie(sessionCookieName)
 	if err != nil {
-		return auth.Session{}, false
+		return auth.Session{}, errNoSession
 	}
 	gen, err := s.currentGeneration()
 	if err != nil {
-		s.logger.Printf("本人確認の状態を読めません: %v", err)
-		return auth.Session{}, false
+		return auth.Session{}, err
 	}
 	sess, err := auth.Verify(s.cfg.SessionKey, c.Value, gen, s.cfg.Now())
 	if err != nil {
-		return auth.Session{}, false
+		return auth.Session{}, errNoSession
 	}
-	return sess, true
+	return sess, nil
 }
 
+// currentGeneration は auth.json の世代番号。読めなければ errStorage を返し、理由をログに書く。
 func (s *server) currentGeneration() (auth.SessionGeneration, error) {
 	st, err := store.LoadAuthState(s.cfg.DataDir)
-	if err != nil {
-		return 0, err
+	if err == nil {
+		var gen auth.SessionGeneration
+		if gen, err = auth.NewSessionGeneration(st.Generation); err == nil {
+			return gen, nil
+		}
 	}
-	return auth.NewSessionGeneration(st.Generation)
+	s.logger.Printf("%v: %v", errStorage, err)
+	return 0, errStorage
 }
 
 func isWrite(method string) bool {
