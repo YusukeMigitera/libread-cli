@@ -11,7 +11,7 @@ import libraries from "../../../specs/002-web-mobile-access/contracts/examples/l
 import librarySearch from "../../../specs/002-web-mobile-access/contracts/examples/library-search.json";
 import session from "../../../specs/002-web-mobile-access/contracts/examples/session.json";
 
-export const examples: Readonly<Record<string, unknown>> = {
+const examples = {
   session,
   check,
   "check-setup-libraries": checkSetupLibraries,
@@ -22,13 +22,13 @@ export const examples: Readonly<Record<string, unknown>> = {
   "library-search": librarySearch,
   import: importResult,
   "error-unauthenticated": errorUnauthenticated,
-};
+} satisfies Record<string, unknown>;
+
+/** 例の名前（contracts/examples/<名前>.json）。打ち間違いは型チェックで分かる。 */
+export type ExampleName = keyof typeof examples;
 
 // example は name の例を返す。テストで JSON の応答として使うので、毎回複製する。
-export function example(name: keyof typeof examples): unknown {
-  const value = examples[name];
-  if (value === undefined) {
-    throw new Error(`example ${name} がありません`);
-  }
-  return structuredClone(value);
+// 値は unknown として返し、検証関数のテストに渡す。
+export function example(name: ExampleName): unknown {
+  return structuredClone(examples[name]);
 }
