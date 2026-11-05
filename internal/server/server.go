@@ -61,6 +61,12 @@ type server struct {
 
 // New は設定に従って HTTP ハンドラーを作る。
 func New(cfg Config) http.Handler {
+	s := newServer(cfg)
+	return s.withSecurityHeaders(s.withRequestLog(http.HandlerFunc(s.dispatch)))
+}
+
+// newServer は設定の既定値を補い、URL を登録したサーバーを作る。
+func newServer(cfg Config) *server {
 	if cfg.Now == nil {
 		cfg.Now = time.Now
 	}
@@ -77,7 +83,7 @@ func New(cfg Config) http.Handler {
 		logger: log.New(cfg.Log, "", 0),
 	}
 	s.routes()
-	return s.withSecurityHeaders(s.withRequestLog(http.HandlerFunc(s.dispatch)))
+	return s
 }
 
 // routes は API と本人確認の URL を登録する。

@@ -3,7 +3,8 @@ package server
 import (
 	"errors"
 	"fmt"
-	"net/http"
+	"os"
+	"path/filepath"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -18,8 +19,18 @@ import (
 
 func newBareServer(t *testing.T, mutate ...func(*Config)) *server {
 	t.Helper()
-	ts := newTestServer(t, mutate...)
-	return &server{cfg: ts.cfg, api: http.NewServeMux(), auth: http.NewServeMux()}
+	return newServer(newTestServer(t, mutate...).cfg)
+}
+
+// newBareServer も New と同じ組み立てを使うので、ログを書く処理を通っても落ちない。
+func TestBareServerCanLog(t *testing.T) {
+	s := newBareServer(t)
+	if err := os.WriteFile(filepath.Join(s.cfg.DataDir, "auth.json"), []byte("壊れた内容"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.currentGeneration(); !errors.Is(err, errStorage) {
+		t.Errorf("err = %v, want errStorage", err)
+	}
 }
 
 // research W3: 2つの端末からほぼ同時に保存しても、ほかの変更は失われない。
@@ -116,11 +127,12 @@ func TestExternalServicesAreSerializedPerService(t *testing.T) {
 	}
 
 	// カーリルを使っているあいだも NDL サーチは使える。
+	locked := make(chan struct{})
 	done := make(chan struct{})
 	go func() {
-		s.withCalil(func(*calil.Client) error { <-done; return nil })
+		s.withCalil(func(*calil.Client) error { close(locked); <-done; return nil })
 	}()
-	time.Sleep(5 * time.Millisecond)
+	<-locked // カーリルのロックを確かに持っている
 	ok := make(chan struct{})
 	go func() {
 		s.withNDL(func(*ndl.Client) error { return nil })
