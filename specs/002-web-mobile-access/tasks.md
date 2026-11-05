@@ -107,7 +107,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Implementation
 
-- [ ] T018 Implement `ParseData` in `internal/store/data.go` by extracting the parsing part of `Load`; make `Load` call it (T006).
+- [X] T018 Implement `ParseData` in `internal/store/data.go` by extracting the parsing part of `Load`; make `Load` call it (T006).
 - [ ] T019 [P] Implement `AuthState`, `LoadAuthState` and `SaveAuthState` in `internal/store/auth.go` using `writeFileAtomic` (T007). `SessionGeneration` lives in `internal/auth`; store keeps a plain validated `int` field to avoid an import cycle, and `internal/auth` converts it.
 - [ ] T020 [P] Create `internal/present/present.go` by moving the label-building code out of `internal/cli/format.go` (T008), and change `internal/cli/format.go` to call it. The existing CLI golden tests in `internal/cli` must still pass unchanged.
 - [ ] T021 [P] Create `internal/checkrun/checkrun.go` by moving `loadHoldings`, `readHoldingsCache`, `saveHoldingsCache`, `systemIDsOf`, `holdingKey` and the per-library loop out of `internal/cli/check.go` (T009). `Deps` holds the Calil client, the holiday client, `store.Cache`, and `Warn`. Change `internal/cli/check.go` to call `checkrun.Run`; the existing CLI tests must still pass unchanged.
