@@ -95,7 +95,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - A network failure throws `ApiError` with 「通信に失敗しました」.
   - `decodeSession(u: unknown)` accepts `{"expiresAt": "<RFC 3339>"}` and throws on anything else.
   - `decodeSession` accepts the `session.json` example from `web/src/test/examples.ts` (T017).
-- [ ] T016 [P] Write tests in `web/src/App.test.tsx` (contracts/screens.md「共通」「ログイン画面」):
+- [X] T016 [P] Write tests in `web/src/App.test.tsx` (contracts/screens.md「共通」「ログイン画面」):
   - When `GET /api/session` returns `401`, the login screen is shown with a 「Google でログイン」 link to `/auth/login?return=/` and no user data.
   - `#/login?error=denied` shows 「ログインできませんでした。libread に登録した Google アカウントでログインしてください」.
   - With a session, the bottom tabs 今日・本・図書館 switch the hash between `#/`, `#/books` and `#/libraries`.
