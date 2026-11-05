@@ -42,7 +42,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - `web/vite.config.ts`: React plugin; `server.proxy` sends `/api` and `/auth` to `http://localhost:8080`; `test: { environment: "jsdom", globals: true, setupFiles: ["src/test/setup.ts"] }`.
   - `web/src/test/setup.ts`: import `@testing-library/jest-dom/vitest`; after each test, restore `fetch`, clear `sessionStorage`, and call `vi.useRealTimers()`.
 - [X] T003 [P] Create `web/index.html` (lang `ja`, `<meta name="viewport" content="width=device-width, initial-scale=1">`, title `libread`) and `web/src/main.tsx` that renders a placeholder `<App />` from `web/src/App.tsx` into `#root`. Confirm `npm run build`, `npm run typecheck`, `npm run lint`, `npm run format:check` and `npm test` (with one trivial passing test in `web/src/App.test.tsx`) all succeed.
-- [ ] T004 [P] Add `web/node_modules/` and `web/dist/` to `.gitignore`.
+- [X] T004 [P] Add `web/node_modules/` and `web/dist/` to `.gitignore`.
 - [ ] T005 Extend the `check` target in `Makefile` (quickstart.md step 1): keep the existing Go gates (`gofmt -l .` must be empty, `go vet ./...`, `go tool staticcheck ./...`, `go test ./...`), then run `cd web && npm ci && npm run format:check && npm run typecheck && npm run lint && npm test`. Make `gofmt` ignore `web/node_modules` (use `gofmt -l $$(git ls-files '*.go')`). After the web gates, run `cd web && npm run build` and fail if `web/dist` contains any of the strings `LIBREAD_`, `client_secret`, `appkey` (`! grep -rE 'LIBREAD_|client_secret|appkey' web/dist`) (Constitution 技術的制約「秘密情報」, FR-113). This checks names only; secret values exist only in the local environment and are intentionally not matched.
 
 ---
