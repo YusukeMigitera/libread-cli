@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getJSON } from "./api/http";
 import { App, useApiErrorHandler } from "./App";
 import { example } from "./test/examples";
@@ -131,4 +131,35 @@ test("あとの API が 401 を返したらログイン画面に切り替える"
     await screen.findByRole("link", { name: "Google でログイン" }),
   ).toHaveAttribute("href", "/auth/login?return=/books");
   expect(screen.queryByText("本の画面")).not.toBeInTheDocument();
+});
+
+test("401 以外の失敗は共通の処理から投げ直され、画面が表示できる", async () => {
+  stubApi({
+    ...loggedIn,
+    "/api/books": () =>
+      jsonResponse(502, {
+        error: {
+          code: "upstream",
+          message: "NDL サーチに接続できませんでした",
+        },
+      }),
+  });
+  function BooksThatFail() {
+    const handleError = useApiErrorHandler();
+    const [message, setMessage] = useState("");
+    useEffect(() => {
+      getJSON("/api/books", (u) => u)
+        .catch(handleError)
+        .catch((e: unknown) => {
+          setMessage(e instanceof Error ? e.message : "?");
+        });
+    }, [handleError]);
+    return <p>{message}</p>;
+  }
+  window.location.hash = "#/books";
+  render(<App screens={{ books: BooksThatFail }} />);
+  expect(
+    await screen.findByText("NDL サーチに接続できませんでした"),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("navigation")).toBeInTheDocument();
 });

@@ -30,11 +30,15 @@ type AuthState =
 
 type ApiErrorHandler = (e: unknown) => void;
 
-const ApiErrorContext = createContext<ApiErrorHandler>(() => undefined);
+const ApiErrorContext = createContext<ApiErrorHandler>((e) => {
+  throw e;
+});
 
 /**
  * useApiErrorHandler は、API の失敗を受け取る共通の処理を返す。
- * UnauthenticatedError（401）ならログイン画面に切り替える。それ以外の失敗は各画面が表示する。
+ * UnauthenticatedError（401）ならログイン画面に切り替えて、そのまま戻る。
+ * それ以外の失敗はそのまま投げ直すので、各画面は続けて catch し、message と「再試行」を表示する（FR-116）。
+ * 例: getJSON(...).catch(handleError).catch((e) => { setError(e) })
  */
 export function useApiErrorHandler(): ApiErrorHandler {
   return useContext(ApiErrorContext);
@@ -116,7 +120,9 @@ export function App({ screens = {} }: Props) {
   const handleApiError = useCallback<ApiErrorHandler>((e) => {
     if (e instanceof UnauthenticatedError) {
       setAuth({ kind: "loggedOut" });
+      return;
     }
+    throw e;
   }, []);
 
   if (route.kind === "login" || auth.kind === "loggedOut") {
