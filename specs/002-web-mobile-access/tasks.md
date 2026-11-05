@@ -55,7 +55,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Tests (write first, confirm they fail)
 
-- [ ] T006 [P] Write tests in `internal/store/data_test.go` for a new `ParseData(raw []byte) (Data, error)` (research W8):
+- [X] T006 [P] Write tests in `internal/store/data_test.go` for a new `ParseData(raw []byte) (Data, error)` (research W8):
   - It accepts the same content `Load` accepts (reuse the existing fixtures, e.g. `internal/cli/testdata/check_scenario1.json`) and returns the same `Data`.
   - Invalid JSON, `version` other than 1, and any invalid field (bad ISBN, `open` ≥ `close`, closure `start` > `end`) are errors.
   - `Load` keeps its current behaviour (missing file → empty `Data`).
