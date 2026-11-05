@@ -106,6 +106,7 @@ gcloud run deploy libread --source . --region asia-northeast1 \
 
 - `--allow-unauthenticated` は、Cloud Run の前段の認証を使わないという意味。本人確認はアプリが行う（research W2）。
 - `Dockerfile` は、Node で `web/` をビルドし、Go でサーバーをビルドして、両方を1つのイメージに入れる。
+- デプロイの最中は、画面から保存しない。新旧のリビジョンが短い時間同時に動き、変更が失われることがある（research W3「デプロイ中の例外」）。
 
 ## 5. スマートフォンでの確認
 

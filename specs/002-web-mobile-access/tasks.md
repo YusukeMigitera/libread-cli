@@ -273,6 +273,11 @@ description: "Task list for スマートフォンのブラウザから使える 
 - [ ] T059 Remove the 001 CLI (FR-117, quickstart.md step 6): delete `cmd/libread/` and `internal/cli/` (`internal/server/testdata/` keeps the six data/golden pairs listed in T031). Move any helper still used only by the server out of `internal/cli` first. `make check` must pass afterwards.
 - [ ] T060 Rewrite `README.md` for the Web version: what it is, how to deploy (link to quickstart.md step 4), how to use it on the phone, where data lives (Cloud Storage bucket), the environment variables, development (`make check`, `npm run dev`), and the external-service credits (keep the 001 credits section). Link to `specs/002-web-mobile-access/`.
 - [ ] T061 Change **Status** in `specs/002-web-mobile-access/spec.md` from `Draft` to `Implemented` with the completion date, and note in `specs/001-readable-libraries-today/spec.md` that FR-015（ターミナルからの操作）was superseded by spec 002 FR-117.
+- [ ] T062 Add automatic deployment (research W13) after the manual deployment in T057 has worked:
+  - Set up Workload Identity Federation for this GitHub repository and a deploy service account with only the roles needed for `gcloud run deploy --source` (Cloud Run admin on the service, Cloud Build, Artifact Registry writer, and `iam.serviceAccountUser` on the runtime service account). Do not create a service account key. Record the `gcloud` commands in `specs/002-web-mobile-access/quickstart.md` step 4.
+  - Create `.github/workflows/deploy.yml`: on push to `main`, set up Go 1.25 and Node 22, run `make check`, authenticate with `google-github-actions/auth` (Workload Identity), and run the same `gcloud run deploy` command as quickstart.md step 4. Keep non-secret values (project, region, bucket, owner email, client ID, public origin) in GitHub repository variables, never in the workflow file.
+  - Revisit research W3「デプロイ中の例外」: deployments now run without the user noticing. Either keep the decision and say why in research.md, or add a task for generation-checked writes.
+  - Mention the automatic deployment in `README.md`.
 
 ---
 
@@ -285,7 +290,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 - **US1 (Phase 3)**: Depends on Foundational.
 - **US2 (Phase 4)**: Depends on Foundational. T046 extends `web/src/screens/Books.tsx` created in T040; if US2 is built before US1, create that file in T046 and add the import section later in T040.
 - **US3 (Phase 5)**: Depends on Foundational. The last case in T047 uses `GET /api/check` (T036); if US3 is built before US1, skip that case until T036 is done.
-- **Polish (Phase 6)**: Depends on US1–US3. T057 → T058 → T059 in this order (the CLI is removed only after the production import).
+- **Polish (Phase 6)**: Depends on US1–US3. T057 → T058 → T059 in this order (the CLI is removed only after the production import). T062 needs T057 (a working manual deployment).
 
 ### Within Each Phase
 
