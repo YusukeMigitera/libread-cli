@@ -89,7 +89,9 @@ async function readBody(res: Response): Promise<unknown> {
 function errorFromBody(status: number, body: unknown): ApiError {
   try {
     const error = asObject(asObject(body).error);
-    return new ApiError(asString(error.message), status, asString(error.code));
+    // message があれば code がなくても使う（画面にそのまま出せる文言なので）。
+    const code = typeof error.code === "string" ? error.code : undefined;
+    return new ApiError(asString(error.message), status, code);
   } catch {
     return new ApiError(networkErrorMessage, status);
   }

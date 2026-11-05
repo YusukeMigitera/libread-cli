@@ -105,6 +105,20 @@ describe("エラー", () => {
     expect((err as ApiError).code).toBe("conflict");
   });
 
+  test("error.code がなくても error.message は使う", async () => {
+    stubFetch(() =>
+      Promise.resolve(
+        jsonResponse(409, { error: { message: "すでに登録済みです" } }),
+      ),
+    );
+    const err = await sendJSON("POST", "/api/books", {}, identity).catch(
+      (e: unknown) => e,
+    );
+    expect(err).toBeInstanceOf(ApiError);
+    expect((err as ApiError).message).toBe("すでに登録済みです");
+    expect((err as ApiError).code).toBeUndefined();
+  });
+
   test("本文が契約の形でなければ「通信に失敗しました」", async () => {
     for (const body of [
       "<html>502</html>",
