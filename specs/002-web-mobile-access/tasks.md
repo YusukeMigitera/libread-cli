@@ -74,7 +74,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - `Exchange(ctx, code)` POSTs `code`, `client_id`, `client_secret`, `redirect_uri`, `grant_type=authorization_code` and returns the owner check result.
   - Accepted only when `iss` is `https://accounts.google.com` or `accounts.google.com`, `aud` equals the client ID, `exp` is in the future, `email_verified` is `true`, and `email` equals `LIBREAD_OWNER_EMAIL` ignoring case. Each violation is rejected. A token-endpoint error status is rejected.
   - `ReturnPath` accepts only `/`, `/books`, `/libraries`; anything else becomes `/`.
-- [ ] T012 [P] Write tests in `internal/server/middleware_test.go` (contracts/http-api.md「共通」):
+- [X] T012 [P] Write tests in `internal/server/middleware_test.go` (contracts/http-api.md「共通」):
   - Without a valid `libread_session`, every `/api/...` path and method (including unknown paths such as `/api/nonexistent` and `/api/books/9784003101018`) returns exactly the same `401` status and body `{"error":{"code":"unauthenticated","message":"ログインしてください"}}`, whether or not user data exists (FR-110, SC-104).
   - With a valid session, `POST`/`PUT`/`PATCH`/`DELETE` whose `Origin` differs from `LIBREAD_PUBLIC_ORIGIN` (or is missing) returns `403` `forbidden`; `GET` does not need `Origin`.
   - Every response has `Strict-Transport-Security: max-age=31536000`; `/api/` and `/auth/` responses have `Cache-Control: no-store`.
