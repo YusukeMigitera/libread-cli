@@ -31,7 +31,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 **Purpose**: 画面のプロジェクトと、サーバー・画面をまとめた品質ゲートの準備
 
-- [ ] T001 Create the frontend project in `web/` (research W6):
+- [X] T001 Create the frontend project in `web/` (research W6):
   - `web/package.json` with `"private": true`, `"type": "module"` and scripts `dev` (`vite`), `build` (`tsc --noEmit && vite build`), `typecheck` (`tsc --noEmit`), `lint` (`eslint .`), `format:check` (`prettier --check .`), `format` (`prettier --write .`), `test` (`vitest run`).
   - Runtime dependencies are only `react` and `react-dom` (19). Dev dependencies are only `vite`, `@vitejs/plugin-react`, `typescript`, `@types/react`, `@types/react-dom`, `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `prettier`, `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`. Pin exact versions (no `^`) and commit `web/package-lock.json`.
   - Add `"engines": {"node": ">=22"}`.
