@@ -81,7 +81,9 @@ func New(cfg Config) http.Handler {
 }
 
 // routes は API と本人確認の URL を登録する。
-func (s *server) routes() {}
+func (s *server) routes() {
+	s.authRoutes()
+}
 
 // dispatch は URL の先頭で、API・本人確認・画面に振り分ける。
 func (s *server) dispatch(w http.ResponseWriter, r *http.Request) {
