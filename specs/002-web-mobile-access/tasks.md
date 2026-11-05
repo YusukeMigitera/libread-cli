@@ -31,19 +31,19 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 **Purpose**: 画面のプロジェクトと、サーバー・画面をまとめた品質ゲートの準備
 
-- [ ] T001 Create the frontend project in `web/` (research W6):
+- [X] T001 Create the frontend project in `web/` (research W6):
   - `web/package.json` with `"private": true`, `"type": "module"` and scripts `dev` (`vite`), `build` (`tsc --noEmit && vite build`), `typecheck` (`tsc --noEmit`), `lint` (`eslint .`), `format:check` (`prettier --check .`), `format` (`prettier --write .`), `test` (`vitest run`).
   - Runtime dependencies are only `react` and `react-dom` (19). Dev dependencies are only `vite`, `@vitejs/plugin-react`, `typescript`, `@types/react`, `@types/react-dom`, `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `prettier`, `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`. Pin exact versions (no `^`) and commit `web/package-lock.json`.
   - Add `"engines": {"node": ">=22"}`.
-- [ ] T002 [P] Create the TypeScript and tool configs in `web/`:
+- [X] T002 [P] Create the TypeScript and tool configs in `web/`:
   - `web/tsconfig.json`: `"strict": true`, `"noUncheckedIndexedAccess": true`, `"noImplicitOverride": true`, `"jsx": "react-jsx"`, `"moduleResolution": "bundler"`, `"resolveJsonModule": true` (for the shared contract examples in T017), `"types": ["vitest/globals", "@testing-library/jest-dom"]`.
   - `web/eslint.config.js`: `@eslint/js` recommended + `typescript-eslint` `strictTypeChecked` + `eslint-plugin-react-hooks`; `@typescript-eslint/no-explicit-any: "error"` (Constitution 原則 III). Ignore `dist/`.
   - `web/.prettierrc.json` (`{}` is fine) and `web/.prettierignore` (`dist/`, `node_modules/`, `package-lock.json`).
   - `web/vite.config.ts`: React plugin; `server.proxy` sends `/api` and `/auth` to `http://localhost:8080`; `test: { environment: "jsdom", globals: true, setupFiles: ["src/test/setup.ts"] }`.
   - `web/src/test/setup.ts`: import `@testing-library/jest-dom/vitest`; after each test, restore `fetch`, clear `sessionStorage`, and call `vi.useRealTimers()`.
-- [ ] T003 [P] Create `web/index.html` (lang `ja`, `<meta name="viewport" content="width=device-width, initial-scale=1">`, title `libread`) and `web/src/main.tsx` that renders a placeholder `<App />` from `web/src/App.tsx` into `#root`. Confirm `npm run build`, `npm run typecheck`, `npm run lint`, `npm run format:check` and `npm test` (with one trivial passing test in `web/src/App.test.tsx`) all succeed.
-- [ ] T004 [P] Add `web/node_modules/` and `web/dist/` to `.gitignore`.
-- [ ] T005 Extend the `check` target in `Makefile` (quickstart.md step 1): keep the existing Go gates (`gofmt -l .` must be empty, `go vet ./...`, `go tool staticcheck ./...`, `go test ./...`), then run `cd web && npm ci && npm run format:check && npm run typecheck && npm run lint && npm test`. Make `gofmt` ignore `web/node_modules` (use `gofmt -l $$(git ls-files '*.go')`). After the web gates, run `cd web && npm run build` and fail if `web/dist` contains any of the strings `LIBREAD_`, `client_secret`, `appkey` (`! grep -rE 'LIBREAD_|client_secret|appkey' web/dist`) (Constitution 技術的制約「秘密情報」, FR-113). This checks names only; secret values exist only in the local environment and are intentionally not matched.
+- [X] T003 [P] Create `web/index.html` (lang `ja`, `<meta name="viewport" content="width=device-width, initial-scale=1">`, title `libread`) and `web/src/main.tsx` that renders a placeholder `<App />` from `web/src/App.tsx` into `#root`. Confirm `npm run build`, `npm run typecheck`, `npm run lint`, `npm run format:check` and `npm test` (with one trivial passing test in `web/src/App.test.tsx`) all succeed.
+- [X] T004 [P] Add `web/node_modules/` and `web/dist/` to `.gitignore`.
+- [X] T005 Extend the `check` target in `Makefile` (quickstart.md step 1): keep the existing Go gates (`gofmt -l .` must be empty, `go vet ./...`, `go tool staticcheck ./...`, `go test ./...`), then run `cd web && npm ci && npm run format:check && npm run typecheck && npm run lint && npm test`. Make `gofmt` ignore `web/node_modules` (use `gofmt -l $$(git ls-files '*.go')`). After the web gates, run `cd web && npm run build` and fail if `web/dist` contains any of the strings `LIBREAD_`, `client_secret`, `appkey` (`! grep -rE 'LIBREAD_|client_secret|appkey' web/dist`) (Constitution 技術的制約「秘密情報」, FR-113). This checks names only; secret values exist only in the local environment and are intentionally not matched.
 
 ---
 
