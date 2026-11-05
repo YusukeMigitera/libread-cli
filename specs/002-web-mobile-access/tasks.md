@@ -55,31 +55,31 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Tests (write first, confirm they fail)
 
-- [ ] T006 [P] Write tests in `internal/store/data_test.go` for a new `ParseData(raw []byte) (Data, error)` (research W8):
+- [X] T006 [P] Write tests in `internal/store/data_test.go` for a new `ParseData(raw []byte) (Data, error)` (research W8):
   - It accepts the same content `Load` accepts (reuse the existing fixtures, e.g. `internal/cli/testdata/check_scenario1.json`) and returns the same `Data`.
   - Invalid JSON, `version` other than 1, and any invalid field (bad ISBN, `open` ≥ `close`, closure `start` > `end`) are errors.
   - `Load` keeps its current behaviour (missing file → empty `Data`).
-- [ ] T007 [P] Write tests in `internal/store/auth_test.go` for `LoadAuthState(dir) (AuthState, error)` and `SaveAuthState(dir, AuthState) error` on `dir/auth.json` (data-model.md AuthState):
+- [X] T007 [P] Write tests in `internal/store/auth_test.go` for `LoadAuthState(dir) (AuthState, error)` and `SaveAuthState(dir, AuthState) error` on `dir/auth.json` (data-model.md AuthState):
   - Missing file → `Generation` 1.
   - Round trip of `{"version": 1, "generation": N}`.
   - `generation` < 1 or unknown `version` is an error.
-- [ ] T008 [P] Write tests in `internal/present/present_test.go` for the label functions moved from `internal/cli/format.go` (research W5): `OpeningLabel(domain.Opening) string`, `AvailabilityLabel(domain.BookHolding) string`, `HoldingsSourceLabel(domain.Result) string`, `OpeningInfoSourceLabel([]domain.RegisteredLibrary) string`, and the constants for the closure note (`※ 臨時休館は入力済みの情報のみ反映しています`), the NDL credit and the Calil credit. Expected strings are exactly those in `internal/cli/testdata/check_*.golden` and specs/001-readable-libraries-today/contracts/cli.md (e.g. `開館中 〜19:00`, `開館前 15:00〜20:00`, `開館中 〜14:30（閉館まで30分未満）`, `在架（貸出可）`, `不明（古い情報: HH:MM 取得）`).
-- [ ] T009 [P] Write tests in `internal/checkrun/checkrun_test.go` for `Run(ctx, Deps, data store.Data, books []domain.ReadingBook, now time.Time) (domain.Result, error)` moved from `internal/cli/check.go` (`loadHoldings`, the holdings cache, the holiday lookup and the per-library loop). Port the holdings-cache cases from `internal/cli/check_test.go`: all fresh → no Calil request; stale or missing → one Calil session and the cache is saved; Calil failure with an old cache → old snapshots are used and marked stale; Calil failure with no cache → error. Warnings go to a `Deps.Warn func(string)` instead of stderr.
-- [ ] T010 [P] Write tests in `internal/auth/session_test.go` for the session cookie (data-model.md Session, research W2):
+- [X] T008 [P] Write tests in `internal/present/present_test.go` for the label functions moved from `internal/cli/format.go` (research W5): `OpeningLabel(domain.Opening) string`, `AvailabilityLabel(domain.BookHolding) string`, `HoldingsSourceLabel(domain.Result) string`, `OpeningInfoSourceLabel([]domain.RegisteredLibrary) string`, and the constants for the closure note (`※ 臨時休館は入力済みの情報のみ反映しています`), the NDL credit and the Calil credit. Expected strings are exactly those in `internal/cli/testdata/check_*.golden` and specs/001-readable-libraries-today/contracts/cli.md (e.g. `開館中 〜19:00`, `開館前 15:00〜20:00`, `開館中 〜14:30（閉館まで30分未満）`, `在架（貸出可）`, `不明（古い情報: HH:MM 取得）`).
+- [X] T009 [P] Write tests in `internal/checkrun/checkrun_test.go` for `Run(ctx, Deps, data store.Data, books []domain.ReadingBook, now time.Time) (domain.Result, error)` moved from `internal/cli/check.go` (`loadHoldings`, the holdings cache, the holiday lookup and the per-library loop). Port the holdings-cache cases from `internal/cli/check_test.go`: all fresh → no Calil request; stale or missing → one Calil session and the cache is saved; Calil failure with an old cache → old snapshots are used and marked stale; Calil failure with no cache → error. Warnings go to a `Deps.Warn func(string)` instead of stderr.
+- [X] T010 [P] Write tests in `internal/auth/session_test.go` for the session cookie (data-model.md Session, research W2):
   - `Issue(key, generation, now)` → value `base64url(JSON) + "." + base64url(HMAC-SHA256(key, JSON))`; `ExpiresAt` = `IssuedAt` + 30日.
   - `Verify(key, value, currentGeneration, now)` accepts a fresh cookie and rejects: a changed payload, a changed signature, a different key, `now` ≥ `ExpiresAt`, `Generation` ≠ current generation, malformed values (no `.`, bad base64, bad JSON).
   - `SessionGeneration` is a named type; values < 1 are rejected.
-- [ ] T011 [P] Write tests in `internal/auth/oidc_test.go` for the Google login with a fake token endpoint (`httptest.Server`) (research W2):
+- [X] T011 [P] Write tests in `internal/auth/oidc_test.go` for the Google login with a fake token endpoint (`httptest.Server`) (research W2):
   - `LoginURL(state)` contains `response_type=code`, `client_id`, `redirect_uri=<origin>/auth/callback`, `scope=openid email`, `state`, `prompt=select_account`.
   - `Exchange(ctx, code)` POSTs `code`, `client_id`, `client_secret`, `redirect_uri`, `grant_type=authorization_code` and returns the owner check result.
   - Accepted only when `iss` is `https://accounts.google.com` or `accounts.google.com`, `aud` equals the client ID, `exp` is in the future, `email_verified` is `true`, and `email` equals `LIBREAD_OWNER_EMAIL` ignoring case. Each violation is rejected. A token-endpoint error status is rejected.
   - `ReturnPath` accepts only `/`, `/books`, `/libraries`; anything else becomes `/`.
-- [ ] T012 [P] Write tests in `internal/server/middleware_test.go` (contracts/http-api.md「共通」):
+- [X] T012 [P] Write tests in `internal/server/middleware_test.go` (contracts/http-api.md「共通」):
   - Without a valid `libread_session`, every `/api/...` path and method (including unknown paths such as `/api/nonexistent` and `/api/books/9784003101018`) returns exactly the same `401` status and body `{"error":{"code":"unauthenticated","message":"ログインしてください"}}`, whether or not user data exists (FR-110, SC-104).
   - With a valid session, `POST`/`PUT`/`PATCH`/`DELETE` whose `Origin` differs from `LIBREAD_PUBLIC_ORIGIN` (or is missing) returns `403` `forbidden`; `GET` does not need `Origin`.
   - Every response has `Strict-Transport-Security: max-age=31536000`; `/api/` and `/auth/` responses have `Cache-Control: no-store`.
   - The request log line contains time, method, path (without the query string), status and duration, and never contains the query string, cookies, notes or the owner email (research W11).
-- [ ] T013 [P] Write tests in `internal/server/auth_handlers_test.go` (contracts/http-api.md「本人確認」):
+- [X] T013 [P] Write tests in `internal/server/auth_handlers_test.go` (contracts/http-api.md「本人確認」):
   - `GET /auth/login?return=/books` sets `libread_login` (`HttpOnly`, `Secure`, `SameSite=Lax`, 10分) and redirects to Google with the same `state`.
   - `GET /auth/callback` with matching `state` and an owner token sets `libread_session` (`HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, 30日), clears `libread_login`, and redirects to `/#/books`.
   - Non-owner token, `state` mismatch, missing `libread_login` and `error=` from Google all redirect to `/#/login?error=denied` without `libread_session`, and clear `libread_login`.
@@ -87,44 +87,44 @@ description: "Task list for スマートフォンのブラウザから使える 
   - `POST /api/session/logout` clears the cookie (`204`).
   - `POST /api/session/revoke-all` increments the generation in `auth.json`, clears the cookie (`204`), and afterwards a cookie issued before it gets `401` (FR-111).
   - Each success response, and the `401` body, passes `assertMatchesExample` with the matching example file (T017).
-- [ ] T014 [P] Write tests in `internal/server/static_test.go`: `/` returns `index.html` with `Cache-Control: no-cache` without a session; `/assets/x.js` returns the file with `Cache-Control: public, max-age=31536000, immutable`; a missing asset is `404`. Use `fstest.MapFS`.
-- [ ] T015 [P] Write tests in `web/src/api/http.test.ts` for the fetch wrapper:
+- [X] T014 [P] Write tests in `internal/server/static_test.go`: `/` returns `index.html` with `Cache-Control: no-cache` without a session; `/assets/x.js` returns the file with `Cache-Control: public, max-age=31536000, immutable`; a missing asset is `404`. Use `fstest.MapFS`.
+- [X] T015 [P] Write tests in `web/src/api/http.test.ts` for the fetch wrapper:
   - Requests use `credentials: "same-origin"`, and send `Content-Type: application/json` with a JSON body for writes.
   - A `401` response throws `UnauthenticatedError`.
   - Other error statuses throw `ApiError` with `error.message` from the body, or 「通信に失敗しました」 when the body is not the contract shape.
   - A network failure throws `ApiError` with 「通信に失敗しました」.
   - `decodeSession(u: unknown)` accepts `{"expiresAt": "<RFC 3339>"}` and throws on anything else.
   - `decodeSession` accepts the `session.json` example from `web/src/test/examples.ts` (T017).
-- [ ] T016 [P] Write tests in `web/src/App.test.tsx` (contracts/screens.md「共通」「ログイン画面」):
+- [X] T016 [P] Write tests in `web/src/App.test.tsx` (contracts/screens.md「共通」「ログイン画面」):
   - When `GET /api/session` returns `401`, the login screen is shown with a 「Google でログイン」 link to `/auth/login?return=/` and no user data.
   - `#/login?error=denied` shows 「ログインできませんでした。libread に登録した Google アカウントでログインしてください」.
   - With a session, the bottom tabs 今日・本・図書館 switch the hash between `#/`, `#/books` and `#/libraries`.
   - When any later API call throws `UnauthenticatedError`, the login screen is shown.
 
-- [ ] T017 [P] Create the shared contract examples in `specs/002-web-mobile-access/contracts/examples/` (contracts/http-api.md「共通」, Constitution 原則 III): `session.json`, `check.json` (the example in contracts/http-api.md), `check-setup-libraries.json`, `check-setup-books.json`, `books.json`, `book-search.json`, `libraries.json`, `library-search.json`, `import.json`, `error-unauthenticated.json`.
+- [X] T017 [P] Create the shared contract examples in `specs/002-web-mobile-access/contracts/examples/` (contracts/http-api.md「共通」, Constitution 原則 III): `session.json`, `check.json` (the example in contracts/http-api.md), `check-setup-libraries.json`, `check-setup-books.json`, `books.json`, `book-search.json`, `libraries.json`, `library-search.json`, `import.json`, `error-unauthenticated.json`.
   - Add a Go helper `assertMatchesExample(t, name, body)` in `internal/server/contract_test.go` that checks the response has exactly the same set of keys at every level as the example file (values may differ).
   - Add a web helper `web/src/test/examples.ts` that loads the same files with `import ... from "../../../specs/002-web-mobile-access/contracts/examples/<name>.json"`.
 
 ### Implementation
 
-- [ ] T018 Implement `ParseData` in `internal/store/data.go` by extracting the parsing part of `Load`; make `Load` call it (T006).
-- [ ] T019 [P] Implement `AuthState`, `LoadAuthState` and `SaveAuthState` in `internal/store/auth.go` using `writeFileAtomic` (T007). `SessionGeneration` lives in `internal/auth`; store keeps a plain validated `int` field to avoid an import cycle, and `internal/auth` converts it.
-- [ ] T020 [P] Create `internal/present/present.go` by moving the label-building code out of `internal/cli/format.go` (T008), and change `internal/cli/format.go` to call it. The existing CLI golden tests in `internal/cli` must still pass unchanged.
-- [ ] T021 [P] Create `internal/checkrun/checkrun.go` by moving `loadHoldings`, `readHoldingsCache`, `saveHoldingsCache`, `systemIDsOf`, `holdingKey` and the per-library loop out of `internal/cli/check.go` (T009). `Deps` holds the Calil client, the holiday client, `store.Cache`, and `Warn`. Change `internal/cli/check.go` to call `checkrun.Run`; the existing CLI tests must still pass unchanged.
-- [ ] T022 [P] Implement `internal/auth/session.go` (T010): `SessionGeneration`, `Session`, `Issue`, `Verify`. Compare signatures with `hmac.Equal`. Use only the standard library.
-- [ ] T023 [P] Implement `internal/auth/oidc.go` (T011): `Config{ClientID, ClientSecret, PublicOrigin, OwnerEmail, TokenURL, AuthURL, HTTP}`, `LoginURL`, `Exchange`, `ReturnPath`, and `NewState()` (32 bytes from `crypto/rand`, base64url). Decode the ID token payload without signature verification, because it comes directly from the token endpoint over TLS (OpenID Connect Core 1.0 §3.1.3.7; research W2). Use only the standard library.
-- [ ] T024 Implement `internal/server/server.go` (T012–T014):
+- [X] T018 Implement `ParseData` in `internal/store/data.go` by extracting the parsing part of `Load`; make `Load` call it (T006).
+- [X] T019 [P] Implement `AuthState`, `LoadAuthState` and `SaveAuthState` in `internal/store/auth.go` using `writeFileAtomic` (T007). `SessionGeneration` lives in `internal/auth`; store keeps a plain validated `int` field to avoid an import cycle, and `internal/auth` converts it.
+- [X] T020 [P] Create `internal/present/present.go` by moving the label-building code out of `internal/cli/format.go` (T008), and change `internal/cli/format.go` to call it. The existing CLI golden tests in `internal/cli` must still pass unchanged.
+- [X] T021 [P] Create `internal/checkrun/checkrun.go` by moving `loadHoldings`, `readHoldingsCache`, `saveHoldingsCache`, `systemIDsOf`, `holdingKey` and the per-library loop out of `internal/cli/check.go` (T009). `Deps` holds the Calil client, the holiday client, `store.Cache`, and `Warn`. Change `internal/cli/check.go` to call `checkrun.Run`; the existing CLI tests must still pass unchanged.
+- [X] T022 [P] Implement `internal/auth/session.go` (T010): `SessionGeneration`, `Session`, `Issue`, `Verify`. Compare signatures with `hmac.Equal`. Use only the standard library.
+- [X] T023 [P] Implement `internal/auth/oidc.go` (T011): `Config{ClientID, ClientSecret, PublicOrigin, OwnerEmail, TokenURL, AuthURL, HTTP}`, `LoginURL`, `Exchange`, `ReturnPath`, and `NewState()` (32 bytes from `crypto/rand`, base64url). Decode the ID token payload without signature verification, because it comes directly from the token endpoint over TLS (OpenID Connect Core 1.0 §3.1.3.7; research W2). Use only the standard library.
+- [X] T024 Implement `internal/server/server.go` (T012–T014):
   - `Config` (data dir, cache dir, static `fs.FS`, auth config, session key, Calil app key, `Now func() time.Time`, `HTTP *http.Client`, log `io.Writer`) and `New(Config) http.Handler`.
   - Routing with `http.ServeMux` method patterns (Go 1.22+). Order: security headers → request log → for `/api/`: session check (before routing, so unknown paths also get `401`) → `Origin` check for writes → handler.
   - A `sync.Mutex` that serializes every read-modify-write of `data.json` (research W3): each write handler loads the latest data, applies one change, and saves, all under the lock.
   - One `sync.Mutex` per external service (Calil, NDL, holidays-jp), held only while that service is being called (research W9). The Calil mutex is shared by `/api/check`, `/api/library-search` and `POST /api/libraries`; the NDL mutex by `/api/book-search` and `POST /api/books`.
   - JSON helpers that write the error shape in contracts/http-api.md, and never include the Calil app key in messages.
   - Static files from the `fs.FS` with the cache headers in T014.
-- [ ] T025 Implement `internal/server/auth_handlers.go`: `/auth/login`, `/auth/callback`, `GET /api/session`, `POST /api/session/logout`, `POST /api/session/revoke-all` (T013). Revoke-all runs under the same mutex as data writes.
-- [ ] T026 Implement `cmd/libread-server/main.go`: read `PORT` (default `8080`), `LIBREAD_DATA_DIR`, `LIBREAD_CACHE_DIR`, `LIBREAD_STATIC_DIR`, `LIBREAD_PUBLIC_ORIGIN`, `LIBREAD_OWNER_EMAIL`, `LIBREAD_GOOGLE_CLIENT_ID`, `LIBREAD_GOOGLE_CLIENT_SECRET`, `LIBREAD_SESSION_KEY` (base64, at least 32 bytes) and `LIBREAD_CALIL_APPKEY`. Exit with a clear message if any required value except `LIBREAD_CALIL_APPKEY` is missing (a missing Calil key gives `503 notConfigured` on the endpoints that need it). Import `time/tzdata`. Set `ReadHeaderTimeout` on the `http.Server` and shut down gracefully on SIGTERM (Cloud Run).
-- [ ] T027 [P] Implement `web/src/api/http.ts` (T015): `getJSON`, `sendJSON`, `UnauthenticatedError`, `ApiError`, `decodeSession`, and small decoding helpers (`asObject`, `asString`, `asNumber`, `asBoolean`, `asArray`, `asOptional`) that take `unknown` and throw on mismatch. No `any`.
-- [ ] T028 Implement `web/src/App.tsx`, `web/src/screens/Login.tsx`, `web/src/components/ErrorRetry.tsx` and `web/src/styles.css` (T016): session check on start, hash routing for `#/`, `#/books`, `#/libraries`, `#/login`, fixed bottom tabs, a shared handler that switches to the login screen on `UnauthenticatedError`. The three screens are placeholders for now. `styles.css` uses a single column, `max-width: 100%`, `overflow-wrap: anywhere` and no fixed widths over 360px (FR-115). The web code must not read build-time environment variables (`import.meta.env` is not used except `import.meta.env.DEV`); add an ESLint `no-restricted-syntax` rule in `web/eslint.config.js` that rejects any other `import.meta.env` member (FR-113).
-- [ ] T029 Create `Dockerfile` (quickstart.md step 4): stage 1 `node:22` runs `npm ci && npm run build` in `web/`; stage 2 `golang:1.25` builds `./cmd/libread-server` with `CGO_ENABLED=0`; final stage `gcr.io/distroless/static-debian12:nonroot` copies the binary to `/app/libread-server` and `web/dist` to `/app/static`, and sets `ENTRYPOINT`. Add `.dockerignore` (`web/node_modules`, `web/dist`, `bin/`, `.git`, `.env*`).
+- [X] T025 Implement `internal/server/auth_handlers.go`: `/auth/login`, `/auth/callback`, `GET /api/session`, `POST /api/session/logout`, `POST /api/session/revoke-all` (T013). Revoke-all runs under the same mutex as data writes.
+- [X] T026 Implement `cmd/libread-server/main.go`: read `PORT` (default `8080`), `LIBREAD_DATA_DIR`, `LIBREAD_CACHE_DIR`, `LIBREAD_STATIC_DIR`, `LIBREAD_PUBLIC_ORIGIN`, `LIBREAD_OWNER_EMAIL`, `LIBREAD_GOOGLE_CLIENT_ID`, `LIBREAD_GOOGLE_CLIENT_SECRET`, `LIBREAD_SESSION_KEY` (base64, at least 32 bytes) and `LIBREAD_CALIL_APPKEY`. Exit with a clear message if any required value except `LIBREAD_CALIL_APPKEY` is missing (a missing Calil key gives `503 notConfigured` on the endpoints that need it). Import `time/tzdata`. Set `ReadHeaderTimeout` on the `http.Server` and shut down gracefully on SIGTERM (Cloud Run).
+- [X] T027 [P] Implement `web/src/api/http.ts` (T015): `getJSON`, `sendJSON`, `UnauthenticatedError`, `ApiError`, `decodeSession`, and small decoding helpers (`asObject`, `asString`, `asNumber`, `asBoolean`, `asArray`, `asOptional`) that take `unknown` and throw on mismatch. No `any`.
+- [X] T028 Implement `web/src/App.tsx`, `web/src/screens/Login.tsx`, `web/src/components/ErrorRetry.tsx` and `web/src/styles.css` (T016): session check on start, hash routing for `#/`, `#/books`, `#/libraries`, `#/login`, fixed bottom tabs, a shared handler that switches to the login screen on `UnauthenticatedError`. The three screens are placeholders for now. `styles.css` uses a single column, `max-width: 100%`, `overflow-wrap: anywhere` and no fixed widths over 360px (FR-115). The web code must not read build-time environment variables (`import.meta.env` is not used except `import.meta.env.DEV`); add an ESLint `no-restricted-syntax` rule in `web/eslint.config.js` that rejects any other `import.meta.env` member (FR-113).
+- [X] T029 Create `Dockerfile` (quickstart.md step 4): stage 1 `node:22` runs `npm ci && npm run build` in `web/`; stage 2 `golang:1.25` builds `./cmd/libread-server` with `CGO_ENABLED=0`; final stage `gcr.io/distroless/static-debian12:nonroot` copies the binary to `/app/libread-server` and `web/dist` to `/app/static`, and sets `ENTRYPOINT`. Add `.dockerignore` (`web/node_modules`, `web/dist`, `bin/`, `.git`, `.env*`).
 
 **Checkpoint**: `make check` passes. Login works locally against Google (quickstart.md step 3-1), and the three tabs show placeholders.
 

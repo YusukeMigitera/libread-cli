@@ -9,11 +9,12 @@ import (
 
 	"libread/internal/calil"
 	"libread/internal/domain"
+	"libread/internal/present"
 	"libread/internal/store"
 )
 
 // calilAttribution はカーリルの利用条件で必須のリンク表示（research.md R1）。
-const calilAttribution = "図書館情報: カーリル（https://calil.jp/）"
+const calilAttribution = present.CalilCreditLabel + "（" + present.CalilURL + "）"
 
 const libHoursLine = "libread lib hours <図書館> [--sun 〜 --sat <HH:MM-HH:MM|closed>] [--holiday <same|closed|HH:MM-HH:MM>]"
 

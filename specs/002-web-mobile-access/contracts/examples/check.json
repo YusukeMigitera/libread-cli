@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-21T14:05:00+09:00",
+  "readable": [
+    {
+      "library": {
+        "id": "Tokyo_Setagaya:中央図書館",
+        "name": "世田谷区立中央図書館"
+      },
+      "opening": {
+        "status": "open",
+        "label": "開館中 〜19:00",
+        "open": "09:00",
+        "close": "19:00",
+        "closingSoon": false
+      },
+      "books": [
+        {
+          "isbn": "9784003101018",
+          "title": "吾輩は猫である",
+          "availability": "availableToLend",
+          "label": "在架（貸出可）",
+          "readable": true,
+          "stale": false,
+          "fetchedAt": "2026-10-21T14:04:50+09:00"
+        }
+      ]
+    }
+  ],
+  "notReadable": [
+    {
+      "library": {
+        "id": "Tokyo_Setagaya:経堂図書館",
+        "name": "世田谷区立経堂図書館"
+      },
+      "opening": {
+        "status": "noSchedule",
+        "label": "開館情報未入力"
+      },
+      "books": []
+    }
+  ],
+  "sources": {
+    "holdings": {
+      "label": "所蔵情報: カーリル 14:04 取得（30分以内の取得結果を使用）",
+      "links": [
+        {
+          "title": "吾輩は猫である",
+          "url": "https://calil.jp/book/9784003101018"
+        }
+      ]
+    },
+    "openingInfo": {
+      "label": "開館情報: 利用者入力（最終更新 中央図書館 2026-10-21）",
+      "note": "※ 臨時休館は入力済みの情報のみ反映しています"
+    },
+    "holidays": {
+      "label": "祝日: holidays-jp（https://holidays-jp.github.io/）"
+    }
+  }
+}
