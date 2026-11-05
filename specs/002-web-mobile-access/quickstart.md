@@ -9,9 +9,14 @@
 - Go 1.25 以上、Node.js 22 LTS
 - カーリルのアプリケーションキー（001 と同じ）
 - Google Cloud のプロジェクトと `gcloud` CLI（手順 4 だけ）
-- Google の OAuth クライアント（種類「ウェブ アプリケーション」）。承認済みのリダイレクト URI に次の2つを登録する。
-  - `http://localhost:8080/auth/callback`（手順 3）
-  - `https://<Cloud Run の URL>/auth/callback`（手順 4）
+- Google の OAuth クライアント（種類「ウェブ アプリケーション」）。承認済みのリダイレクト URI に次の3つを登録する。
+  承認済みの JavaScript 生成元は空でよい（認可コードの交換はサーバーが行うため）。
+  - `http://localhost:8080/auth/callback`（手順 3。ビルドした画面を Go のサーバーで配信するとき）
+  - `http://localhost:5173/auth/callback`（手順 3。Vite の開発サーバーで画面を開くとき）
+  - `https://libread-<プロジェクト番号>.asia-northeast1.run.app/auth/callback`（手順 4。Cloud Run の URL は「サービス名-プロジェクト番号.リージョン.run.app」の形になる。
+    最初のデプロイで `gcloud run deploy` が表示する URL と一致することを確かめる）
+- OAuth 同意画面: User Type「外部」、公開ステータス「テスト」のままでよい。「テストユーザー」に本人の Google アカウントを追加する
+  （追加しないとログインできない）。スコープは `openid` と `email` だけ。
 
 ## 1. 品質ゲート（ネットワーク不要）
 
@@ -53,8 +58,10 @@ export LIBREAD_CACHE_DIR="$(mktemp -d)"
 LIBREAD_STATIC_DIR=web/dist go run ./cmd/libread-server
 ```
 
-画面を変えながら確かめるときは、別の端末で `cd web && npm run dev` を実行し、`http://localhost:5173` を開く
+画面を変えながら確かめるときは、サーバーを `LIBREAD_PUBLIC_ORIGIN=http://localhost:5173` で起動し、
+別の端末で `cd web && npm run dev` を実行して `http://localhost:5173` を開く
 （Vite の開発サーバーが `/api` と `/auth` を `localhost:8080` へ中継する）。
+`LIBREAD_PUBLIC_ORIGIN` を 8080 番のままにすると、Google からの戻り先が 8080 番になり、書き込みの要求も `Origin` が一致せず `403` になる。
 
 ブラウザで `http://localhost:8080` を開き、次を確かめる。
 
