@@ -1,0 +1,110 @@
+/* 画面幅 360px を基準に、1列で横スクロールを出さない（FR-115）。固定の幅は 360px を超えない。 */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Hiragino Sans",
+    "Noto Sans JP",
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fafafa;
+}
+
+img,
+table {
+  max-width: 100%;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 100%;
+  margin: 0 auto;
+  /* 下部のタブに隠れないようにする */
+  padding: 16px 16px calc(72px + env(safe-area-inset-bottom));
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.button,
+button {
+  display: inline-block;
+  max-width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #888;
+  border-radius: 8px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button.primary {
+  border-color: #1a5fb4;
+  background: #1a5fb4;
+  color: #fff;
+}
+
+.error {
+  color: #b00020;
+}
+
+.error-retry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.error-retry p {
+  margin: 0;
+  color: #b00020;
+}
+
+.tabs {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  border-top: 1px solid #ccc;
+  background: #fff;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tabs a {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 12px 4px;
+  color: #555;
+  text-align: center;
+  text-decoration: none;
+}
+
+.tabs a[aria-current="page"] {
+  color: #1a5fb4;
+  font-weight: bold;
+}
