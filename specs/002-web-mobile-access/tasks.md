@@ -59,7 +59,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - It accepts the same content `Load` accepts (reuse the existing fixtures, e.g. `internal/cli/testdata/check_scenario1.json`) and returns the same `Data`.
   - Invalid JSON, `version` other than 1, and any invalid field (bad ISBN, `open` ≥ `close`, closure `start` > `end`) are errors.
   - `Load` keeps its current behaviour (missing file → empty `Data`).
-- [ ] T007 [P] Write tests in `internal/store/auth_test.go` for `LoadAuthState(dir) (AuthState, error)` and `SaveAuthState(dir, AuthState) error` on `dir/auth.json` (data-model.md AuthState):
+- [X] T007 [P] Write tests in `internal/store/auth_test.go` for `LoadAuthState(dir) (AuthState, error)` and `SaveAuthState(dir, AuthState) error` on `dir/auth.json` (data-model.md AuthState):
   - Missing file → `Generation` 1.
   - Round trip of `{"version": 1, "generation": N}`.
   - `generation` < 1 or unknown `version` is an error.
