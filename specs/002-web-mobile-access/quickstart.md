@@ -63,7 +63,9 @@ LIBREAD_STATIC_DIR=web/dist go run ./cmd/libread-server
 （Vite の開発サーバーが `/api` と `/auth` を `localhost:8080` へ中継する）。
 `LIBREAD_PUBLIC_ORIGIN` を 8080 番のままにすると、Google からの戻り先が 8080 番になり、書き込みの要求も `Origin` が一致せず `403` になる。
 
-ブラウザで `http://localhost:8080` を開き、次を確かめる。
+Chrome か Firefox で `http://localhost:8080` を開き、次を確かめる。
+Safari は `http://localhost` で `Secure` の Cookie を保存しないため、ローカルではログインできない（research W10）。
+Safari でのログインは、HTTPS になる本番で確かめる（手順 5-1）。
 
 1. **本人確認**（FR-110・FR-111）
    - 本人の Google アカウントでログインできる。
@@ -88,7 +90,16 @@ LIBREAD_STATIC_DIR=web/dist go run ./cmd/libread-server
 | 3. 図書館 | 2026-11-06 | 期待どおり。手順との違いはなかった |
 | 4. 本 | 2026-11-06 | 期待どおり。手順との違いはなかった |
 | 5. 今日 | 2026-11-06 | 期待どおり。手順との違いはなかった |
-| 6. すべての端末からログアウト | — | 未実施 |
+| 6. すべての端末からログアウト | 2026-11-06 | 期待どおり（Chrome の通常のウィンドウとシークレットウィンドウで確認） |
+
+手順との違い:
+
+- **Safari ではログインできなかった**: Google でアカウントを選んだあと、ログインできない。
+  原因は、Safari（WebKit）が `http://localhost` を安全な接続として扱わず、`Secure` の Cookie（`libread_login`・`libread_session`）を保存しないことと考えられる。
+  `libread_login` がないと、Google から戻ったときに state を照合できず、ログインを拒否する。
+  Chrome・Firefox は localhost の `Secure` の Cookie を保存するので、この問題は起きない。
+  本番は HTTPS なので起きないはずで、`Secure` は外さない。手順 3 の冒頭に、ローカルでは Chrome か Firefox を使うことを追記した。
+  iPhone の Safari でのログインは手順 5-1 で確かめる。
 
 ## 4. Cloud Run へのデプロイ
 
@@ -123,7 +134,7 @@ gcloud run deploy libread --source . --region asia-northeast1 \
 
 ## 5. スマートフォンでの確認
 
-1. スマートフォンのブラウザで `https://<Cloud Run の URL>` を開き、ログインする。ホーム画面に追加しておく。
+1. スマートフォンのブラウザで `https://<Cloud Run の URL>` を開き、ログインする。ホーム画面に追加しておく。iPhone では Safari でログインできることを確かめる（ローカルの `http://localhost` では Safari でログインできないため、ここが最初の確認になる）。
 2. 縦向きで、今日・本・図書館の3画面とも横スクロールが出ない（FR-115）。
 3. 本人確認済みの端末で、ホーム画面から開いて結果が出るまで20秒以内（SC-101）。
 4. 15分以上使わずに置いてから（インスタンスが停止した状態で）開き、30秒以内に結果が出る（SC-102）。
