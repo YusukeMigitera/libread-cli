@@ -94,6 +94,10 @@ func (s *server) routes() {
 	s.api.HandleFunc("GET /api/check", s.handleCheck)
 	s.api.HandleFunc("POST /api/import", s.handleImport)
 	s.api.HandleFunc("GET /api/books", s.handleListBooks)
+	s.api.HandleFunc("GET /api/book-search", s.handleBookSearch)
+	s.api.HandleFunc("POST /api/books", s.handleAddBook)
+	s.api.HandleFunc("PATCH /api/books/{isbn}", s.handleUpdateNote)
+	s.api.HandleFunc("DELETE /api/books/{isbn}", s.handleRemoveBook)
 	s.api.HandleFunc("GET /api/libraries", s.handleListLibraries)
 }
 
@@ -128,12 +132,12 @@ func (s *server) serveAPI(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusForbidden, "forbidden", "この操作は受け付けられません")
 		return
 	}
-	h, pattern := s.api.Handler(r)
-	if pattern == "" {
+	if _, pattern := s.api.Handler(r); pattern == "" {
 		writeError(w, http.StatusNotFound, "notFound", "見つかりません")
 		return
 	}
-	h.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), sessionKey{}, sess)))
+	// Handler は URL のパラメーター（{isbn} など）を r に設定しないので、ServeMux にもう一度振り分けさせる。
+	s.api.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), sessionKey{}, sess)))
 }
 
 type sessionKey struct{}

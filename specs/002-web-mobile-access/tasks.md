@@ -215,7 +215,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Implementation for User Story 2
 
-- [ ] T044 [US2] Implement the book endpoints in `internal/server/books.go` using `internal/ndl` and the data mutex (T041). Reuse the NDL candidate ranking and `hint` conditions from `internal/ndl` and `internal/cli/book.go` (move shared text into `internal/present` if both need it). Use the NDL mutex from T024 (research W9).
+- [X] T044 [US2] Implement the book endpoints in `internal/server/books.go` using `internal/ndl` and the data mutex (T041). Reuse the NDL candidate ranking and `hint` conditions from `internal/ndl` and `internal/cli/book.go` (move shared text into `internal/present` if both need it). Use the NDL mutex from T024 (research W9).
 - [ ] T045 [P] [US2] Implement `web/src/api/books.ts` (T042).
 - [ ] T046 [US2] Implement `web/src/screens/Books.tsx` (list, note editing, removal, search and registration), keeping the import section from T040 (T043).
 
