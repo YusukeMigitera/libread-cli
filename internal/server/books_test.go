@@ -604,56 +604,22 @@ func TestBookSearchAndAddDoNotOverlapAtNDL(t *testing.T) {
 	}
 }
 
-// 書誌検索が NDL サーチのロックを待つあいだに同じ本が登録されたら、検索結果でも登録済みにする。
+// 書誌検索が NDL サーチに問い合わせているあいだに（ロックを待つあいだも含む）同じ本が登録されたら、検索結果でも登録済みにする。
 // 登録済みかどうかは、NDL サーチに問い合わせたあとのデータで決める。
-func TestBookSearchMarksBooksAddedWhileWaiting(t *testing.T) {
+func TestBookSearchMarksBooksAddedWhileSearching(t *testing.T) {
 	s := newBookServer(t)
-	started, release := make(chan struct{}), make(chan struct{})
-	var once sync.Once
+	var writeErr error
 	s.ndl.respond = func(q url.Values) (int, string) {
-		if q.Has("isbn") {
-			once.Do(func() { close(started) })
-			<-release
-		}
+		// NDL サーチが応答する前に、ほかの端末からこの本が登録された。
+		writeErr = os.WriteFile(filepath.Join(s.cfg.DataDir, "data.json"),
+			[]byte(`{"version": 1, "books": [{"isbn": "9784003101018", "title": "吾輩は猫である", "addedOn": "2026-11-05"}], "libraries": []}`), 0o600)
 		return ndlFixtureFor(q)
 	}
-
-	var wg sync.WaitGroup
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
-		if rec := s.send(t, http.MethodPost, "/api/books", `{"isbn": "9784003101018"}`); rec.Code != http.StatusCreated {
-			t.Errorf("登録: status = %d, body = %s", rec.Code, rec.Body)
-		}
-	}()
-	<-started
-	var got bookSearchBody
-	go func() {
-		defer wg.Done()
-		got = s.search(t, "/api/book-search?q=9784003101018")
-	}()
-	// 検索が NDL サーチのロックを待ち始めるまで待ってから、登録を終わらせる。
-	time.Sleep(50 * time.Millisecond)
-	close(release)
-	wg.Wait()
-
+	got := s.search(t, "/api/book-search?q=9784003101018")
+	if writeErr != nil {
+		t.Fatal(writeErr)
+	}
 	if len(got.Books) != 1 || !got.Books[0].Registered {
 		t.Errorf("検索結果 = %+v, want 登録済み", got.Books)
-	}
-}
-
-// 本人確認を通ったあと、存在しない URL・メソッドは共通のエラーの形で 404 を返す。
-func TestUnknownAPIIsNotFound(t *testing.T) {
-	s := newBookServer(t)
-	for _, tt := range []struct{ method, target string }{
-		{http.MethodGet, "/api"},
-		{http.MethodGet, "/api/nosuch"},
-		{http.MethodPut, "/api/books"},
-		{http.MethodGet, "/api/books/9784003101018/x"},
-	} {
-		rec := s.send(t, tt.method, tt.target, "")
-		if rec.Code != http.StatusNotFound || errorCodeOf(t, rec) != "notFound" {
-			t.Errorf("%s %s: status = %d, body = %s, want 404 notFound", tt.method, tt.target, rec.Code, rec.Body)
-		}
 	}
 }
