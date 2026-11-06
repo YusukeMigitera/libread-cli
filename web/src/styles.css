@@ -187,3 +187,18 @@ h2 {
 .sources ul {
   margin: 0 0 4px;
 }
+
+/* 本の画面: 001 のデータの取り込み */
+
+.import {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px dashed #888;
+  border-radius: 8px;
+}
+
+.import input[type="file"] {
+  max-width: 100%;
+}

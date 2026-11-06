@@ -49,6 +49,20 @@ export function sendJSON<T>(
   return request(path, init, decode);
 }
 
+/** sendJSONText は、JSON の文字列 text をそのまま本文にして送る（001 の data.json の取り込みに使う）。 */
+export function sendJSONText<T>(
+  method: WriteMethod,
+  path: string,
+  text: string,
+  decode: Decoder<T>,
+): Promise<T> {
+  return request(
+    path,
+    { method, headers: { "Content-Type": "application/json" }, body: text },
+    decode,
+  );
+}
+
 async function request<T>(
   path: string,
   init: RequestInit,

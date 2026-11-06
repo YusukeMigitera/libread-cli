@@ -20,6 +20,7 @@ import {
   type Route,
   type ScreenName,
 } from "./route";
+import { Books } from "./screens/Books";
 import { Login } from "./screens/Login";
 import { Today } from "./screens/Today";
 
@@ -55,7 +56,7 @@ function Placeholder({ title }: { title: string }) {
 
 const defaultScreens: Readonly<Record<ScreenName, ComponentType>> = {
   today: Today,
-  books: () => <Placeholder title="本" />,
+  books: Books,
   libraries: () => <Placeholder title="図書館" />,
 };
 

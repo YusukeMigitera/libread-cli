@@ -11,11 +11,7 @@ function jsonResponse(status: number, body: unknown): Response {
 }
 
 function stubImport(response: () => Response) {
-  const fn = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
-    void input;
-    void init;
-    return Promise.resolve(response());
-  });
+  const fn = vi.fn<typeof fetch>(() => Promise.resolve(response()));
   vi.stubGlobal("fetch", fn);
   return fn;
 }
