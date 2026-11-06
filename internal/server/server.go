@@ -102,6 +102,12 @@ func (s *server) routes() {
 	s.api.HandleFunc("PATCH /api/books/{isbn}", s.handleUpdateNote)
 	s.api.HandleFunc("DELETE /api/books/{isbn}", s.handleRemoveBook)
 	s.api.HandleFunc("GET /api/libraries", s.handleListLibraries)
+	s.api.HandleFunc("GET /api/library-search", s.handleLibrarySearch)
+	s.api.HandleFunc("POST /api/libraries", s.handleAddLibrary)
+	s.api.HandleFunc("DELETE /api/libraries/{id}", s.handleRemoveLibrary)
+	s.api.HandleFunc("PUT /api/libraries/{id}/schedule", s.handlePutSchedule)
+	s.api.HandleFunc("POST /api/libraries/{id}/closures", s.handleAddClosure)
+	s.api.HandleFunc("DELETE /api/libraries/{id}/closures/{index}", s.handleRemoveClosure)
 }
 
 // dispatch は URL の先頭で、API・本人確認・画面に振り分ける。

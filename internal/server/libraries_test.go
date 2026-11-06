@@ -382,8 +382,10 @@ func TestPutSchedule(t *testing.T) {
 	}
 	// 保存されている。
 	libs := s.libraries(t)
-	if libs[1].Schedule == nil || *libs[1].Schedule != *got.Schedule {
-		t.Errorf("保存した schedule = %+v", libs[1].Schedule)
+	saved, _ := json.Marshal(libs[1].Schedule)
+	returned, _ := json.Marshal(got.Schedule)
+	if string(saved) != string(returned) {
+		t.Errorf("保存した schedule = %s, want %s", saved, returned)
 	}
 
 	// 祝日の扱いを時間の指定に。丸ごと置き換える（曜日も変わる）。
