@@ -196,7 +196,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Tests for User Story 2 (write first, confirm they fail)
 
-- [ ] T041 [P] [US2] Write tests in `internal/server/books_test.go` (contracts/http-api.md「読みかけの本」):
+- [X] T041 [P] [US2] Write tests in `internal/server/books_test.go` (contracts/http-api.md「読みかけの本」):
   - `GET /api/books` in registration order with `isbn`, `title`, `author`, `publisher`, `note`, `addedOn`.
   - `GET /api/book-search` uses the recorded NDL responses in `internal/ndl/testdata/`; `q` is required (`400`); `registered` is true for registered ISBNs; `hint` appears only under the 001 conditions; `credit` has the NDL label, URL and CC BY 4.0 license link.
   - `POST /api/books` checks the ISBN with NDL, returns `201` and the book, `addedOn` is today (Asia/Tokyo); an already registered ISBN is `409` without an NDL request; an invalid ISBN is `400`; NDL unreachable is `502`.
