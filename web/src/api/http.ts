@@ -3,6 +3,13 @@
 
 const networkErrorMessage = "通信に失敗しました";
 
+/**
+ * requestTimeoutMs は1回の要求を待つ上限。これを過ぎたら中止して「通信に失敗しました」にする。
+ * 応答が返ってこない要求のために、保存中の画面から抜けられなくならないようにする。
+ * サーバーは NDL サーチを最長30秒待ち、ほかの要求のロックも待つことがあるので、それより長くする。
+ */
+export const requestTimeoutMs = 60_000;
+
 /** 本人確認ができない（401）。画面はログイン画面に切り替える。 */
 export class UnauthenticatedError extends Error {
   constructor() {
@@ -68,16 +75,29 @@ async function request<T>(
   init: RequestInit,
   decode: Decoder<T>,
 ): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    controller.abort();
+  }, requestTimeoutMs);
   let res: Response;
+  let body: unknown;
   try {
-    res = await fetch(path, { ...init, credentials: "same-origin" });
-  } catch {
-    throw new ApiError(networkErrorMessage);
+    try {
+      res = await fetch(path, {
+        ...init,
+        credentials: "same-origin",
+        signal: controller.signal,
+      });
+    } catch {
+      throw new ApiError(networkErrorMessage);
+    }
+    if (res.status === 401) {
+      throw new UnauthenticatedError();
+    }
+    body = await readBody(res);
+  } finally {
+    clearTimeout(timer);
   }
-  if (res.status === 401) {
-    throw new UnauthenticatedError();
-  }
-  const body = await readBody(res);
   if (!res.ok) {
     throw errorFromBody(res.status, body);
   }

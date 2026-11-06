@@ -156,3 +156,41 @@ describe("decodeSession", () => {
     }
   });
 });
+
+describe("タイムアウト", () => {
+  // neverResponds は、中止されるまで応答しない fetch。
+  function neverResponds() {
+    return stubFetch(
+      (_, init) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () => {
+            reject(new DOMException("中止しました", "AbortError"));
+          });
+        }),
+    );
+  }
+
+  test("60秒たっても応答がなければ中止し、「通信に失敗しました」の ApiError", async () => {
+    vi.useFakeTimers();
+    const fetchMock = neverResponds();
+    const result = sendJSON(
+      "PATCH",
+      "/api/books/x",
+      { note: "" },
+      identity,
+    ).catch((e: unknown) => e);
+    await vi.advanceTimersByTimeAsync(59_999);
+    expect(fetchMock.mock.calls[0]?.[1]?.signal?.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    const err = await result;
+    expect(err).toBeInstanceOf(ApiError);
+    expect((err as ApiError).message).toBe("通信に失敗しました");
+  });
+
+  test("応答を受けたらタイマーを止める", async () => {
+    vi.useFakeTimers();
+    stubFetch(() => Promise.resolve(jsonResponse(200, { a: 1 })));
+    await getJSON("/api/x", identity);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
