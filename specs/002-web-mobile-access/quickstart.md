@@ -142,6 +142,20 @@ gcloud run deploy libread --source . --region asia-northeast1 \
   --set-secrets LIBREAD_CALIL_APPKEY=libread-calil-appkey:latest,LIBREAD_GOOGLE_CLIENT_SECRET=libread-google-client-secret:latest,LIBREAD_SESSION_KEY=libread-session-key:latest
 ```
 
+初回は Cloud Run の URL がまだ決まっていないので、次の順に進める。
+
+1. `LIBREAD_PUBLIC_ORIGIN` を仮の値にしてデプロイする。終わると URL（`https://libread-…run.app`）が表示される。
+2. 環境変数だけを正しい URL に更新する（ビルドし直さない。ほかの環境変数・秘密情報・ボリュームはそのまま残る）。
+   控えているデプロイのコマンドの `LIBREAD_PUBLIC_ORIGIN` も、この URL に書き換えておく。
+
+   ```sh
+   gcloud run services update libread --region asia-northeast1 --update-env-vars LIBREAD_PUBLIC_ORIGIN=https://<Cloud Run の URL>
+   ```
+
+3. Google の OAuth クライアントの「承認済みのリダイレクト URI」に `https://<Cloud Run の URL>/auth/callback` を加える。
+
+- 初回の `--source` でのデプロイでは、ビルドしたイメージを置く Artifact Registry のリポジトリ `cloud-run-source-deploy`（`asia-northeast1`）を作るかを尋ねられる。作ってよい。
+  イメージはデプロイのたびにたまり、保存量が 0.5 GB を超えた分は料金がかかるので、古いイメージを消すクリーンアップポリシーを設定する。
 - `--allow-unauthenticated` は、Cloud Run の前段の認証を使わないという意味。本人確認はアプリが行う（research W2）。
 - `Dockerfile` は、Node で `web/` をビルドし、Go でサーバーをビルドして、両方を1つのイメージに入れる。
 - デプロイの最中は、画面から保存しない。新旧のリビジョンが短い時間同時に動き、変更が失われることがある（research W3「デプロイ中の例外」）。
