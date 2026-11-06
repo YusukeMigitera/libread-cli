@@ -92,6 +92,7 @@ func newServer(cfg Config) *server {
 func (s *server) routes() {
 	s.authRoutes()
 	s.api.HandleFunc("GET /api/check", s.handleCheck)
+	s.api.HandleFunc("POST /api/import", s.handleImport)
 }
 
 // dispatch は URL の先頭で、API・本人確認・画面に振り分ける。
