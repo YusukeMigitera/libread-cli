@@ -36,8 +36,8 @@ func (s *server) handleImport(w http.ResponseWriter, r *http.Request) {
 	}
 	in, err := store.ParseData(raw)
 	if err != nil {
-		// 理由（Go のエラーの文言）は画面に出さず、ログにだけ書く。
-		s.logger.Printf("取り込み: %v", err)
+		// 理由の文言には ISBN・図書館ID などの利用者データが含まれるので、画面にもログにも出さない（research W10）。
+		s.logger.Printf("取り込み: data.json の形式が正しくありません")
 		writeError(w, http.StatusBadRequest, "invalid", "data.json の形式が正しくありません。libread の CLI の data.json を選んでください")
 		return
 	}
