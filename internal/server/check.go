@@ -5,7 +5,6 @@ import (
 
 	"libread/internal/checkrun"
 	"libread/internal/domain"
-	"libread/internal/holiday"
 	"libread/internal/present"
 	"libread/internal/store"
 )
@@ -117,22 +116,18 @@ func (s *server) handleCheck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	now := s.cfg.Now()
-	var result domain.Result
 	// カーリルのロックは、所蔵キャッシュを読むところから保存するところまでだけ持つ（checkrun.Deps.CalilLock）。
 	// 同時に来た2つ目の検索は1つ目を待ち、1つ目が保存した30分以内のキャッシュを使う。
-	// 祝日の取得のあいだは持たないので、図書館の検索を待たせない（research W9）。
-	err = s.withHolidays(func(h *holiday.Client) error {
-		deps := checkrun.Deps{
-			Calil:     c,
-			Holidays:  h,
-			Cache:     store.NewCache(s.cfg.CacheDir),
-			CalilLock: &s.calilMu,
-			Warn:      func(msg string) { s.logger.Printf("検索: %s", msg) },
-		}
-		var err error
-		result, err = checkrun.Run(r.Context(), deps, data, books, now)
-		return err
-	})
+	// 祝日のロックは開館状態の判定のあいだだけ持つ。2つのロックを同時には持たない（research W9）。
+	deps := checkrun.Deps{
+		Calil:        c,
+		Holidays:     s.holidaysClient(),
+		Cache:        store.NewCache(s.cfg.CacheDir),
+		CalilLock:    &s.calilMu,
+		HolidaysLock: &s.holidaysMu,
+		Warn:         func(msg string) { s.logger.Printf("検索: %s", msg) },
+	}
+	result, err := checkrun.Run(r.Context(), deps, data, books, now)
 	if err != nil {
 		s.logger.Printf("検索: %v", err)
 		writeError(w, http.StatusBadGateway, "upstream", "カーリルに接続できませんでした。しばらくしてから再試行してください")

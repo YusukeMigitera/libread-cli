@@ -252,7 +252,12 @@ func (s *server) withNDL(fn func(*ndl.Client) error) error {
 func (s *server) withHolidays(fn func(*holiday.Client) error) error {
 	s.holidaysMu.Lock()
 	defer s.holidaysMu.Unlock()
-	return fn(&holiday.Client{HTTP: s.cfg.HTTP, Cache: store.NewCache(s.cfg.CacheDir), Now: s.cfg.Now, UserAgent: userAgent})
+	return fn(s.holidaysClient())
+}
+
+// holidaysClient は holidays-jp のクライアントを作る。ロックは取らないので、使う側が holidaysMu を持つ。
+func (s *server) holidaysClient() *holiday.Client {
+	return &holiday.Client{HTTP: s.cfg.HTTP, Cache: store.NewCache(s.cfg.CacheDir), Now: s.cfg.Now, UserAgent: userAgent}
 }
 
 // JSON（contracts/http-api.md「共通」）

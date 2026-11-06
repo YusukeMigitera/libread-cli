@@ -56,8 +56,10 @@ type fakeServices struct {
 
 	// delay は、カーリルへの要求に応答するまでの実時間。同時の要求を重ねるテストで使う。
 	delay time.Duration
-	// holidaysDelay は、holidays-jp への要求に応答するまでの実時間。
-	holidaysDelay time.Duration
+	// holidaysStarted が nil でなければ、holidays-jp への最初の要求を受けたときに閉じる。
+	// そのあと holidaysRelease が閉じられるまで応答しない。
+	holidaysStarted, holidaysRelease chan struct{}
+	holidaysOnce                     sync.Once
 	// calilInFlight・calilMaxInFlight は、同時に処理中のカーリルへの要求の数と、その最大値。
 	calilInFlight, calilMaxInFlight atomic.Int32
 }
@@ -82,8 +84,9 @@ func (f *fakeServices) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			time.Sleep(f.delay)
 		}
 	}
-	if r.Host == "holidays-jp.github.io" && f.holidaysDelay > 0 {
-		time.Sleep(f.holidaysDelay)
+	if r.Host == "holidays-jp.github.io" && f.holidaysStarted != nil {
+		f.holidaysOnce.Do(func() { close(f.holidaysStarted) })
+		<-f.holidaysRelease
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -628,7 +631,12 @@ func TestCheckUsesTokyoDateRegardlessOfLocalZone(t *testing.T) {
 
 // research W9: 祝日の取得のあいだはカーリルのロックを持たない。祝日の取得が遅くても図書館の検索は待たされない。
 func TestSlowHolidaysDoNotBlockCalil(t *testing.T) {
-	svc := &fakeServices{calil: []string{contractCheckFinal}, calilLibrary: `[]`, holidaysDelay: 500 * time.Millisecond}
+	svc := &fakeServices{
+		calil:           []string{contractCheckFinal},
+		calilLibrary:    `[]`,
+		holidaysStarted: make(chan struct{}),
+		holidaysRelease: make(chan struct{}),
+	}
 	s := newCheckServer(t, svc, checkStart)
 	// 祝日の扱いが「休館」なので、判定に祝日の一覧を使う。
 	s.writeData(t, `{"version": 1,
@@ -649,24 +657,23 @@ func TestSlowHolidaysDoNotBlockCalil(t *testing.T) {
 			t.Errorf("status = %d, body = %s", rec.Code, rec.Body)
 		}
 	}()
-	// 所蔵の問い合わせが済み、祝日の取得を待っているところまで進める。
-	deadline := time.Now().Add(2 * time.Second)
-	for svc.sessions() == 0 && time.Now().Before(deadline) {
-		time.Sleep(5 * time.Millisecond)
-	}
-	time.Sleep(50 * time.Millisecond)
-
-	err := bare.withCalil(func(c *calil.Client) error {
-		_, err := c.Libraries(context.Background(), "東京都", "")
-		return err
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
+	// 検索が祝日の一覧を待っているあいだに、図書館の検索をする。
+	<-svc.holidaysStarted
+	searched := make(chan error, 1)
+	go func() {
+		searched <- bare.withCalil(func(c *calil.Client) error {
+			_, err := c.Libraries(context.Background(), "東京都", "")
+			return err
+		})
+	}()
 	select {
-	case <-checked:
+	case err := <-searched:
+		if err != nil {
+			t.Error(err)
+		}
+	case <-time.After(5 * time.Second):
 		t.Error("図書館の検索が、祝日の取得が終わるまで待たされた")
-	default:
 	}
+	close(svc.holidaysRelease)
 	<-checked
 }
