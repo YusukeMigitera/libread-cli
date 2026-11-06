@@ -354,15 +354,35 @@ function BookFinder({ registered, onAdded }: FinderProps) {
     restore ? { kind: "loading", query: restore.query } : { kind: "idle" },
   );
   const [formError, setFormError] = useState<string | undefined>(undefined);
+  /** 登録しかけた本を検索結果に戻せなかったときの、入力していたメモ。 */
+  const [missed, setMissed] = useState<AddDraft | undefined>(undefined);
 
-  // restoring が true なら、登録しかけた本の検索のやり直し。結果を表示できたら退避した内容を消す。
-  // 失敗したら消さずに残し、再試行や次のログインのあとでも戻せるようにする。
+  // 画面を離れたあとに検索が終わっても、退避した内容を消さない（戻ってきたときに戻せるように）。
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  // restoring は、登録しかけた本の検索のやり直しなら、その退避した内容。
+  // 結果を表示できたら退避した内容を消す。失敗したら消さずに残し、再試行や次のログインのあとでも戻せるようにする。
+  // その本が結果にないか登録済みでメモの入力欄に戻せないときは、入力していたメモを表示する。
   const fetchResult = useCallback(
-    (query: BookQuery, restoring: boolean) => {
+    (query: BookQuery, restoring: AddDraft | undefined) => {
       searchBooks(query)
         .then((result) => {
+          if (!mounted.current) {
+            return;
+          }
           setSearch({ kind: "done", query, result });
           if (restoring) {
+            const target = result.books.find((c) => c.isbn === restoring.isbn);
+            if (!target || target.registered) {
+              setMissed(restoring);
+              setRestore(undefined);
+            }
             clearDraft();
           }
         })
@@ -378,14 +398,13 @@ function BookFinder({ registered, onAdded }: FinderProps) {
   useEffect(() => {
     if (restore && !restored.current) {
       restored.current = true;
-      fetchResult(restore.query, true);
+      fetchResult(restore.query, restore);
     }
   }, [restore, fetchResult]);
 
-  const run = (query: BookQuery) => {
+  const run = (query: BookQuery, restoring: AddDraft | undefined) => {
     setSearch({ kind: "loading", query });
-    // 新しい条件で探したら restore は消える（onSubmit）ので、restore があるのは同じ条件での再試行。
-    fetchResult(query, restore !== undefined);
+    fetchResult(query, restoring);
   };
 
   const onSubmit = () => {
@@ -399,13 +418,13 @@ function BookFinder({ registered, onAdded }: FinderProps) {
       return;
     }
     setFormError(undefined);
+    setMissed(undefined);
     if (restore) {
       // 登録しかけた本はやめて、新しい条件で探す。
       setRestore(undefined);
       clearDraft();
     }
-    setSearch({ kind: "loading", query });
-    fetchResult(query, false);
+    run(query, undefined);
   };
 
   return (
@@ -456,12 +475,18 @@ function BookFinder({ registered, onAdded }: FinderProps) {
           </p>
         )}
       </form>
+      {missed && (
+        <p className="notice" role="status">
+          {`登録しかけた本（ISBN ${missed.isbn}）は検索結果にないか、すでに登録されています。入力していたメモ: ${missed.note}`}
+        </p>
+      )}
       {search.kind === "loading" && <p>探しています…</p>}
       {search.kind === "error" && (
         <ErrorRetry
           message={search.message}
           onRetry={() => {
-            run(search.query);
+            // 新しい条件で探すと restore は消える（onSubmit）ので、restore があれば同じ条件での再試行。
+            run(search.query, restore);
           }}
         />
       )}

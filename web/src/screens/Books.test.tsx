@@ -794,3 +794,59 @@ describe("修正のレビューでの指摘", () => {
     expect(sessionStorage.length).toBe(0);
   });
 });
+
+describe("2回目の修正のレビューでの指摘", () => {
+  function storeAddDraft(isbn = "9784003101018") {
+    sessionStorage.setItem(
+      "libread:draft",
+      JSON.stringify({
+        kind: "add",
+        query: { q: "吾輩は猫である", author: "", publisher: "" },
+        isbn,
+        note: "p.1から",
+      }),
+    );
+  }
+
+  test("登録しかけた本が検索結果にないときは、入力していたメモを表示する", async () => {
+    storeAddDraft("9784101010014");
+    stubApi(newApi({ books: [botchan] }));
+    render(<Books />);
+
+    expect(
+      await screen.findByText(
+        "登録しかけた本（ISBN 9784101010014）は検索結果にないか、すでに登録されています。入力していたメモ: p.1から",
+      ),
+    ).toBeInTheDocument();
+    expect(sessionStorage.length).toBe(0);
+  });
+
+  test("登録しかけた本がすでに登録済みのときも、入力していたメモを表示する", async () => {
+    storeAddDraft();
+    const search = example("book-search") as Obj;
+    const [first] = search.books as [Obj];
+    first.registered = true;
+    stubApi(newApi({ books: [neko], search }));
+    render(<Books />);
+
+    expect(
+      await screen.findByText(/入力していたメモ: p\.1から/),
+    ).toBeInTheDocument();
+  });
+
+  test("検索のやり直しの途中で画面を離れたら、退避したメモを消さない", async () => {
+    storeAddDraft();
+    const api = newApi({ books: [botchan] });
+    const search = deferred();
+    api.override = (_, path) =>
+      path.startsWith("/api/book-search") ? search.promise : undefined;
+    stubApi(api);
+    const { unmount } = render(<Books />);
+    await screen.findByText("探しています…");
+
+    unmount();
+    search.resolve(jsonResponse(200, example("book-search")));
+    await new Promise((r) => setTimeout(r, 0));
+    expect(sessionStorage.length).toBe(1);
+  });
+});
