@@ -269,7 +269,8 @@ description: "Task list for スマートフォンのブラウザから使える 
 - [X] T055 Run `make check` and fix every warning (also run `go test -race ./...`).
 - [ ] T056 Run quickstart.md step 3 locally against the real services and Google, and record any differences in `specs/002-web-mobile-access/quickstart.md`.
 - [ ] T057 Deploy to Cloud Run following quickstart.md step 4 (bucket, secrets, IAM, Calil key restriction check, `gcloud run deploy`), then run quickstart.md step 5 on the phone. Record the results (including the cold-start time for SC-102 and the 360px check for FR-115) in `specs/002-web-mobile-access/quickstart.md`.
-- [ ] T058 Import the real 001 `data.json` in production (quickstart.md step 3-2) and confirm the counts (SC-108).
+- [X] T058 Import the real 001 `data.json` in production (quickstart.md step 3-2) and confirm the counts (SC-108).
+  - **該当なし（2026-11-06）**: 001 の CLI の `data.json` は一時ディレクトリに置いていたため残っておらず、移したいデータもない。本番では Web から直接登録する。取り込みの機能は自動テスト（`internal/server/import_test.go`、`web/src/screens/Import.test.tsx`）で確かめている。
 - [ ] T059 Remove the 001 CLI (FR-117, quickstart.md step 6): delete `cmd/libread/` and `internal/cli/` (`internal/server/testdata/` keeps the six data/golden pairs listed in T031). Move any helper still used only by the server out of `internal/cli` first. `make check` must pass afterwards.
 - [ ] T060 Rewrite `README.md` for the Web version: what it is, how to deploy (link to quickstart.md step 4), how to use it on the phone, where data lives (Cloud Storage bucket), the environment variables, development (`make check`, `npm run dev`), and the external-service credits (keep the 001 credits section). Link to `specs/002-web-mobile-access/`.
 - [ ] T061 Change **Status** in `specs/002-web-mobile-access/spec.md` from `Draft` to `Implemented` with the completion date, and note in `specs/001-readable-libraries-today/spec.md` that FR-015（ターミナルからの操作）was superseded by spec 002 FR-117.
@@ -290,7 +291,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 - **US1 (Phase 3)**: Depends on Foundational.
 - **US2 (Phase 4)**: Depends on Foundational. T046 extends `web/src/screens/Books.tsx` created in T040; if US2 is built before US1, create that file in T046 and add the import section later in T040.
 - **US3 (Phase 5)**: Depends on Foundational. The last case in T047 uses `GET /api/check` (T036); if US3 is built before US1, skip that case until T036 is done.
-- **Polish (Phase 6)**: Depends on US1–US3. T057 → T058 → T059 in this order (the CLI is removed only after the production import). T062 needs T057 (a working manual deployment).
+- **Polish (Phase 6)**: Depends on US1–US3. T057 → T058 → T059 in this order (the CLI is removed only after the production import; T058 turned out to be not applicable, so T059 only waits for T057). T062 needs T057 (a working manual deployment).
 
 ### Within Each Phase
 
