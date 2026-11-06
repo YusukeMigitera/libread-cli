@@ -68,8 +68,7 @@ function deferred() {
 // stubCheck は GET /api/check への応答を、呼ばれた順に responses から返す。
 function stubCheck(...responses: (() => Response | Promise<Response>)[]) {
   let i = 0;
-  const fn = vi.fn((input: RequestInfo | URL) => {
-    void input;
+  const fn = vi.fn<typeof fetch>(() => {
     const next = responses[Math.min(i, responses.length - 1)];
     i++;
     if (!next) {
@@ -80,8 +79,7 @@ function stubCheck(...responses: (() => Response | Promise<Response>)[]) {
   vi.stubGlobal("fetch", fn);
   return {
     fn,
-    paths: () =>
-      (fn.mock.calls as unknown as [string][]).map(([input]) => input),
+    paths: () => fn.mock.calls.map(([input]) => input),
   };
 }
 

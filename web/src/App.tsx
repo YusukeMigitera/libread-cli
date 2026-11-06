@@ -21,6 +21,7 @@ import {
   type ScreenName,
 } from "./route";
 import { Login } from "./screens/Login";
+import { Today } from "./screens/Today";
 
 type AuthState =
   | { readonly kind: "checking" }
@@ -53,7 +54,7 @@ function Placeholder({ title }: { title: string }) {
 }
 
 const defaultScreens: Readonly<Record<ScreenName, ComponentType>> = {
-  today: () => <Placeholder title="今日" />,
+  today: Today,
   books: () => <Placeholder title="本" />,
   libraries: () => <Placeholder title="図書館" />,
 };
