@@ -120,20 +120,21 @@ func (s *server) handleBookSearch(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid", "書名または ISBN を入力してください")
 		return
 	}
-	data, err := s.loadData()
-	if err != nil {
-		s.logger.Printf("利用者データを読めません: %v", err)
-		writeError(w, http.StatusInternalServerError, "internal", "保存先を読めませんでした")
-		return
-	}
 	var res ndl.Result
-	err = s.withNDL(func(c *ndl.Client) error {
+	err := s.withNDL(func(c *ndl.Client) error {
 		var err error
 		res, err = c.Search(r.Context(), q)
 		return err
 	})
 	if err != nil {
 		s.writeNDLError(w, "書誌の検索", err)
+		return
+	}
+	// 登録済みかどうかは、問い合わせたあとのデータで決める。NDL サーチのロックを待つあいだに登録された本も含める。
+	data, err := s.loadData()
+	if err != nil {
+		s.logger.Printf("利用者データを読めません: %v", err)
+		writeError(w, http.StatusInternalServerError, "internal", "保存先を読めませんでした")
 		return
 	}
 	out := bookSearchResponse{

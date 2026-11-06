@@ -603,3 +603,41 @@ func TestBookSearchAndAddDoNotOverlapAtNDL(t *testing.T) {
 		t.Errorf("books = %+v, want 1冊", books)
 	}
 }
+
+// 書誌検索が NDL サーチのロックを待つあいだに同じ本が登録されたら、検索結果でも登録済みにする。
+// 登録済みかどうかは、NDL サーチに問い合わせたあとのデータで決める。
+func TestBookSearchMarksBooksAddedWhileWaiting(t *testing.T) {
+	s := newBookServer(t)
+	started, release := make(chan struct{}), make(chan struct{})
+	var once sync.Once
+	s.ndl.respond = func(q url.Values) (int, string) {
+		if q.Has("isbn") {
+			once.Do(func() { close(started) })
+			<-release
+		}
+		return ndlFixtureFor(q)
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		if rec := s.send(t, http.MethodPost, "/api/books", `{"isbn": "9784003101018"}`); rec.Code != http.StatusCreated {
+			t.Errorf("登録: status = %d, body = %s", rec.Code, rec.Body)
+		}
+	}()
+	<-started
+	var got bookSearchBody
+	go func() {
+		defer wg.Done()
+		got = s.search(t, "/api/book-search?q=9784003101018")
+	}()
+	// 検索が NDL サーチのロックを待ち始めるまで待ってから、登録を終わらせる。
+	time.Sleep(50 * time.Millisecond)
+	close(release)
+	wg.Wait()
+
+	if len(got.Books) != 1 || !got.Books[0].Registered {
+		t.Errorf("検索結果 = %+v, want 登録済み", got.Books)
+	}
+}
