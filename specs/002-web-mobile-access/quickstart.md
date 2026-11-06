@@ -28,7 +28,7 @@ make check
 
 | 対象 | 内容 |
 |---|---|
-| サーバー | `gofmt -l .`（出力なし）、`go vet ./...`、`go tool staticcheck ./...`、`go test ./...` |
+| サーバー | `gofmt -l`（Git 管理下の Go のファイル、出力なし）、`go vet`・`go tool staticcheck`・`go test`（いずれも `./cmd/... ./internal/...`。`./...` だと `web/node_modules` にある Go のパッケージまで対象になるため） |
 | 画面（`web/`） | `npm ci`、`npm run format:check`（Prettier）、`npm run typecheck`（`tsc --noEmit`、strict）、`npm run lint`（ESLint）、`npm test`（Vitest） |
 
 **期待結果**: すべて警告なしで成功する。テストは実ネットワークに接続しない。

@@ -1,5 +1,8 @@
 .PHONY: check
 
+# Go の検査の対象。./... だと web/node_modules にある Go のパッケージ（npm の依存に含まれるもの）まで検査してしまう。
+GO_PKGS := ./cmd/... ./internal/...
+
 # 品質ゲート（quickstart.md 手順 1）
 # web/dist の検査は秘密情報の「名前」だけを探す。値はローカルの環境にしかないため照合しない（FR-113）。
 # 型チェックは npm run typecheck で済ませるため、web/dist は vite build だけで作る。
@@ -8,9 +11,9 @@ check:
 	if [ -z "$$files" ]; then echo "Go のファイルが見つかりません"; exit 1; fi; \
 	out="$$(gofmt -l $$files)" || exit 1; \
 	if [ -n "$$out" ]; then echo "gofmt が必要なファイル:"; echo "$$out"; exit 1; fi
-	go vet ./...
-	go tool staticcheck ./...
-	go test ./...
+	go vet $(GO_PKGS)
+	go tool staticcheck $(GO_PKGS)
+	go test $(GO_PKGS)
 	cd web && npm ci && npm run format:check && npm run typecheck && npm run lint && npm test
 	cd web && npx vite build
 	@if [ ! -d web/dist ]; then echo "web/dist がありません"; exit 1; fi; \
