@@ -91,6 +91,9 @@ func newServer(cfg Config) *server {
 // routes は API と本人確認の URL を登録する。
 func (s *server) routes() {
 	s.authRoutes()
+	// 登録していない URL・メソッドは、共通のエラーの形の 404 にする（本人確認のあと）。
+	s.api.HandleFunc("/api", handleAPINotFound)
+	s.api.HandleFunc("/api/", handleAPINotFound)
 	s.api.HandleFunc("GET /api/check", s.handleCheck)
 	s.api.HandleFunc("POST /api/import", s.handleImport)
 	s.api.HandleFunc("GET /api/books", s.handleListBooks)
@@ -132,12 +135,11 @@ func (s *server) serveAPI(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusForbidden, "forbidden", "この操作は受け付けられません")
 		return
 	}
-	if _, pattern := s.api.Handler(r); pattern == "" {
-		writeError(w, http.StatusNotFound, "notFound", "見つかりません")
-		return
-	}
-	// Handler は URL のパラメーター（{isbn} など）を r に設定しないので、ServeMux にもう一度振り分けさせる。
 	s.api.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), sessionKey{}, sess)))
+}
+
+func handleAPINotFound(w http.ResponseWriter, _ *http.Request) {
+	writeError(w, http.StatusNotFound, "notFound", "見つかりません")
 }
 
 type sessionKey struct{}

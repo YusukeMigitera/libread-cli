@@ -641,3 +641,19 @@ func TestBookSearchMarksBooksAddedWhileWaiting(t *testing.T) {
 		t.Errorf("検索結果 = %+v, want 登録済み", got.Books)
 	}
 }
+
+// 本人確認を通ったあと、存在しない URL・メソッドは共通のエラーの形で 404 を返す。
+func TestUnknownAPIIsNotFound(t *testing.T) {
+	s := newBookServer(t)
+	for _, tt := range []struct{ method, target string }{
+		{http.MethodGet, "/api"},
+		{http.MethodGet, "/api/nosuch"},
+		{http.MethodPut, "/api/books"},
+		{http.MethodGet, "/api/books/9784003101018/x"},
+	} {
+		rec := s.send(t, tt.method, tt.target, "")
+		if rec.Code != http.StatusNotFound || errorCodeOf(t, rec) != "notFound" {
+			t.Errorf("%s %s: status = %d, body = %s, want 404 notFound", tt.method, tt.target, rec.Code, rec.Body)
+		}
+	}
+}
