@@ -1,6 +1,8 @@
 // 本人確認が切れたときの入力の退避（research W12）。
 // sessionStorage に置くのは入力中の1件だけで、戻したら消す。sessionStorage を使えない環境では何もしない。
 
+import { UnauthenticatedError } from "./api/http";
+
 const storageKey = "libread:draft";
 
 /** 本の画面で書きかけのメモ。 */
@@ -31,6 +33,22 @@ export function saveDraft(draft: Draft): void {
   } catch {
     // 退避できなくても、ログイン画面への切り替えは続ける。
   }
+}
+
+/**
+ * keepDraftOnUnauthenticated は、保存の要求の catch に渡す処理を返す。
+ * 本人確認が切れた失敗（UnauthenticatedError）なら draft を退避し、どの失敗もそのまま投げ直す。
+ * 例: updateNote(...).catch(keepDraftOnUnauthenticated(draft)).catch(handleError)
+ */
+export function keepDraftOnUnauthenticated(
+  draft: Draft,
+): (e: unknown) => never {
+  return (e) => {
+    if (e instanceof UnauthenticatedError) {
+      saveDraft(draft);
+    }
+    throw e;
+  };
 }
 
 /** peekDraft は退避した内容のうち kind のものを返す。消さない（描画中に呼べるように）。 */

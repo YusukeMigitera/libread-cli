@@ -706,3 +706,91 @@ describe("レビューでの指摘", () => {
     expect(calls().filter((c) => c.method === "DELETE")).toHaveLength(1);
   });
 });
+
+describe("修正のレビューでの指摘", () => {
+  test("保存中は「取消」も押せない", async () => {
+    const api = newApi();
+    const patch = deferred();
+    api.override = (method) => (method === "PATCH" ? patch.promise : undefined);
+    stubApi(api);
+    const user = userEvent.setup();
+    render(<Books />);
+    const item = await bookItem("吾輩は猫である");
+    await user.click(within(item).getByRole("button", { name: "メモを編集" }));
+    await user.click(within(item).getByRole("button", { name: "保存" }));
+    expect(within(item).getByRole("button", { name: "取消" })).toBeDisabled();
+    patch.resolve(jsonResponse(200, readingBook()));
+    await waitFor(() => {
+      expect(within(item).queryByLabelText("メモ")).not.toBeInTheDocument();
+    });
+  });
+
+  test("登録中は「取消」も押せない", async () => {
+    const api = newApi({ books: [botchan] });
+    const post = deferred();
+    api.override = (method) => (method === "POST" ? post.promise : undefined);
+    stubApi(api);
+    const user = userEvent.setup();
+    render(<Books />);
+    await user.type(await screen.findByLabelText("書名または ISBN"), "猫");
+    await user.click(screen.getByRole("button", { name: "探す" }));
+    const results = await screen.findByRole("list", { name: "検索結果" });
+    const [first] = within(results).getAllByRole("listitem") as [HTMLElement];
+    await user.click(within(first).getByRole("button", { name: "登録" }));
+    await user.click(within(first).getByRole("button", { name: "登録する" }));
+    expect(within(first).getByRole("button", { name: "取消" })).toBeDisabled();
+    post.resolve(jsonResponse(201, readingBook()));
+    expect(
+      await within(first).findByRole("button", { name: "登録済み" }),
+    ).toBeDisabled();
+  });
+
+  test("入力し直したら、空白だけで探したときのメッセージを消す", async () => {
+    stubApi(newApi());
+    const user = userEvent.setup();
+    render(<Books />);
+    const q = await screen.findByLabelText("書名または ISBN");
+    await user.type(q, " ");
+    await user.click(screen.getByRole("button", { name: "探す" }));
+    expect(
+      screen.getByText("書名または ISBN を入力してください"),
+    ).toBeInTheDocument();
+    await user.type(q, "猫");
+    expect(
+      screen.queryByText("書名または ISBN を入力してください"),
+    ).not.toBeInTheDocument();
+  });
+
+  test("登録しかけた本の検索のやり直しに失敗しても、退避したメモは残し、再試行で戻す", async () => {
+    sessionStorage.setItem(
+      "libread:draft",
+      JSON.stringify({
+        kind: "add",
+        query: { q: "吾輩は猫である", author: "", publisher: "" },
+        isbn: "9784003101018",
+        note: "p.1から",
+      }),
+    );
+    const api = newApi({ books: [botchan] });
+    let fail = true;
+    api.override = (_, path) =>
+      path.startsWith("/api/book-search") && fail
+        ? jsonResponse(502, {
+            error: { code: "upstream", message: "接続できませんでした" },
+          })
+        : undefined;
+    stubApi(api);
+    const user = userEvent.setup();
+    render(<Books />);
+
+    expect(await screen.findByText("接続できませんでした")).toBeInTheDocument();
+    expect(sessionStorage.length).toBe(1);
+
+    fail = false;
+    await user.click(screen.getByRole("button", { name: "再試行" }));
+    const results = await screen.findByRole("list", { name: "検索結果" });
+    const [first] = within(results).getAllByRole("listitem") as [HTMLElement];
+    expect(within(first).getByLabelText("メモ（任意）")).toHaveValue("p.1から");
+    expect(sessionStorage.length).toBe(0);
+  });
+});

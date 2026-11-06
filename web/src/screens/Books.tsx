@@ -12,18 +12,12 @@ import {
   type ReadingBook,
 } from "../api/books";
 import type { ISBN } from "../api/check";
-import {
-  ApiError,
-  asArray,
-  asObject,
-  getJSON,
-  UnauthenticatedError,
-} from "../api/http";
+import { ApiError, asArray, asObject, getJSON } from "../api/http";
 import { ErrorRetry } from "../components/ErrorRetry";
 import {
   clearDraft,
+  keepDraftOnUnauthenticated,
   peekDraft,
-  saveDraft,
   takeDraft,
   type AddDraft,
 } from "../draft";
@@ -122,12 +116,7 @@ export function Books() {
         // 保存中にほかの本のメモを編集し始めていたら、その入力は残す。
         setEditing((prev) => (prev?.isbn === isbn ? undefined : prev));
       })
-      .catch((e: unknown) => {
-        if (e instanceof UnauthenticatedError) {
-          saveDraft({ kind: "note", isbn, text });
-        }
-        throw e;
-      })
+      .catch(keepDraftOnUnauthenticated({ kind: "note", isbn, text }))
       .catch(handleError)
       .catch((e: unknown) => {
         setEditing((prev) =>
@@ -290,7 +279,7 @@ function BookItem({
             <button type="submit" disabled={editing.saving}>
               保存
             </button>
-            <button type="button" onClick={onCancel}>
+            <button type="button" onClick={onCancel} disabled={editing.saving}>
               取消
             </button>
           </div>
@@ -366,11 +355,16 @@ function BookFinder({ registered, onAdded }: FinderProps) {
   );
   const [formError, setFormError] = useState<string | undefined>(undefined);
 
+  // restoring が true なら、登録しかけた本の検索のやり直し。結果を表示できたら退避した内容を消す。
+  // 失敗したら消さずに残し、再試行や次のログインのあとでも戻せるようにする。
   const fetchResult = useCallback(
-    (query: BookQuery) => {
+    (query: BookQuery, restoring: boolean) => {
       searchBooks(query)
         .then((result) => {
           setSearch({ kind: "done", query, result });
+          if (restoring) {
+            clearDraft();
+          }
         })
         .catch(handleError)
         .catch((e: unknown) => {
@@ -384,14 +378,14 @@ function BookFinder({ registered, onAdded }: FinderProps) {
   useEffect(() => {
     if (restore && !restored.current) {
       restored.current = true;
-      clearDraft();
-      fetchResult(restore.query);
+      fetchResult(restore.query, true);
     }
   }, [restore, fetchResult]);
 
   const run = (query: BookQuery) => {
     setSearch({ kind: "loading", query });
-    fetchResult(query);
+    // 新しい条件で探したら restore は消える（onSubmit）ので、restore があるのは同じ条件での再試行。
+    fetchResult(query, restore !== undefined);
   };
 
   const onSubmit = () => {
@@ -405,8 +399,13 @@ function BookFinder({ registered, onAdded }: FinderProps) {
       return;
     }
     setFormError(undefined);
-    setRestore(undefined);
-    run(query);
+    if (restore) {
+      // 登録しかけた本はやめて、新しい条件で探す。
+      setRestore(undefined);
+      clearDraft();
+    }
+    setSearch({ kind: "loading", query });
+    fetchResult(query, false);
   };
 
   return (
@@ -427,6 +426,7 @@ function BookFinder({ registered, onAdded }: FinderProps) {
           value={form.q}
           onChange={(e) => {
             setForm({ ...form, q: e.target.value });
+            setFormError(undefined);
           }}
         />
         <label htmlFor={ids.author}>著者</label>
@@ -575,21 +575,18 @@ function Candidate({
         setAdd({ kind: "idle" });
         onAdded(book);
       })
-      .catch((e: unknown) => {
-        if (e instanceof UnauthenticatedError) {
-          saveDraft({
-            kind: "add",
-            query: {
-              q: query.q,
-              author: query.author ?? "",
-              publisher: query.publisher ?? "",
-            },
-            isbn: candidate.isbn,
-            note,
-          });
-        }
-        throw e;
-      })
+      .catch(
+        keepDraftOnUnauthenticated({
+          kind: "add",
+          query: {
+            q: query.q,
+            author: query.author ?? "",
+            publisher: query.publisher ?? "",
+          },
+          isbn: candidate.isbn,
+          note,
+        }),
+      )
       .catch(handleError)
       .catch((e: unknown) => {
         setAdd({ kind: "noting", note, saving: false, error: messageOf(e) });
@@ -638,6 +635,7 @@ function Candidate({
             </button>
             <button
               type="button"
+              disabled={add.saving}
               onClick={() => {
                 setAdd({ kind: "idle" });
               }}
