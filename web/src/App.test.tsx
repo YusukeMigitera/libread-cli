@@ -4,23 +4,12 @@ import { useEffect, useState } from "react";
 import { getJSON } from "./api/http";
 import { App, useApiErrorHandler } from "./App";
 import { example } from "./test/examples";
-
-function jsonResponse(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-  });
-}
+import { jsonResponse, pathOf } from "./test/http";
 
 // stubApi は path ごとの応答を返す fetch に差し替える。
 function stubApi(routes: Record<string, () => Response>) {
   const fn = vi.fn((input: RequestInfo | URL) => {
-    const path =
-      typeof input === "string"
-        ? input
-        : input instanceof URL
-          ? input.pathname
-          : input.url;
+    const path = pathOf(input);
     const route = routes[path];
     return Promise.resolve(
       route

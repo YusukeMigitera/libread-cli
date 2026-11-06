@@ -108,3 +108,102 @@ button {
   color: #1a5fb4;
   font-weight: bold;
 }
+
+/* 今日の画面 */
+
+.checked-at {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.stale {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #fff3cd;
+  color: #7a5200;
+  font-weight: bold;
+}
+
+.stale-note {
+  margin: 0;
+  color: #7a5200;
+}
+
+.book-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.book-select select {
+  max-width: 100%;
+  padding: 8px;
+  font: inherit;
+}
+
+h2 {
+  margin: 8px 0 0;
+  font-size: 1.1rem;
+}
+
+.libraries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.libraries > li {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.libraries h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.libraries .opening {
+  margin: 0;
+}
+
+.holdings {
+  margin: 4px 0 0;
+  padding-left: 1.2em;
+}
+
+.sources {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.sources p,
+.sources ul {
+  margin: 0 0 4px;
+}
+
+/* 本の画面: 001 のデータの取り込み */
+
+.import {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px dashed #888;
+  border-radius: 8px;
+}
+
+.import input[type="file"] {
+  max-width: 100%;
+}
+
+.notice {
+  margin: 0;
+  color: #555;
+}

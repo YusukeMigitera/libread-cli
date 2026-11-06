@@ -84,6 +84,18 @@ func AvailabilityLabel(h domain.BookHolding) string {
 	}
 }
 
+// HoldingLabel は検索結果の本ごとの文言。取得時刻が本ごとに違う結果（PerBookTimes）では、取得できた本に取得時刻を付ける。
+func HoldingLabel(h domain.BookHolding, perBook bool) string {
+	s := AvailabilityLabel(h)
+	if perBook && IsFresh(h) {
+		s += "（" + Clock(h.FetchedAt) + " 取得）"
+	}
+	return s
+}
+
+// PerBookTimes は、r の最新の所蔵状況の取得時刻が本ごとに違うか。違えば本ごとに取得時刻を表示する。
+func PerBookTimes(r domain.Result) bool { return len(FetchTimes(r)) > 1 }
+
 // IsFresh は、h が30分以内に取得できた所蔵状況か。
 func IsFresh(h domain.BookHolding) bool {
 	return !h.Stale && (h.SystemStatus == domain.SystemOK || h.SystemStatus == domain.SystemCache)

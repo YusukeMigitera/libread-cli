@@ -138,7 +138,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Tests for User Story 1 (write first, confirm they fail)
 
-- [ ] T030 [P] [US1] Write tests in `internal/server/check_test.go` for `GET /api/check` (contracts/http-api.md「検索」):
+- [X] T030 [P] [US1] Write tests in `internal/server/check_test.go` for `GET /api/check` (contracts/http-api.md「検索」):
   - Response shape and field names exactly as in the contract example, `checkedAt` in `+09:00`.
   - `opening.open`/`close` only for `open`・`notYetOpen`・`finishedToday`; `closingSoon` only for `open`; `notReadable` libraries that are not `open`/`notYetOpen` have empty `books`.
   - A `stale: true` book always has `readable: false`; `fetchedAt` is omitted when nothing was fetched.
@@ -149,7 +149,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - A concurrent `/api/check` and `/api/library-search` never have two Calil requests in flight at once (research W9).
   - With `time.Local` set to UTC in the test (`t.Cleanup` restores it), at injected time `2026-10-21T00:05:00+09:00` (= `2026-10-20T15:05Z`), the result's `checkedAt` is `2026-10-21T00:05:00+09:00` and a library whose schedule is open on 水曜 only and closed on 火曜 is judged by 水曜 (FR-103).
   - The normal and `setupRequired` responses pass `assertMatchesExample` with `check.json`, `check-setup-libraries.json` and `check-setup-books.json` (T017).
-- [ ] T031 [P] [US1] Write `TestCheckMatchesCLIScenarios` in `internal/server/check_scenarios_test.go` (SC-103, quickstart.md step 2). Copy these fixtures from `internal/cli/testdata/` to `internal/server/testdata/`, so the test survives the CLI's removal, and port each case from `internal/cli/check_test.go` with the same injected time and the same fake Calil/holidays/cache setup:
+- [X] T031 [P] [US1] Write `TestCheckMatchesCLIScenarios` in `internal/server/check_scenarios_test.go` (SC-103, quickstart.md step 2). Copy these fixtures from `internal/cli/testdata/` to `internal/server/testdata/`, so the test survives the CLI's removal, and port each case from `internal/cli/check_test.go` with the same injected time and the same fake Calil/holidays/cache setup:
 
   | CLI test | data | golden |
   |---|---|---|
@@ -161,12 +161,12 @@ description: "Task list for スマートフォンのブラウザから使える 
   | `TestCheckFallsBackToCachePerSystem` | `check_single.json` | `check_mixed_times.golden` |
 
   For each case, assert that the library names and order in `readable` and `notReadable`, every `opening.label`, every book `label`, and the `sources` labels equal the corresponding lines of the golden file. Parse the golden file (lines `N. <館名>  <label>`, `- <館名>  <label>`, `   - 『<書名>』 <label>`) instead of re-running the CLI.
-- [ ] T032 [P] [US1] Write tests in `internal/server/import_test.go` for `POST /api/import` (FR-118, research W8):
+- [X] T032 [P] [US1] Write tests in `internal/server/import_test.go` for `POST /api/import` (FR-118, research W8):
   - With no books and no libraries, a valid 001 `data.json` is saved and the response is `{"books": N, "libraries": M, "closures": K}`; loading the saved `data.json` with `store.Load` gives the same `Data` as `store.ParseData` of the input (SC-108).
   - With any existing book or library → `409`, nothing changed.
   - Invalid content → `400`, nothing saved. Bodies over 1 MiB → `400`.
-- [ ] T033 [P] [US1] Write tests in `web/src/api/check.test.ts` for `decodeCheckView(u: unknown)`: accepts the `check.json`, `check-setup-libraries.json` and `check-setup-books.json` examples from `web/src/test/examples.ts` (T017); unknown `opening.status` or `availability` values become `"unknown"` (Constitution 原則 III); missing required fields throw.
-- [ ] T034 [P] [US1] Write tests in `web/src/screens/Today.test.tsx` (contracts/screens.md「今日」):
+- [X] T033 [P] [US1] Write tests in `web/src/api/check.test.ts` for `decodeCheckView(u: unknown)`: accepts the `check.json`, `check-setup-libraries.json` and `check-setup-books.json` examples from `web/src/test/examples.ts` (T017); unknown `opening.status` or `availability` values become `"unknown"` (Constitution 原則 III); missing required fields throw.
+- [X] T034 [P] [US1] Write tests in `web/src/screens/Today.test.tsx` (contracts/screens.md「今日」):
   - While `GET /api/check` is pending, only 「所蔵状況を取得しています…」 is shown — no partial result (FR-104).
   - On success: the checked-at time (e.g. 「10月21日(水) 14:05 時点」), 「今日読める図書館」 with libraries numbered in API order, labels as given, 「今日は読めない図書館」, sources and Calil links. Empty `readable` shows 「今日読める図書館はありません」. The screen never reorders libraries.
   - 「更新」 hides the old result, shows the loading text, and then shows the new checked-at time (FR-105).
@@ -174,15 +174,15 @@ description: "Task list for スマートフォンのブラウザから使える 
   - On failure: the error message and 「再試行」; a previous result stays visible with its checked-at time (FR-116).
   - `setupRequired` shows the right message and a link to `#/libraries` or `#/books`.
   - With 2+ books, choosing a book requests `/api/check?isbn=<ISBN>` (US1 scenario 5).
-- [ ] T035 [P] [US1] Write tests in `web/src/screens/Import.test.tsx`: the import section (file input) is shown only when the books and libraries lists are both empty; choosing a file POSTs its text to `/api/import` and shows the imported counts; a `400`/`409` shows the error message.
+- [X] T035 [P] [US1] Write tests in `web/src/screens/Import.test.tsx`: the import section (file input) is shown only when the books and libraries lists are both empty; choosing a file POSTs its text to `/api/import` and shows the imported counts; a `400`/`409` shows the error message.
 
 ### Implementation for User Story 1
 
-- [ ] T036 [US1] Implement `GET /api/check` in `internal/server/check.go` using `checkrun.Run` and `present` (T030, T031). Use the Calil mutex from T024 while calling Calil. Convert `domain.Result` to the contract JSON with typed response structs (no `any`).
-- [ ] T037 [US1] Implement `POST /api/import` in `internal/server/import.go` using `store.ParseData` under the data mutex (T032).
-- [ ] T038 [P] [US1] Implement `web/src/api/check.ts` (`CheckView` types with string-literal unions and an `ISBN` brand type, `decodeCheckView`, `fetchCheck(isbn?)`) (T033).
-- [ ] T039 [US1] Implement `web/src/screens/Today.tsx` (T034). Re-evaluate staleness once a minute with `setInterval`, clearing it on unmount. Fetch on mount and when the screen becomes active again, not on tab visibility changes.
-- [ ] T040 [US1] Implement `web/src/screens/Import.tsx` and show it from the placeholder books screen `web/src/screens/Books.tsx` (T035). Read the file with `File.text()`.
+- [X] T036 [US1] Implement `GET /api/check` in `internal/server/check.go` using `checkrun.Run` and `present` (T030, T031). Use the Calil mutex from T024 while calling Calil. Convert `domain.Result` to the contract JSON with typed response structs (no `any`).
+- [X] T037 [US1] Implement `POST /api/import` in `internal/server/import.go` using `store.ParseData` under the data mutex (T032).
+- [X] T038 [P] [US1] Implement `web/src/api/check.ts` (`CheckView` types with string-literal unions and an `ISBN` brand type, `decodeCheckView`, `fetchCheck(isbn?)`) (T033).
+- [X] T039 [US1] Implement `web/src/screens/Today.tsx` (T034). Re-evaluate staleness once a minute with `setInterval`, clearing it on unmount. Fetch on mount and when the screen becomes active again, not on tab visibility changes.
+- [X] T040 [US1] Implement `web/src/screens/Import.tsx` and show it from the placeholder books screen `web/src/screens/Books.tsx` (T035). Read the file with `File.text()`.
 
 **Checkpoint**: 001 のデータを取り込むと、今日の画面に 001 の CLI と同じ結果が表示される（MVP）。
 

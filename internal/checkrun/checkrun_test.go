@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -206,5 +207,78 @@ func TestRunFailsWhenCalilFailsWithoutCache(t *testing.T) {
 
 	if _, err := f.run(t); err == nil {
 		t.Fatal("want error")
+	}
+}
+
+// heldLocker は、持たれているかを外から確かめられる sync.Locker。
+type heldLocker struct {
+	mu   sync.Mutex
+	held atomic.Bool
+}
+
+func (l *heldLocker) Lock()   { l.mu.Lock(); l.held.Store(true) }
+func (l *heldLocker) Unlock() { l.held.Store(false); l.mu.Unlock() }
+
+// locksAt は、各サービスへの要求を受けたときに持たれていたロックを記録する。
+type locksAt struct {
+	svc             *fakeServices
+	calil, holidays *heldLocker
+	mu              sync.Mutex
+	seen            map[string][2]bool // パス → {カーリルのロック, 祝日のロック}
+}
+
+func (l *locksAt) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	l.mu.Lock()
+	key := "check"
+	if strings.HasSuffix(r.URL.Path, "/date.json") {
+		key = "holidays"
+	}
+	l.seen[key] = [2]bool{l.calil.held.Load(), l.holidays.held.Load()}
+	l.mu.Unlock()
+	l.svc.ServeHTTP(w, r)
+}
+
+// 002 research W9: カーリルのロックは所蔵状況の取得（キャッシュの読み書きを含む）のあいだ、
+// 祝日のロックは祝日の一覧の取得のあいだだけ持ち、2つを同時には持たない。
+func TestRunHoldsEachLockOnlyForItsService(t *testing.T) {
+	calilLock, holidaysLock := &heldLocker{}, &heldLocker{}
+	rec := &locksAt{svc: &fakeServices{}, calil: calilLock, holidays: holidaysLock, seen: map[string][2]bool{}}
+	srv := httptest.NewServer(rec)
+	t.Cleanup(srv.Close)
+	f := newFixture(t, rec.svc)
+	f.deps.Calil.BaseURL, f.deps.Calil.HTTP = srv.URL, srv.Client()
+	f.deps.Holidays.BaseURL, f.deps.Holidays.HTTP = srv.URL, srv.Client()
+	f.deps.CalilLock, f.deps.HolidaysLock = calilLock, holidaysLock
+	// 祝日の扱いが「休館」なので、判定に祝日の一覧を使う。
+	data, err := store.ParseData([]byte(strings.Replace(dataJSON, `"mode": "same"`, `"mode": "closed"`, 1)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Run(context.Background(), f.deps, data, data.Books, now); err != nil {
+		t.Fatal(err)
+	}
+	if got := rec.seen["check"]; got != [2]bool{true, false} {
+		t.Errorf("カーリルへの要求のときのロック（カーリル, 祝日） = %v, want [true false]", got)
+	}
+	if got := rec.seen["holidays"]; got != [2]bool{false, true} {
+		t.Errorf("holidays-jp への要求のときのロック（カーリル, 祝日） = %v, want [false true]", got)
+	}
+	if calilLock.held.Load() || holidaysLock.held.Load() {
+		t.Error("Run のあとにロックが残っている")
+	}
+}
+
+// 所蔵状況の取得の途中でパニックしても、ロックは外す。
+func TestWithLockUnlocksOnPanic(t *testing.T) {
+	l := &heldLocker{}
+	func() {
+		defer func() { _ = recover() }()
+		_ = withLock(l, func() error { panic("取得の途中で失敗") })
+	}()
+	if l.held.Load() {
+		t.Fatal("パニックのあとにロックが残っている")
+	}
+	if err := withLock(nil, func() error { return nil }); err != nil {
+		t.Errorf("nil のロック: %v", err)
 	}
 }

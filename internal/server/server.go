@@ -40,8 +40,10 @@ type Config struct {
 	SessionKey  []byte
 	CalilAppKey string // 空なら、カーリルを使う API は 503 notConfigured
 	Now         func() time.Time
-	HTTP        *http.Client // 外部サービス（カーリル・NDL サーチ・holidays-jp）への要求に使う
-	Log         io.Writer    // 1要求1行のログと、外部サービスのエラーの書き先
+	// Sleep はカーリルのポーリングの間隔を待つ。nil なら実際に待つ。テストで時刻を進めるのに使う。
+	Sleep func(ctx context.Context, d time.Duration) error
+	HTTP  *http.Client // 外部サービス（カーリル・NDL サーチ・holidays-jp）への要求に使う
+	Log   io.Writer    // 1要求1行のログと、外部サービスのエラーの書き先
 }
 
 type server struct {
@@ -89,6 +91,10 @@ func newServer(cfg Config) *server {
 // routes は API と本人確認の URL を登録する。
 func (s *server) routes() {
 	s.authRoutes()
+	s.api.HandleFunc("GET /api/check", s.handleCheck)
+	s.api.HandleFunc("POST /api/import", s.handleImport)
+	s.api.HandleFunc("GET /api/books", s.handleListBooks)
+	s.api.HandleFunc("GET /api/libraries", s.handleListLibraries)
 }
 
 // dispatch は URL の先頭で、API・本人確認・画面に振り分ける。
@@ -218,12 +224,21 @@ var errNotConfigured = errors.New("カーリルのアプリケーションキー
 
 // withCalil はカーリルへの問い合わせを、ほかのカーリルへの問い合わせと重ならないように行う。
 func (s *server) withCalil(fn func(*calil.Client) error) error {
-	if s.cfg.CalilAppKey == "" {
-		return errNotConfigured
+	c, err := s.calilClient()
+	if err != nil {
+		return err
 	}
 	s.calilMu.Lock()
 	defer s.calilMu.Unlock()
-	return fn(&calil.Client{AppKey: s.cfg.CalilAppKey, HTTP: s.cfg.HTTP, Now: s.cfg.Now, UserAgent: userAgent})
+	return fn(c)
+}
+
+// calilClient はカーリルのクライアントを作る。ロックは取らないので、使う側が calilMu を持つ。
+func (s *server) calilClient() (*calil.Client, error) {
+	if s.cfg.CalilAppKey == "" {
+		return nil, errNotConfigured
+	}
+	return &calil.Client{AppKey: s.cfg.CalilAppKey, HTTP: s.cfg.HTTP, Now: s.cfg.Now, Sleep: s.cfg.Sleep, UserAgent: userAgent}, nil
 }
 
 // withNDL は NDL サーチへの問い合わせを、ほかの NDL サーチへの問い合わせと重ならないように行う。
@@ -237,7 +252,12 @@ func (s *server) withNDL(fn func(*ndl.Client) error) error {
 func (s *server) withHolidays(fn func(*holiday.Client) error) error {
 	s.holidaysMu.Lock()
 	defer s.holidaysMu.Unlock()
-	return fn(&holiday.Client{HTTP: s.cfg.HTTP, Cache: store.NewCache(s.cfg.CacheDir), Now: s.cfg.Now, UserAgent: userAgent})
+	return fn(s.holidaysClient())
+}
+
+// holidaysClient は holidays-jp のクライアントを作る。ロックは取らないので、使う側が holidaysMu を持つ。
+func (s *server) holidaysClient() *holiday.Client {
+	return &holiday.Client{HTTP: s.cfg.HTTP, Cache: store.NewCache(s.cfg.CacheDir), Now: s.cfg.Now, UserAgent: userAgent}
 }
 
 // JSON（contracts/http-api.md「共通」）

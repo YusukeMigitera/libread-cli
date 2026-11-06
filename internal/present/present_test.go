@@ -182,3 +182,18 @@ func TestCredits(t *testing.T) {
 		t.Errorf("CalilBookURL = %q, want %q", got, want)
 	}
 }
+
+func TestHoldingLabel(t *testing.T) {
+	fetched := time.Date(2026, 10, 21, 13, 50, 0, 0, domain.Tokyo())
+	ok := domain.BookHolding{Availability: domain.AvailableToLend, SystemStatus: domain.SystemOK, FetchedAt: fetched}
+	failed := domain.BookHolding{Availability: domain.Unknown, SystemStatus: domain.SystemError, FetchedAt: fetched}
+	if got := HoldingLabel(ok, false); got != "在架（貸出可）" {
+		t.Errorf("取得時刻が同じ = %q", got)
+	}
+	if got := HoldingLabel(ok, true); got != "在架（貸出可）（13:50 取得）" {
+		t.Errorf("取得時刻が本ごと = %q", got)
+	}
+	if got := HoldingLabel(failed, true); got != "不明（取得失敗）" {
+		t.Errorf("取得できなかった本には取得時刻を付けない: %q", got)
+	}
+}

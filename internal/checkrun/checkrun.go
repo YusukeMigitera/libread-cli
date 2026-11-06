@@ -5,6 +5,7 @@ package checkrun
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"libread/internal/calil"
@@ -21,6 +22,11 @@ type Deps struct {
 	Calil    *calil.Client
 	Holidays *holiday.Client
 	Cache    store.Cache
+	// CalilLock は、所蔵キャッシュを読むところからカーリルに問い合わせて保存するところまで持つロック。
+	// HolidaysLock は、祝日の一覧を使って開館状態を判定するあいだ（祝日の一覧の取得を含む）持つロック。
+	// どちらも nil ならロックしない。2つを同時に持つことはない（002 research W9）。
+	CalilLock    sync.Locker
+	HolidaysLock sync.Locker
 	// Warn は、検索は続けられるが利用者に知らせたいこと（キャッシュの読み書きの失敗、古い情報での表示）を受け取る。
 	Warn func(string)
 }
@@ -29,19 +35,30 @@ type Deps struct {
 // 所蔵状況は30分以内のキャッシュを使い、なければカーリルに1セッションで問い合わせる（001 research R7）。
 // どの組み合わせにも使える所蔵状況がないときだけエラーを返す。
 func Run(ctx context.Context, deps Deps, data store.Data, books []domain.ReadingBook, now time.Time) (domain.Result, error) {
-	holdings, err := loadHoldings(ctx, deps, books, systemIDsOf(data.Libraries), now)
+	var holdings map[string]domain.HoldingSnapshot
+	err := withLock(deps.CalilLock, func() error {
+		var err error
+		holdings, err = loadHoldings(ctx, deps, books, systemIDsOf(data.Libraries), now)
+		return err
+	})
 	if err != nil {
 		return domain.Result{}, err
 	}
-	isHoliday := deps.Holidays.Lookup(ctx)
 
 	libs := make([]domain.LibraryResult, 0, len(data.Libraries))
-	for _, lib := range data.Libraries {
-		r := domain.LibraryResult{Library: lib, Opening: domain.OpenStatusOf(lib, now, isHoliday)}
+	// 祝日の一覧は、判定に必要になったときに取得する（holiday.Client.Lookup）。その取得をほかと重ねない。
+	_ = withLock(deps.HolidaysLock, func() error {
+		isHoliday := deps.Holidays.Lookup(ctx)
+		for _, lib := range data.Libraries {
+			libs = append(libs, domain.LibraryResult{Library: lib, Opening: domain.OpenStatusOf(lib, now, isHoliday)})
+		}
+		return nil
+	})
+	for i, lib := range data.Libraries {
 		for _, b := range books {
 			snap := holdings[holdingKey(b.Book.ISBN, lib.ID.SystemID)]
 			avail, raw, stale := domain.AvailabilityOf(snap, lib.ID.LibKey, now)
-			r.Books = append(r.Books, domain.BookHolding{
+			libs[i].Books = append(libs[i].Books, domain.BookHolding{
 				Book:         b.Book,
 				Availability: avail,
 				Raw:          raw,
@@ -50,9 +67,17 @@ func Run(ctx context.Context, deps Deps, data store.Data, books []domain.Reading
 				FetchedAt:    snap.FetchedAt,
 			})
 		}
-		libs = append(libs, r)
 	}
 	return domain.NewResult(now, libs), nil
+}
+
+// withLock は l を持って fn を呼ぶ。fn がパニックしてもロックを外す。l が nil ならロックしない。
+func withLock(l sync.Locker, fn func() error) error {
+	if l != nil {
+		l.Lock()
+		defer l.Unlock()
+	}
+	return fn()
 }
 
 func (d Deps) warn(format string, a ...any) {
