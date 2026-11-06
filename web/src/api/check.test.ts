@@ -1,12 +1,6 @@
 import { example } from "../test/examples";
 import { decodeCheckView, fetchCheck } from "./check";
-
-function jsonResponse(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-  });
-}
+import { jsonResponse } from "../test/http";
 
 type Obj = Record<string, unknown>;
 

@@ -2,21 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { example } from "../test/examples";
 import { Books } from "./Books";
-
-function jsonResponse(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-  });
-}
-
-function pathOf(input: RequestInfo | URL): string {
-  return typeof input === "string"
-    ? input
-    : input instanceof URL
-      ? input.pathname
-      : input.url;
-}
+import { jsonResponse, pathOf } from "../test/http";
 
 // stubLists は一覧の応答を返す。取り込みが済んだら、一覧を契約の例に差し替える。
 function stubLists() {

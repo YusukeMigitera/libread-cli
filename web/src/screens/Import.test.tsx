@@ -2,13 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { example } from "../test/examples";
 import { Import } from "./Import";
-
-function jsonResponse(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-  });
-}
+import { jsonResponse } from "../test/http";
 
 function stubImport(response: () => Response) {
   const fn = vi.fn<typeof fetch>(() => Promise.resolve(response()));

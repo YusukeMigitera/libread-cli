@@ -2,15 +2,9 @@ import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { example } from "../test/examples";
 import { Today } from "./Today";
+import { jsonResponse } from "../test/http";
 
 type Obj = Record<string, unknown>;
-
-function jsonResponse(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-  });
-}
 
 function upstreamError(): Response {
   return jsonResponse(502, {

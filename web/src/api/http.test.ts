@@ -7,13 +7,7 @@ import {
   sendJSON,
   UnauthenticatedError,
 } from "./http";
-
-function jsonResponse(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-  });
-}
+import { jsonResponse } from "../test/http";
 
 function stubFetch(
   impl: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
