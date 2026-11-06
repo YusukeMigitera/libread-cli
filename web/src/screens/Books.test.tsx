@@ -71,3 +71,43 @@ test("一覧を読めなければ、メッセージと「再試行」", async ()
   ).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "再試行" })).toBeInTheDocument();
 });
+
+test("取り込んだあとの読み直しに失敗しても、取り込んだ件数の表示は残す", async () => {
+  let imported = false;
+  vi.stubGlobal(
+    "fetch",
+    vi.fn<typeof fetch>((input, init) => {
+      const path = pathOf(input);
+      if (path === "/api/import" && init?.method === "POST") {
+        imported = true;
+        return Promise.resolve(jsonResponse(200, example("import")));
+      }
+      if (imported) {
+        return Promise.resolve(
+          jsonResponse(500, {
+            error: { code: "internal", message: "保存先を読めませんでした" },
+          }),
+        );
+      }
+      return Promise.resolve(
+        jsonResponse(
+          200,
+          path === "/api/books" ? { books: [] } : { libraries: [] },
+        ),
+      );
+    }),
+  );
+  const user = userEvent.setup();
+  render(<Books />);
+  await user.upload(
+    await screen.findByLabelText("CLI のデータを取り込む"),
+    new File(['{"version": 1}'], "data.json", { type: "application/json" }),
+  );
+
+  expect(
+    await screen.findByText("保存先を読めませんでした"),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText("取り込みました（本 3冊・図書館 4館・臨時休館 2件）"),
+  ).toBeInTheDocument();
+});

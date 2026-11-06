@@ -9,10 +9,12 @@ import { Import } from "./Import";
 
 type Counts = { readonly books: number; readonly libraries: number };
 
-type State =
-  | { readonly kind: "loading" }
-  | { readonly kind: "loaded"; readonly counts: Counts }
-  | { readonly kind: "error"; readonly message: string };
+interface State {
+  /** 最後に読めた件数。読み直しに失敗しても残し、取り込みの欄（と取り込んだ件数の表示）を消さない。 */
+  readonly counts: Counts | undefined;
+  readonly loading: boolean;
+  readonly error: string | undefined;
+}
 
 /** countOf は一覧の応答（{"books": [...]} など）の件数。 */
 function countOf(key: "books" | "libraries") {
@@ -28,19 +30,24 @@ function fetchCounts(): Promise<Counts> {
 
 export function Books() {
   const handleError = useApiErrorHandler();
-  const [state, setState] = useState<State>({ kind: "loading" });
+  const [state, setState] = useState<State>({
+    counts: undefined,
+    loading: true,
+    error: undefined,
+  });
 
   const load = useCallback(() => {
     fetchCounts()
       .then((counts) => {
-        setState({ kind: "loaded", counts });
+        setState({ counts, loading: false, error: undefined });
       })
       .catch(handleError)
       .catch((e: unknown) => {
-        setState({
-          kind: "error",
-          message: e instanceof ApiError ? e.message : "通信に失敗しました",
-        });
+        setState((prev) => ({
+          counts: prev.counts,
+          loading: false,
+          error: e instanceof ApiError ? e.message : "通信に失敗しました",
+        }));
       });
   }, [handleError]);
 
@@ -51,17 +58,17 @@ export function Books() {
   return (
     <main className="screen books">
       <h1>本</h1>
-      {state.kind === "loading" && <p>読み込んでいます…</p>}
-      {state.kind === "error" && (
+      {state.loading && state.counts === undefined && <p>読み込んでいます…</p>}
+      {state.error !== undefined && (
         <ErrorRetry
-          message={state.message}
+          message={state.error}
           onRetry={() => {
-            setState({ kind: "loading" });
+            setState((prev) => ({ ...prev, loading: true, error: undefined }));
             load();
           }}
         />
       )}
-      {state.kind === "loaded" && (
+      {state.counts && (
         <Import
           bookCount={state.counts.books}
           libraryCount={state.counts.libraries}
