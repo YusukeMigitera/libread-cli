@@ -80,10 +80,8 @@ function scheduleFormOf(s: Schedule | null): ScheduleForm {
   const holiday = s?.holiday;
   return {
     days,
-    holiday:
-      holiday?.mode === "closed" || holiday?.mode === "hours"
-        ? holiday.mode
-        : "same",
+    // 知らない扱いは選ばれていない状態にし、保存の前に選んでもらう（黙って「曜日どおり」にしない）。
+    holiday: holiday?.mode === "unknown" ? "" : (holiday?.mode ?? "same"),
     holidayOpen: holiday?.mode === "hours" ? holiday.open : defaultOpen,
     holidayClose: holiday?.mode === "hours" ? holiday.close : defaultClose,
   };
@@ -123,6 +121,9 @@ function scheduleInputOf(
       return h;
     }
     weekly[key] = h;
+  }
+  if (form.holiday === "") {
+    return "祝日の扱いを選んでください";
   }
   if (form.holiday !== "hours") {
     return { weekly, holiday: { mode: form.holiday } };
@@ -326,7 +327,8 @@ export function Libraries() {
     if (!window.confirm(`臨時休館期間 ${describeClosure(c)}を外しますか？`)) {
       return;
     }
-    const key = `${lib.id}#${String(index)}`;
+    // 位置で指定するので、同じ館の削除は1つずつ送る（前の削除で位置がずれるため）。
+    const key = `${lib.id}#closures`;
     setActionError(undefined);
     setBusyKey(key, true);
     removeClosure(lib.id, index)
@@ -370,7 +372,7 @@ export function Libraries() {
                   library={l}
                   editor={editor?.id === l.id ? editor : undefined}
                   removing={busy.has(l.id)}
-                  removingPeriod={(i) => busy.has(`${l.id}#${String(i)}`)}
+                  removingPeriod={busy.has(`${l.id}#closures`)}
                   onEditSchedule={() => {
                     setEditor({
                       kind: "schedule",
@@ -415,7 +417,7 @@ export function Libraries() {
         </section>
       )}
       <LibraryFinder
-        registered={libraries ?? []}
+        registered={libraries}
         onAdded={(added) => {
           setLibraries((libs) =>
             libs.some((l) => l.id === added.id) ? [...libs] : [...libs, added],
@@ -431,7 +433,8 @@ interface LibraryItemProps {
   library: Library;
   editor: Editor | undefined;
   removing: boolean;
-  removingPeriod: (index: number) => boolean;
+  /** 臨時休館期間を削除している途中。終わるまで、この館のどの期間も削除できない。 */
+  removingPeriod: boolean;
   onEditSchedule: () => void;
   onAddClosure: () => void;
   onChange: (editor: Editor) => void;
@@ -465,11 +468,12 @@ function LibraryItem({
       {l.closures.length > 0 && (
         <ul className="closures" aria-label="臨時休館期間">
           {l.closures.map((c, i) => (
-            <li key={`${c.start}|${c.end}|${c.reason}`}>
+            // 取り込んだデータには同じ期間が重複していることがあるので、位置も含める。
+            <li key={`${String(i)}|${c.start}|${c.end}|${c.reason}`}>
               <span>{describeClosure(c)}</span>{" "}
               <button
                 type="button"
-                disabled={removingPeriod(i)}
+                disabled={removingPeriod}
                 onClick={() => {
                   onRemovePeriod(i, c);
                 }}
@@ -760,8 +764,8 @@ function notFoundText(q: LibraryQuery): string {
 }
 
 interface FinderProps {
-  /** 利用図書館。検索結果のうち、ここにある館は「登録済み」にする。 */
-  registered: readonly Library[];
+  /** 利用図書館。読めていれば、ここにある館だけを「登録済み」にする（検索のあとに外した館を登録し直せるように）。 */
+  registered: readonly Library[] | undefined;
   onAdded: (library: Library) => void;
 }
 
@@ -867,7 +871,9 @@ function LibraryFinder({ registered, onAdded }: FinderProps) {
                   key={c.id}
                   candidate={c}
                   registered={
-                    c.registered || registered.some((l) => l.id === c.id)
+                    registered
+                      ? registered.some((l) => l.id === c.id)
+                      : c.registered
                   }
                   onAdded={onAdded}
                 />

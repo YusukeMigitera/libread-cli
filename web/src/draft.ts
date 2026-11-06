@@ -17,7 +17,8 @@ export interface NoteDraft {
 /** 開館時間の編集の入力欄の値。時刻は入力欄の文字列のまま（確かめるのは保存のとき）。 */
 export interface ScheduleForm {
   readonly days: Readonly<Record<Weekday, DayForm>>;
-  readonly holiday: "same" | "closed" | "hours";
+  /** 祝日の扱い。"" は選ばれていない（今の扱いを画面が知らない）。 */
+  readonly holiday: "same" | "closed" | "hours" | "";
   readonly holidayOpen: string;
   readonly holidayClose: string;
 }
@@ -201,7 +202,10 @@ function parseScheduleForm(u: unknown): ScheduleForm | undefined {
   if (
     !f ||
     !days ||
-    (f.holiday !== "same" && f.holiday !== "closed" && f.holiday !== "hours") ||
+    (f.holiday !== "same" &&
+      f.holiday !== "closed" &&
+      f.holiday !== "hours" &&
+      f.holiday !== "") ||
     typeof f.holidayOpen !== "string" ||
     typeof f.holidayClose !== "string"
   ) {

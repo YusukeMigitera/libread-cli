@@ -806,3 +806,107 @@ describe("設定", () => {
     expect(await libraryItem("世田谷区立中央図書館")).toBeInTheDocument();
   });
 });
+
+describe("レビューでの指摘", () => {
+  test("臨時休館期間を削除しているあいだは、同じ館のほかの期間も削除できない（位置がずれるため）", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    let release: (r: Response) => void = () => undefined;
+    const api = newApi({
+      libraries: [
+        {
+          ...central,
+          closures: [
+            { start: "2026-11-10", end: "2026-11-14", reason: "特別整理期間" },
+            { start: "2026-12-01", end: "2026-12-02", reason: "" },
+          ],
+        },
+      ],
+    });
+    api.override = (method) =>
+      method === "DELETE"
+        ? new Promise<Response>((r) => {
+            release = r;
+          })
+        : undefined;
+    stubApi(api);
+    const user = userEvent.setup();
+    render(<Libraries />);
+    const item = await libraryItem("世田谷区立中央図書館");
+    const [first, second] = within(item).getAllByRole("button", {
+      name: "削除",
+    });
+    if (!first || !second) {
+      throw new Error("削除のボタンが2つない");
+    }
+    await user.click(first);
+    expect(second).toBeDisabled();
+    release(jsonResponse(200, { ...central, closures: [] }));
+    await waitFor(() => {
+      expect(
+        within(item).queryByRole("button", { name: "削除" }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  test("知らない祝日の扱いは選ばれていない状態から始め、選ぶまで保存しない", async () => {
+    const { calls } = stubApi(
+      newApi({
+        libraries: [
+          {
+            ...central,
+            schedule: {
+              ...(central.schedule as Obj),
+              holiday: { mode: "sometimes" },
+            },
+          },
+        ],
+      }),
+    );
+    const user = userEvent.setup();
+    render(<Libraries />);
+    const item = await libraryItem("世田谷区立中央図書館");
+    expect(within(item).getByText("祝日 不明")).toBeInTheDocument();
+    await user.click(
+      within(item).getByRole("button", { name: "開館時間を編集" }),
+    );
+    const form = within(item).getByRole("form", { name: "開館時間の編集" });
+    for (const name of ["曜日どおり", "休館", "時間を指定"]) {
+      expect(within(form).getByRole("radio", { name })).not.toBeChecked();
+    }
+    await user.click(within(form).getByRole("button", { name: "保存" }));
+    expect(
+      within(form).getByText("祝日の扱いを選んでください"),
+    ).toBeInTheDocument();
+    expect(calls().some((c) => c.method === "PUT")).toBe(false);
+  });
+
+  test("検索のあとに外した館は、検索結果で登録し直せる", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    const search = example("library-search") as { libraries: Obj[] };
+    search.libraries = search.libraries.map((l) => ({
+      ...l,
+      registered: true,
+    }));
+    stubApi(newApi({ search }));
+    const user = userEvent.setup();
+    render(<Libraries />);
+    const item = await libraryItem("世田谷区立中央図書館");
+    const finder = screen.getByRole("region", { name: "図書館を探す" });
+    await user.selectOptions(
+      within(finder).getByLabelText("都道府県"),
+      "東京都",
+    );
+    await user.click(within(finder).getByRole("button", { name: "探す" }));
+    const results = await within(finder).findByRole("list", {
+      name: "検索結果",
+    });
+    expect(
+      within(results).getByRole("button", { name: "登録済み" }),
+    ).toBeDisabled();
+
+    await user.click(within(item).getByRole("button", { name: "外す" }));
+    expect(
+      await within(results).findByRole("button", { name: "登録" }),
+    ).toBeEnabled();
+  });
+});
