@@ -224,12 +224,21 @@ var errNotConfigured = errors.New("カーリルのアプリケーションキー
 
 // withCalil はカーリルへの問い合わせを、ほかのカーリルへの問い合わせと重ならないように行う。
 func (s *server) withCalil(fn func(*calil.Client) error) error {
-	if s.cfg.CalilAppKey == "" {
-		return errNotConfigured
+	c, err := s.calilClient()
+	if err != nil {
+		return err
 	}
 	s.calilMu.Lock()
 	defer s.calilMu.Unlock()
-	return fn(&calil.Client{AppKey: s.cfg.CalilAppKey, HTTP: s.cfg.HTTP, Now: s.cfg.Now, Sleep: s.cfg.Sleep, UserAgent: userAgent})
+	return fn(c)
+}
+
+// calilClient はカーリルのクライアントを作る。ロックは取らないので、使う側が calilMu を持つ。
+func (s *server) calilClient() (*calil.Client, error) {
+	if s.cfg.CalilAppKey == "" {
+		return nil, errNotConfigured
+	}
+	return &calil.Client{AppKey: s.cfg.CalilAppKey, HTTP: s.cfg.HTTP, Now: s.cfg.Now, Sleep: s.cfg.Sleep, UserAgent: userAgent}, nil
 }
 
 // withNDL は NDL サーチへの問い合わせを、ほかの NDL サーチへの問い合わせと重ならないように行う。

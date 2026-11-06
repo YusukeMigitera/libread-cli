@@ -5,6 +5,7 @@ package checkrun
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"libread/internal/calil"
@@ -21,6 +22,9 @@ type Deps struct {
 	Calil    *calil.Client
 	Holidays *holiday.Client
 	Cache    store.Cache
+	// CalilLock は、所蔵キャッシュを読むところからカーリルに問い合わせて保存するところまで持つロック。
+	// nil ならロックしない。祝日の取得や判定のあいだは持たない（002 research W9）。
+	CalilLock sync.Locker
 	// Warn は、検索は続けられるが利用者に知らせたいこと（キャッシュの読み書きの失敗、古い情報での表示）を受け取る。
 	Warn func(string)
 }
@@ -29,7 +33,13 @@ type Deps struct {
 // 所蔵状況は30分以内のキャッシュを使い、なければカーリルに1セッションで問い合わせる（001 research R7）。
 // どの組み合わせにも使える所蔵状況がないときだけエラーを返す。
 func Run(ctx context.Context, deps Deps, data store.Data, books []domain.ReadingBook, now time.Time) (domain.Result, error) {
+	if deps.CalilLock != nil {
+		deps.CalilLock.Lock()
+	}
 	holdings, err := loadHoldings(ctx, deps, books, systemIDsOf(data.Libraries), now)
+	if deps.CalilLock != nil {
+		deps.CalilLock.Unlock()
+	}
 	if err != nil {
 		return domain.Result{}, err
 	}
