@@ -345,7 +345,9 @@ describe("本を探す", () => {
   });
 
   test("結果に書名・著者・出版社・ISBN と「登録」、登録済みは押せない。hint とクレジットを表示する", async () => {
-    const { calls } = stubApi(newApi({ search: searchResult() }));
+    const { calls } = stubApi(
+      newApi({ books: [botchan], search: searchResult() }),
+    );
     const user = userEvent.setup();
     render(<Books />);
     await user.type(

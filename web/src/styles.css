@@ -207,3 +207,90 @@ h2 {
   margin: 0;
   color: #555;
 }
+
+/* 本の画面: 一覧・メモ・検索と登録 */
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.item p {
+  margin: 0;
+}
+
+.item > button {
+  align-self: flex-start;
+}
+
+.item .title {
+  font-weight: bold;
+}
+
+.item .byline,
+.item .meta {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.item .note {
+  white-space: pre-wrap;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.note-editor,
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.note-editor input,
+.search-form input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.search-form button {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+.search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hint {
+  margin: 0;
+  color: #7a5200;
+}
+
+.credit {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+}
