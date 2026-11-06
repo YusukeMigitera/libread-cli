@@ -373,3 +373,63 @@ test("本が1冊なら本の選択は表示しない", async () => {
     screen.queryByRole("combobox", { name: "調べる本" }),
   ).not.toBeInTheDocument();
 });
+
+function twoBooksResult(): Obj {
+  return checkResult((u) => {
+    u.readable = [
+      library("世田谷区立中央図書館", "開館中 〜19:00", [
+        book("9784003101018", "吾輩は猫である", "在架（貸出可）", true),
+        book("9784003101100", "坊っちゃん", "貸出中", false),
+      ]),
+    ];
+  });
+}
+
+test("本を選んで取得に失敗したら、ほかの絞り込みの前の結果は残さない", async () => {
+  stubCheck(() => jsonResponse(200, twoBooksResult()), upstreamError);
+  const user = userEvent.setup();
+  render(<Today />);
+  await user.selectOptions(
+    await screen.findByRole("combobox", { name: "調べる本" }),
+    "坊っちゃん",
+  );
+  expect(
+    await screen.findByText("カーリルに接続できませんでした"),
+  ).toBeInTheDocument();
+  // すべての本の結果（吾輩は猫である の在架）を、坊っちゃんの結果として見せない。
+  expect(screen.queryByText(/時点/)).not.toBeInTheDocument();
+  expect(screen.queryByText("在架（貸出可）")).not.toBeInTheDocument();
+});
+
+test("選んでいた本が登録から外れていたら（404）、絞り込みをやめてすべての本で取得し直す", async () => {
+  const api = stubCheck(
+    () => jsonResponse(200, twoBooksResult()),
+    () =>
+      jsonResponse(404, {
+        error: {
+          code: "notFound",
+          message: "この本は読みかけの本に登録されていません",
+        },
+      }),
+    () => jsonResponse(200, example("check")),
+  );
+  const user = userEvent.setup();
+  render(<Today />);
+  await user.selectOptions(
+    await screen.findByRole("combobox", { name: "調べる本" }),
+    "坊っちゃん",
+  );
+  expect(await screen.findByText(/14:05 時点/)).toBeInTheDocument();
+  expect(api.paths()).toEqual([
+    "/api/check",
+    "/api/check?isbn=9784003101100",
+    "/api/check",
+  ]);
+  expect(
+    screen.queryByText("この本は読みかけの本に登録されていません"),
+  ).not.toBeInTheDocument();
+  // check.json は1冊なので、本の選択は表示しない。
+  expect(
+    screen.queryByRole("combobox", { name: "調べる本" }),
+  ).not.toBeInTheDocument();
+});

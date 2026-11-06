@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useApiErrorHandler } from "../App";
 import {
   fetchCheck,
@@ -66,13 +73,17 @@ export function Today() {
   const [books, setBooks] = useState<readonly BookChoice[]>([]);
   const [selected, setSelected] = useState<ISBN | undefined>(undefined);
   const [now, setNow] = useState(() => Date.now());
-  const lastResult = useRef<CheckResult | undefined>(undefined);
+  // lastResult は最後に表示できた結果と、そのときの本の絞り込み。失敗したとき、同じ絞り込みの結果だけを残す。
+  const lastResult = useRef<
+    | { readonly result: CheckResult; readonly isbn: ISBN | undefined }
+    | undefined
+  >(undefined);
   const requestId = useRef(0);
   const selectId = useId();
 
   // request は取得し、応答を受けてから状態を変える。あとから始めた取得があれば、前の応答は捨てる。
-  const request = useCallback(
-    (isbn: ISBN | undefined) => {
+  const request = useMemo(() => {
+    function go(isbn: ISBN | undefined) {
       const id = ++requestId.current;
       fetchCheck(isbn)
         .then((view) => {
@@ -81,10 +92,14 @@ export function Today() {
           }
           setNow(Date.now());
           if (view.kind === "setupRequired") {
+            // 登録が足りなくなったので、本の選択も前の結果も捨てる。
+            lastResult.current = undefined;
+            setBooks([]);
+            setSelected(undefined);
             setState({ kind: "setupRequired", target: view.setupRequired });
             return;
           }
-          lastResult.current = view;
+          lastResult.current = { result: view, isbn };
           if (isbn === undefined) {
             setBooks(booksOf(view));
           }
@@ -95,15 +110,24 @@ export function Today() {
           if (id !== requestId.current) {
             return;
           }
+          if (isbn !== undefined && e instanceof ApiError && e.status === 404) {
+            // 選んでいた本が読みかけの本から外れた。絞り込みをやめ、すべての本で取得し直す。
+            setBooks([]);
+            setSelected(undefined);
+            go(undefined);
+            return;
+          }
+          const last = lastResult.current;
           setState({
             kind: "error",
             message: e instanceof ApiError ? e.message : "通信に失敗しました",
-            previous: lastResult.current,
+            // 選んでいる本と違う絞り込みの結果は、選んだ本の結果と読み違えるので残さない。
+            previous: last && last.isbn === isbn ? last.result : undefined,
           });
         });
-    },
-    [handleError],
-  );
+    }
+    return go;
+  }, [handleError]);
 
   // reload は前の結果を隠して「取得中」にしてから取得し直す（FR-105）。
   const reload = useCallback(
