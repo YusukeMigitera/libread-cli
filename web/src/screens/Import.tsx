@@ -35,6 +35,12 @@ export function Import({ bookCount, libraryCount, onImported }: Props) {
     setState({ kind: "sending" });
     file
       .text()
+      .catch(() => {
+        // 送る前に、ファイル自体を読めなかった。通信の失敗とは分けて案内する。
+        throw new ApiError(
+          "ファイルを読み込めませんでした。もう一度選んでください",
+        );
+      })
       .then(importData)
       .then((result) => {
         setState({ kind: "done", result });

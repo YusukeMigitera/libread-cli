@@ -105,3 +105,20 @@ test.each([
     expect(screen.getByLabelText("CLI のデータを取り込む")).toBeInTheDocument();
   },
 );
+
+test("ファイルを読めなければ、送らずにファイルを読めなかったことを表示する", async () => {
+  const fetchMock = stubImport(() => jsonResponse(200, example("import")));
+  const user = userEvent.setup();
+  render(<Import bookCount={0} libraryCount={0} onImported={vi.fn()} />);
+  const file = dataFile();
+  vi.spyOn(file, "text").mockRejectedValue(
+    new DOMException("NotReadableError"),
+  );
+
+  await user.upload(screen.getByLabelText("CLI のデータを取り込む"), file);
+
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "ファイルを読み込めませんでした",
+  );
+  expect(fetchMock).not.toHaveBeenCalled();
+});
