@@ -202,3 +202,8 @@ h2 {
 .import input[type="file"] {
   max-width: 100%;
 }
+
+.notice {
+  margin: 0;
+  color: #555;
+}

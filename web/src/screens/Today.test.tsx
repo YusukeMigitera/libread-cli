@@ -428,6 +428,10 @@ test("選んでいた本が登録から外れていたら（404）、絞り込�
   expect(
     screen.queryByText("この本は読みかけの本に登録されていません"),
   ).not.toBeInTheDocument();
+  // 本が外れていたことを知らせる。
+  expect(screen.getByRole("status")).toHaveTextContent(
+    "選んでいた本は読みかけの本に登録されていないため、すべての本で調べました",
+  );
   // check.json は1冊なので、本の選択は表示しない。
   expect(
     screen.queryByRole("combobox", { name: "調べる本" }),

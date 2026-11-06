@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useApiErrorHandler } from "../App";
 import {
   fetchCheck,
@@ -73,6 +66,8 @@ export function Today() {
   const [books, setBooks] = useState<readonly BookChoice[]>([]);
   const [selected, setSelected] = useState<ISBN | undefined>(undefined);
   const [now, setNow] = useState(() => Date.now());
+  // notice は結果に添える案内（選んでいた本が外れていた、など）。
+  const [notice, setNotice] = useState<string | undefined>(undefined);
   // lastResult は最後に表示できた結果と、そのときの本の絞り込み。失敗したとき、同じ絞り込みの結果だけを残す。
   const lastResult = useRef<
     | { readonly result: CheckResult; readonly isbn: ISBN | undefined }
@@ -82,8 +77,10 @@ export function Today() {
   const selectId = useId();
 
   // request は取得し、応答を受けてから状態を変える。あとから始めた取得があれば、前の応答は捨てる。
-  const request = useMemo(() => {
-    function go(isbn: ISBN | undefined) {
+  // 404 のときに、すべての本で取得し直すのに使う（request 自身を中から呼ぶため）。
+  const requestRef = useRef<(isbn: ISBN | undefined) => void>(() => undefined);
+  const request = useCallback(
+    (isbn: ISBN | undefined) => {
       const id = ++requestId.current;
       fetchCheck(isbn)
         .then((view) => {
@@ -114,7 +111,10 @@ export function Today() {
             // 選んでいた本が読みかけの本から外れた。絞り込みをやめ、すべての本で取得し直す。
             setBooks([]);
             setSelected(undefined);
-            go(undefined);
+            setNotice(
+              "選んでいた本は読みかけの本に登録されていないため、すべての本で調べました",
+            );
+            requestRef.current(undefined);
             return;
           }
           const last = lastResult.current;
@@ -125,14 +125,18 @@ export function Today() {
             previous: last && last.isbn === isbn ? last.result : undefined,
           });
         });
-    }
-    return go;
-  }, [handleError]);
+    },
+    [handleError],
+  );
+  useEffect(() => {
+    requestRef.current = request;
+  }, [request]);
 
   // reload は前の結果を隠して「取得中」にしてから取得し直す（FR-105）。
   const reload = useCallback(
     (isbn: ISBN | undefined) => {
       setState({ kind: "loading" });
+      setNotice(undefined);
       request(isbn);
     },
     [request],
@@ -182,6 +186,11 @@ export function Today() {
         </div>
       )}
       {state.kind === "loading" && <p>所蔵状況を取得しています…</p>}
+      {state.kind !== "loading" && notice !== undefined && (
+        <p className="notice" role="status">
+          {notice}
+        </p>
+      )}
       {state.kind === "setupRequired" && <SetupGuide target={state.target} />}
       {state.kind === "error" && (
         <ErrorRetry
