@@ -608,16 +608,22 @@ func TestBookSearchAndAddDoNotOverlapAtNDL(t *testing.T) {
 // 登録済みかどうかは、NDL サーチに問い合わせたあとのデータで決める。
 func TestBookSearchMarksBooksAddedWhileSearching(t *testing.T) {
 	s := newBookServer(t)
-	var writeErr error
+	// 書き込みの結果は、フェイクの NDL サーチ（別の goroutine）から channel で受け取る。
+	writeErr := make(chan error, 1)
 	s.ndl.respond = func(q url.Values) (int, string) {
 		// NDL サーチが応答する前に、ほかの端末からこの本が登録された。
-		writeErr = os.WriteFile(filepath.Join(s.cfg.DataDir, "data.json"),
+		writeErr <- os.WriteFile(filepath.Join(s.cfg.DataDir, "data.json"),
 			[]byte(`{"version": 1, "books": [{"isbn": "9784003101018", "title": "吾輩は猫である", "addedOn": "2026-11-05"}], "libraries": []}`), 0o600)
 		return ndlFixtureFor(q)
 	}
 	got := s.search(t, "/api/book-search?q=9784003101018")
-	if writeErr != nil {
-		t.Fatal(writeErr)
+	select {
+	case err := <-writeErr:
+		if err != nil {
+			t.Fatal(err)
+		}
+	default:
+		t.Fatal("NDL サーチに問い合わせなかった")
 	}
 	if len(got.Books) != 1 || !got.Books[0].Registered {
 		t.Errorf("検索結果 = %+v, want 登録済み", got.Books)
