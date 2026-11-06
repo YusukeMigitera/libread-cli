@@ -180,3 +180,19 @@ func TestRequestLog(t *testing.T) {
 		t.Errorf("ログに Cookie が含まれている:\n%s", log)
 	}
 }
+
+// 本人確認を通ったあと、存在しない URL・メソッドは共通のエラーの形で 404 を返す。
+func TestUnknownAPIIsNotFound(t *testing.T) {
+	s := newTestServer(t)
+	for _, tt := range []struct{ method, target string }{
+		{http.MethodGet, "/api"},
+		{http.MethodGet, "/api/nosuch"},
+		{http.MethodPut, "/api/books"},
+		{http.MethodGet, "/api/books/9784003101018/x"},
+	} {
+		rec := s.do(t, tt.method, tt.target, "", withCookie(s.sessionCookie(t)), withOrigin(testOrigin))
+		if rec.Code != http.StatusNotFound || errorCodeOf(t, rec) != "notFound" {
+			t.Errorf("%s %s: status = %d, body = %s, want 404 notFound", tt.method, tt.target, rec.Code, rec.Body)
+		}
+	}
+}

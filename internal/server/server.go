@@ -91,9 +91,16 @@ func newServer(cfg Config) *server {
 // routes は API と本人確認の URL を登録する。
 func (s *server) routes() {
 	s.authRoutes()
+	// 登録していない URL・メソッドは、共通のエラーの形の 404 にする（本人確認のあと）。
+	s.api.HandleFunc("/api", handleAPINotFound)
+	s.api.HandleFunc("/api/", handleAPINotFound)
 	s.api.HandleFunc("GET /api/check", s.handleCheck)
 	s.api.HandleFunc("POST /api/import", s.handleImport)
 	s.api.HandleFunc("GET /api/books", s.handleListBooks)
+	s.api.HandleFunc("GET /api/book-search", s.handleBookSearch)
+	s.api.HandleFunc("POST /api/books", s.handleAddBook)
+	s.api.HandleFunc("PATCH /api/books/{isbn}", s.handleUpdateNote)
+	s.api.HandleFunc("DELETE /api/books/{isbn}", s.handleRemoveBook)
 	s.api.HandleFunc("GET /api/libraries", s.handleListLibraries)
 }
 
@@ -128,12 +135,11 @@ func (s *server) serveAPI(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusForbidden, "forbidden", "この操作は受け付けられません")
 		return
 	}
-	h, pattern := s.api.Handler(r)
-	if pattern == "" {
-		writeError(w, http.StatusNotFound, "notFound", "見つかりません")
-		return
-	}
-	h.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), sessionKey{}, sess)))
+	s.api.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), sessionKey{}, sess)))
+}
+
+func handleAPINotFound(w http.ResponseWriter, _ *http.Request) {
+	writeError(w, http.StatusNotFound, "notFound", "見つかりません")
 }
 
 type sessionKey struct{}

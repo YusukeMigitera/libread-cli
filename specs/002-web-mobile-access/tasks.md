@@ -196,7 +196,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Tests for User Story 2 (write first, confirm they fail)
 
-- [ ] T041 [P] [US2] Write tests in `internal/server/books_test.go` (contracts/http-api.md「読みかけの本」):
+- [X] T041 [P] [US2] Write tests in `internal/server/books_test.go` (contracts/http-api.md「読みかけの本」):
   - `GET /api/books` in registration order with `isbn`, `title`, `author`, `publisher`, `note`, `addedOn`.
   - `GET /api/book-search` uses the recorded NDL responses in `internal/ndl/testdata/`; `q` is required (`400`); `registered` is true for registered ISBNs; `hint` appears only under the 001 conditions; `credit` has the NDL label, URL and CC BY 4.0 license link.
   - `POST /api/books` checks the ISBN with NDL, returns `201` and the book, `addedOn` is today (Asia/Tokyo); an already registered ISBN is `409` without an NDL request; an invalid ISBN is `400`; NDL unreachable is `502`.
@@ -205,8 +205,8 @@ description: "Task list for スマートフォンのブラウザから使える 
   - Two concurrent `PATCH` requests on different books both persist (spec Edge Cases, research W3).
   - The note never appears in any outgoing request (FR-114).
   - Success responses pass `assertMatchesExample` with `books.json` and `book-search.json` (T017).
-- [ ] T042 [P] [US2] Write tests in `web/src/api/books.test.ts` for `decodeBooks`, `decodeBookSearch` and the request helpers (`addBook`, `updateNote`, `removeBook`, `searchBooks`). The decoders accept the `books.json` and `book-search.json` examples from `web/src/test/examples.ts` (T017).
-- [ ] T043 [P] [US2] Write tests in `web/src/screens/Books.test.tsx` (contracts/screens.md「本」):
+- [X] T042 [P] [US2] Write tests in `web/src/api/books.test.ts` for `decodeBooks`, `decodeBookSearch` and the request helpers (`addBook`, `updateNote`, `removeBook`, `searchBooks`). The decoders accept the `books.json` and `book-search.json` examples from `web/src/test/examples.ts` (T017).
+- [X] T043 [P] [US2] Write tests in `web/src/screens/Books.test.tsx` (contracts/screens.md「本」):
   - The list shows title, author, publisher, note and added date.
   - 「メモを編集」 → input, 「保存」 sends `PATCH`, is disabled while saving, and the list updates; 「取消」 restores; an empty note clears it.
   - When `PATCH` throws `UnauthenticatedError`, the draft is saved to `sessionStorage`, the login screen is shown, and after re-login on `#/books` the draft is back in the input (research W12) and removed from `sessionStorage`.
@@ -215,9 +215,9 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Implementation for User Story 2
 
-- [ ] T044 [US2] Implement the book endpoints in `internal/server/books.go` using `internal/ndl` and the data mutex (T041). Reuse the NDL candidate ranking and `hint` conditions from `internal/ndl` and `internal/cli/book.go` (move shared text into `internal/present` if both need it). Use the NDL mutex from T024 (research W9).
-- [ ] T045 [P] [US2] Implement `web/src/api/books.ts` (T042).
-- [ ] T046 [US2] Implement `web/src/screens/Books.tsx` (list, note editing, removal, search and registration), keeping the import section from T040 (T043).
+- [X] T044 [US2] Implement the book endpoints in `internal/server/books.go` using `internal/ndl` and the data mutex (T041). Reuse the NDL candidate ranking and `hint` conditions from `internal/ndl` and `internal/cli/book.go` (move shared text into `internal/present` if both need it). Use the NDL mutex from T024 (research W9).
+- [X] T045 [P] [US2] Implement `web/src/api/books.ts` (T042).
+- [X] T046 [US2] Implement `web/src/screens/Books.tsx` (list, note editing, removal, search and registration), keeping the import section from T040 (T043).
 
 **Checkpoint**: 本の登録・メモの更新・削除がスマートフォンからでき、今日の画面の対象が変わる。
 
