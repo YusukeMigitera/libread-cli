@@ -231,7 +231,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Tests for User Story 3 (write first, confirm they fail)
 
-- [ ] T047 [P] [US3] Write tests in `internal/server/libraries_test.go` (contracts/http-api.md「利用図書館」):
+- [X] T047 [P] [US3] Write tests in `internal/server/libraries_test.go` (contracts/http-api.md「利用図書館」):
   - `GET /api/libraries`: registration order; `schedule` is `null` when not entered; `weekly` has all 7 keys with `null` for closed days; `holiday.mode` is `same`/`closed`/`hours`; `closures` sorted by start date.
   - `GET /api/library-search` uses `internal/calil/testdata/library_setagaya.json`; `pref` is required (`400`); `name` filters by substring; `registered` flags; `credit` is the Calil link.
   - `POST /api/libraries` checks existence with `library_system_setagaya.json` and returns `201`; unknown `SystemID:LibKey` is `404`; already registered is `409` without a Calil request; missing Calil key is `503`.
@@ -241,8 +241,8 @@ description: "Task list for スマートフォンのブラウザから使える 
   - `DELETE /api/libraries/{id}/closures/{index}`: out-of-range or non-numeric index is `404`; returns the updated library.
   - After `PUT` schedule and `POST` closure including today, `GET /api/check` reports that library as `closedPeriod`; after deleting it, the weekly schedule applies (US3 scenarios 3–4).
   - Success responses pass `assertMatchesExample` with `libraries.json` and `library-search.json` (T017).
-- [ ] T048 [P] [US3] Write tests in `web/src/api/libraries.test.ts` for `decodeLibraries`, `decodeLibrarySearch` and the request helpers. The decoders accept the `libraries.json` and `library-search.json` examples from `web/src/test/examples.ts` (T017).
-- [ ] T049 [P] [US3] Write tests in `web/src/screens/Libraries.test.tsx` (contracts/screens.md「図書館」「設定」):
+- [X] T048 [P] [US3] Write tests in `web/src/api/libraries.test.ts` for `decodeLibraries`, `decodeLibrarySearch` and the request helpers. The decoders accept the `libraries.json` and `library-search.json` examples from `web/src/test/examples.ts` (T017).
+- [X] T049 [P] [US3] Write tests in `web/src/screens/Libraries.test.tsx` (contracts/screens.md「図書館」「設定」):
   - The list shows name, city, the schedule summary per weekday, holiday rule and last updated date, or 「開館情報未入力」, and the closure periods.
   - Schedule editor: first-time editing starts with every weekday 休館 and holiday 曜日どおり; toggling a day and setting times then 「保存」 sends `PUT` with all 7 keys.
   - Closure form: `start` after `end` shows 「開始日は終了日以前にしてください」 and sends nothing; valid input sends `POST`.
@@ -252,9 +252,9 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 ### Implementation for User Story 3
 
-- [ ] T050 [US3] Implement the library endpoints in `internal/server/libraries.go` using `internal/calil` and the data mutex (T047). Use the Calil mutex from T024 (research W9).
-- [ ] T051 [P] [US3] Implement `web/src/api/libraries.ts` (T048).
-- [ ] T052 [US3] Implement `web/src/screens/Libraries.tsx` with the schedule editor (`<input type="time">`), closure form (`<input type="date">`), library search, and the settings section (T049).
+- [X] T050 [US3] Implement the library endpoints in `internal/server/libraries.go` using `internal/calil` and the data mutex (T047). Use the Calil mutex from T024 (research W9).
+- [X] T051 [P] [US3] Implement `web/src/api/libraries.ts` (T048).
+- [X] T052 [US3] Implement `web/src/screens/Libraries.tsx` with the schedule editor (`<input type="time">`), closure form (`<input type="date">`), library search, and the settings section (T049).
 
 **Checkpoint**: 図書館・開館時間・臨時休館をスマートフォンから管理でき、今日の画面の判定に反映される。
 
