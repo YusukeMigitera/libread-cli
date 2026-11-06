@@ -2,12 +2,16 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
+	"testing/iotest"
 
 	"libread/internal/store"
 )
@@ -113,6 +117,22 @@ func TestImportConflictsWithExistingData(t *testing.T) {
 	}
 }
 
+// 本文を読めなかったとき（接続が切れたなど）は、大きさの上限の案内にしない。
+func TestImportBodyReadFailureIsNotSizeError(t *testing.T) {
+	s := newTestServer(t)
+	req := httptest.NewRequest(http.MethodPost, "/api/import", iotest.ErrReader(errors.New("接続が切れた")))
+	req.AddCookie(s.sessionCookie(t))
+	req.Header.Set("Origin", testOrigin)
+	rec := httptest.NewRecorder()
+	s.handler.ServeHTTP(rec, req)
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, body = %s", rec.Code, rec.Body)
+	}
+	if strings.Contains(rec.Body.String(), "1 MiB") {
+		t.Errorf("大きさの上限の案内になっている: %s", rec.Body)
+	}
+}
+
 func TestImportRejectsInvalidContent(t *testing.T) {
 	tests := map[string]string{
 		"JSON でない":     "これは JSON ではない",
@@ -131,6 +151,15 @@ func TestImportRejectsInvalidContent(t *testing.T) {
 			}
 			if code := res.errorCode(t); code != "invalid" {
 				t.Errorf("code = %q", code)
+			}
+			// message は画面にそのまま出す日本語。Go のエラーの文言（英語）を含めない（contracts/http-api.md「共通」）。
+			var e errorBody
+			_ = json.Unmarshal(res.body, &e)
+			if regexp.MustCompile(`(?i)invalid|unexpected|character|json:|version \d`).MatchString(e.Error.Message) {
+				t.Errorf("message に英語のエラーの文言が含まれる: %q", e.Error.Message)
+			}
+			if name == "1 MiB を超える" && !strings.Contains(e.Error.Message, "1 MiB") {
+				t.Errorf("大きさの上限を案内していない: %q", e.Error.Message)
 			}
 			if got := readDataFile(t, s.cfg.DataDir); got != "" {
 				t.Errorf("形式が正しくないのに保存した: %.200s", got)

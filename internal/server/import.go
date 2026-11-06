@@ -24,13 +24,21 @@ var errAlreadyHasData = errors.New("すでにデータがあります")
 // 形式が正しくなければ何も保存しない。
 func (s *server) handleImport(w http.ResponseWriter, r *http.Request) {
 	raw, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxImportBytes))
-	if err != nil {
+	var tooLarge *http.MaxBytesError
+	switch {
+	case errors.As(err, &tooLarge):
 		writeError(w, http.StatusBadRequest, "invalid", "data.json は 1 MiB 以下にしてください")
+		return
+	case err != nil:
+		s.logger.Printf("取り込み: 本文を読めません: %v", err)
+		writeError(w, http.StatusBadRequest, "invalid", "data.json を受け取れませんでした。もう一度選んでください")
 		return
 	}
 	in, err := store.ParseData(raw)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid", "data.json の形式が正しくありません: "+err.Error())
+		// 理由（Go のエラーの文言）は画面に出さず、ログにだけ書く。
+		s.logger.Printf("取り込み: %v", err)
+		writeError(w, http.StatusBadRequest, "invalid", "data.json の形式が正しくありません。libread の CLI の data.json を選んでください")
 		return
 	}
 	_, err = s.updateData(func(d *store.Data) error {
