@@ -16,7 +16,7 @@ func writeResult(w io.Writer, r domain.Result, books []domain.ReadingBook, libs 
 	checked := r.CheckedAt.In(domain.Tokyo())
 	fmt.Fprintf(w, "%s(%s) %s 時点\n", domain.DateOf(checked), weekdayNames[checked.Weekday()], present.Clock(checked))
 
-	perBook := len(present.FetchTimes(r)) > 1
+	perBook := present.PerBookTimes(r)
 
 	fmt.Fprintln(w)
 	fmt.Fprintln(w, "■ 今日読める図書館")
@@ -51,15 +51,6 @@ func writeResult(w io.Writer, r domain.Result, books []domain.ReadingBook, libs 
 
 func writeHoldings(w io.Writer, holdings []domain.BookHolding, perBook bool) {
 	for _, h := range holdings {
-		fmt.Fprintf(w, "   - 『%s』 %s\n", h.Book.Title, holdingText(h, perBook))
+		fmt.Fprintf(w, "   - 『%s』 %s\n", h.Book.Title, present.HoldingLabel(h, perBook))
 	}
-}
-
-// holdingText は所蔵状況の文言。取得時刻が本ごとに違うときは、取得できた本に取得時刻を付ける。
-func holdingText(h domain.BookHolding, perBook bool) string {
-	s := present.AvailabilityLabel(h)
-	if perBook && present.IsFresh(h) {
-		s += "（" + present.Clock(h.FetchedAt) + " 取得）"
-	}
-	return s
 }

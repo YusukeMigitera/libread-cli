@@ -40,8 +40,10 @@ type Config struct {
 	SessionKey  []byte
 	CalilAppKey string // 空なら、カーリルを使う API は 503 notConfigured
 	Now         func() time.Time
-	HTTP        *http.Client // 外部サービス（カーリル・NDL サーチ・holidays-jp）への要求に使う
-	Log         io.Writer    // 1要求1行のログと、外部サービスのエラーの書き先
+	// Sleep はカーリルのポーリングの間隔を待つ。nil なら実際に待つ。テストで時刻を進めるのに使う。
+	Sleep func(ctx context.Context, d time.Duration) error
+	HTTP  *http.Client // 外部サービス（カーリル・NDL サーチ・holidays-jp）への要求に使う
+	Log   io.Writer    // 1要求1行のログと、外部サービスのエラーの書き先
 }
 
 type server struct {
@@ -89,6 +91,7 @@ func newServer(cfg Config) *server {
 // routes は API と本人確認の URL を登録する。
 func (s *server) routes() {
 	s.authRoutes()
+	s.api.HandleFunc("GET /api/check", s.handleCheck)
 }
 
 // dispatch は URL の先頭で、API・本人確認・画面に振り分ける。
@@ -223,7 +226,7 @@ func (s *server) withCalil(fn func(*calil.Client) error) error {
 	}
 	s.calilMu.Lock()
 	defer s.calilMu.Unlock()
-	return fn(&calil.Client{AppKey: s.cfg.CalilAppKey, HTTP: s.cfg.HTTP, Now: s.cfg.Now, UserAgent: userAgent})
+	return fn(&calil.Client{AppKey: s.cfg.CalilAppKey, HTTP: s.cfg.HTTP, Now: s.cfg.Now, Sleep: s.cfg.Sleep, UserAgent: userAgent})
 }
 
 // withNDL は NDL サーチへの問い合わせを、ほかの NDL サーチへの問い合わせと重ならないように行う。
