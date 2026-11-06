@@ -24,6 +24,14 @@ function firstBook(u: unknown): Obj {
 
 const isbn = asISBN("9784003101018");
 
+/** jsonBody は fetch に渡した本文（JSON の文字列）を読む。 */
+function jsonBody(init: RequestInit | undefined): unknown {
+  if (typeof init?.body !== "string") {
+    throw new Error("本文が文字列でない");
+  }
+  return JSON.parse(init.body);
+}
+
 function stubFetch(response: () => Response) {
   const fn = vi.fn<typeof fetch>(() => Promise.resolve(response()));
   vi.stubGlobal("fetch", fn);
@@ -135,7 +143,7 @@ describe("要求", () => {
     const [input, init] = fetchMock.mock.calls[0] ?? [];
     expect(input).toBe("/api/books");
     expect(init?.method).toBe("POST");
-    expect(JSON.parse(String(init?.body))).toEqual({
+    expect(jsonBody(init)).toEqual({
       isbn: "9784003101018",
       note: "p.120まで",
     });
@@ -147,7 +155,7 @@ describe("要求", () => {
     );
     await addBook(isbn, "");
     const [, init] = fetchMock.mock.calls[0] ?? [];
-    expect(JSON.parse(String(init?.body))).toEqual({ isbn: "9784003101018" });
+    expect(jsonBody(init)).toEqual({ isbn: "9784003101018" });
   });
 
   test("updateNote は PATCH /api/books/{isbn} でメモを送る", async () => {
@@ -159,7 +167,7 @@ describe("要求", () => {
     const [input, init] = fetchMock.mock.calls[0] ?? [];
     expect(input).toBe("/api/books/9784003101018");
     expect(init?.method).toBe("PATCH");
-    expect(JSON.parse(String(init?.body))).toEqual({ note: "" });
+    expect(jsonBody(init)).toEqual({ note: "" });
   });
 
   test("removeBook は DELETE /api/books/{isbn}", async () => {
