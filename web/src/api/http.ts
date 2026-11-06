@@ -192,6 +192,15 @@ export function asDateTime(u: unknown): string {
   return s;
 }
 
+/** asDate は日付（YYYY-MM-DD）を確かめる。 */
+export function asDate(u: unknown): string {
+  const s = asString(u);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    throw new DecodeError("日付ではありません");
+  }
+  return s;
+}
+
 // GET /api/session
 
 export interface Session {

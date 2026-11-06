@@ -337,26 +337,15 @@ func (s *server) updateLibrary(id domain.LibraryID, change func(*domain.Register
 	return updated, err
 }
 
-// requestError は要求の内容の誤り。message を 400 か 409 でそのまま返す。
-type requestError struct {
-	status  int
-	message string
-}
-
-func (e *requestError) Error() string { return e.message }
-
 // writeLibraryUpdate は updateLibrary の結果を返す。
 func (s *server) writeLibraryUpdate(w http.ResponseWriter, what string, status int, l domain.RegisteredLibrary, err error) {
-	var re *requestError
 	switch {
 	case errors.Is(err, errNotRegistered):
 		writeLibraryNotFound(w)
-	case errors.As(err, &re):
-		code := "invalid"
-		if re.status == http.StatusConflict {
-			code = "conflict"
-		}
-		writeError(w, re.status, code, re.message)
+	case errors.Is(err, errClosureExists):
+		writeError(w, http.StatusConflict, "conflict", "この臨時休館期間はすでに登録されています")
+	case errors.Is(err, errClosureNotFound):
+		writeClosureNotFound(w)
 	case err != nil:
 		s.writeSaveError(w, what, err)
 	default:
@@ -483,7 +472,7 @@ func (s *server) handleAddClosure(w http.ResponseWriter, r *http.Request) {
 	}
 	l, err := s.updateLibrary(id, func(l *domain.RegisteredLibrary) error {
 		if slices.Contains(l.Closures, period) {
-			return &requestError{status: http.StatusConflict, message: "この臨時休館期間はすでに登録されています"}
+			return errClosureExists
 		}
 		closures := append(slices.Clone(l.Closures), period)
 		domain.SortClosures(closures)
@@ -525,14 +514,14 @@ func (s *server) handleRemoveClosure(w http.ResponseWriter, r *http.Request) {
 		l.Closures = slices.Delete(closures, index, index+1)
 		return nil
 	})
-	if errors.Is(err, errClosureNotFound) {
-		writeClosureNotFound(w)
-		return
-	}
 	s.writeLibraryUpdate(w, "臨時休館期間の削除", http.StatusOK, l, err)
 }
 
-var errClosureNotFound = errors.New("臨時休館期間がありません")
+// errClosureExists・errClosureNotFound は、同じ臨時休館期間がすでにあること・指定した位置に期間がないこと。
+var (
+	errClosureExists   = errors.New("同じ臨時休館期間があります")
+	errClosureNotFound = errors.New("臨時休館期間がありません")
+)
 
 // closureIndex は {index}（0始まりの10進数）を読む。符号や数字以外を含めば false。
 func closureIndex(s string) (int, bool) {

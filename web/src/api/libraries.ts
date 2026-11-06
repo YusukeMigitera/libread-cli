@@ -2,6 +2,7 @@
 import {
   asArray,
   asBoolean,
+  asDate,
   asObject,
   asString,
   DecodeError,
@@ -197,14 +198,6 @@ export function asTimeOfDay(u: unknown): TimeOfDay {
   return t;
 }
 
-function asDate(u: unknown): string {
-  const s = asString(u);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-    throw new DecodeError("日付ではありません");
-  }
-  return s;
-}
-
 function decodeHours(u: unknown): Hours {
   const o = asObject(u);
   return { open: asTimeOfDay(o.open), close: asTimeOfDay(o.close) };
@@ -334,33 +327,7 @@ export function putSchedule(
   id: LibraryID,
   input: ScheduleInput,
 ): Promise<Library> {
-  const weekly: Record<Weekday, Hours | null> = {
-    sun: null,
-    mon: null,
-    tue: null,
-    wed: null,
-    thu: null,
-    fri: null,
-    sat: null,
-  };
-  for (const { key } of weekdays) {
-    const h = input.weekly[key];
-    weekly[key] = h === null ? null : { open: h.open, close: h.close };
-  }
-  const holiday =
-    input.holiday.mode === "hours"
-      ? {
-          mode: "hours",
-          open: input.holiday.open,
-          close: input.holiday.close,
-        }
-      : { mode: input.holiday.mode };
-  return sendJSON(
-    "PUT",
-    `${libraryPath(id)}/schedule`,
-    { weekly, holiday },
-    decodeLibrary,
-  );
+  return sendJSON("PUT", `${libraryPath(id)}/schedule`, input, decodeLibrary);
 }
 
 /** addClosure は臨時休館期間を加え、更新後の館を返す。理由が空なら送らない。 */

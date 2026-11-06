@@ -112,7 +112,7 @@ func (s *server) handleCheck(w http.ResponseWriter, r *http.Request) {
 
 	c, err := s.calilClient()
 	if err != nil {
-		writeError(w, http.StatusServiceUnavailable, "notConfigured", "カーリルのアプリケーションキーが設定されていません")
+		s.writeCalilError(w, "検索", err)
 		return
 	}
 	now := s.cfg.Now()
@@ -129,8 +129,7 @@ func (s *server) handleCheck(w http.ResponseWriter, r *http.Request) {
 	}
 	result, err := checkrun.Run(r.Context(), deps, data, books, now)
 	if err != nil {
-		s.logger.Printf("検索: %v", err)
-		writeError(w, http.StatusBadGateway, "upstream", "カーリルに接続できませんでした。しばらくしてから再試行してください")
+		s.writeCalilError(w, "検索", err)
 		return
 	}
 	writeJSON(w, http.StatusOK, checkResponseOf(result, books, data.Libraries))
