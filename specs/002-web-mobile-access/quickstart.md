@@ -175,7 +175,7 @@ gcloud run deploy libread --source . --region asia-northeast1 \
 | 項目 | 実施日 | 結果 |
 |---|---|---|
 | デプロイ（手順 4） | 2026-11-06 | 期待どおり。`--set-env-vars` を2回指定しても両方が設定され、環境変数6つと秘密情報3つがそろっていた（`gcloud run services describe libread --region asia-northeast1 --format='yaml(spec.template.spec.containers[0].env)'` で確認） |
-| 1. ログイン・ホーム画面への追加 | 2026-11-06 | 期待どおり |
+| 1. ログイン・ホーム画面への追加 | 2026-11-06 | 期待どおり（Android の Brave）。iPhone は手元にないため、iOS Safari では確かめていない |
 | 2. 横スクロールが出ない（FR-115） | 2026-11-06 | 期待どおり（3画面とも） |
 | 3. 結果が出るまで20秒以内（SC-101） | 2026-11-06 | 期待どおり（20秒以内） |
 | 4. 停止状態から30秒以内（SC-102） | — | 未実施 |
@@ -183,6 +183,7 @@ gcloud run deploy libread --source . --region asia-northeast1 \
 | 6. 館内でのメモの書き換え（SC-106） | — | 未実施 |
 | 7. デプロイ後もデータが残る（SC-107） | — | 未実施 |
 | PC のブラウザの 360px 幅（FR-115） | — | 未実施 |
+| PC の Safari でのログイン（HTTPS） | — | 未実施。iOS Safari の代わりに、同じ WebKit の PC の Safari で本番にログインできるかを確かめる（ローカルの `http://localhost` ではログインできなかったため） |
 
 ## 6. 001 の CLI の廃止（FR-117）
 
