@@ -3,11 +3,11 @@ import { asISBN, type ISBN } from "./check";
 import {
   asArray,
   asBoolean,
+  asDate,
   asNumber,
   asObject,
   asOptional,
   asString,
-  DecodeError,
   getJSON,
   noContent,
   sendJSON,
@@ -55,14 +55,6 @@ export interface BookQuery {
   readonly q: string;
   readonly author?: string;
   readonly publisher?: string;
-}
-
-function asDate(u: unknown): string {
-  const s = asString(u);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-    throw new DecodeError("日付ではありません");
-  }
-  return s;
 }
 
 export function decodeBook(u: unknown): ReadingBook {

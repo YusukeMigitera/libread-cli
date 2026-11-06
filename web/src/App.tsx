@@ -21,6 +21,7 @@ import {
   type ScreenName,
 } from "./route";
 import { Books } from "./screens/Books";
+import { Libraries } from "./screens/Libraries";
 import { Login } from "./screens/Login";
 import { Today } from "./screens/Today";
 
@@ -46,18 +47,17 @@ export function useApiErrorHandler(): ApiErrorHandler {
   return useContext(ApiErrorContext);
 }
 
-function Placeholder({ title }: { title: string }) {
-  return (
-    <main className="screen">
-      <h1>{title}</h1>
-    </main>
-  );
+const LoggedOutContext = createContext<() => void>(() => undefined);
+
+/** useLoggedOut は、ログアウトしたあとにログイン画面へ切り替える処理を返す（contracts/screens.md「設定」）。 */
+export function useLoggedOut(): () => void {
+  return useContext(LoggedOutContext);
 }
 
 const defaultScreens: Readonly<Record<ScreenName, ComponentType>> = {
   today: Today,
   books: Books,
-  libraries: () => <Placeholder title="図書館" />,
+  libraries: Libraries,
 };
 
 const tabs: readonly { readonly screen: ScreenName; readonly label: string }[] =
@@ -127,6 +127,10 @@ export function App({ screens = {} }: Props) {
     throw e;
   }, []);
 
+  const loggedOut = useCallback(() => {
+    setAuth({ kind: "loggedOut" });
+  }, []);
+
   if (route.kind === "login" || auth.kind === "loggedOut") {
     return (
       <Login
@@ -153,18 +157,20 @@ export function App({ screens = {} }: Props) {
   const Screen = screens[route.screen] ?? defaultScreens[route.screen];
   return (
     <ApiErrorContext.Provider value={handleApiError}>
-      <Screen />
-      <nav className="tabs" aria-label="画面">
-        {tabs.map((t) => (
-          <a
-            key={t.screen}
-            href={`#${screenPaths[t.screen]}`}
-            aria-current={t.screen === route.screen ? "page" : undefined}
-          >
-            {t.label}
-          </a>
-        ))}
-      </nav>
+      <LoggedOutContext.Provider value={loggedOut}>
+        <Screen />
+        <nav className="tabs" aria-label="画面">
+          {tabs.map((t) => (
+            <a
+              key={t.screen}
+              href={`#${screenPaths[t.screen]}`}
+              aria-current={t.screen === route.screen ? "page" : undefined}
+            >
+              {t.label}
+            </a>
+          ))}
+        </nav>
+      </LoggedOutContext.Provider>
     </ApiErrorContext.Provider>
   );
 }

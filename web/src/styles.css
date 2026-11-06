@@ -294,3 +294,65 @@ h2 {
   font-size: 0.85rem;
   color: #555;
 }
+
+/* 図書館の画面: 一覧・開館時間・臨時休館・検索と登録・設定 */
+
+.schedule,
+.closures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.closures {
+  flex-direction: column;
+}
+
+.schedule-editor,
+.closure-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.schedule-editor fieldset,
+.closure-editor fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.schedule-editor .holiday {
+  padding-top: 4px;
+}
+
+.schedule-editor .day,
+.schedule-editor .hours {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.schedule-editor input[type="time"],
+.closure-editor input,
+.search-form select {
+  max-width: 100%;
+  padding: 6px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.settings .actions {
+  flex-direction: column;
+  align-items: flex-start;
+}

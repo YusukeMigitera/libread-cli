@@ -2,6 +2,7 @@
 // sessionStorage に置くのは入力中の1件だけで、戻したら消す。sessionStorage を使えない環境では何もしない。
 
 import { UnauthenticatedError } from "./api/http";
+import { weekdays, type Weekday } from "./api/libraries";
 
 const storageKey = "libread:draft";
 
@@ -13,6 +14,28 @@ export interface NoteDraft {
 }
 
 /** 本の画面で登録しかけた本。検索をやり直し、その本のメモの入力欄に戻す。 */
+/** 開館時間の編集の入力欄の値。時刻は入力欄の文字列のまま（確かめるのは保存のとき）。 */
+export interface ScheduleForm {
+  readonly days: Readonly<Record<Weekday, DayForm>>;
+  /** 祝日の扱い。"" は選ばれていない（今の扱いを画面が知らない）。 */
+  readonly holiday: "same" | "closed" | "hours" | "";
+  readonly holidayOpen: string;
+  readonly holidayClose: string;
+}
+
+export interface DayForm {
+  readonly open: boolean;
+  readonly openAt: string;
+  readonly closeAt: string;
+}
+
+/** 臨時休館の追加の入力欄の値。 */
+export interface ClosureForm {
+  readonly start: string;
+  readonly end: string;
+  readonly reason: string;
+}
+
 export interface AddDraft {
   readonly kind: "add";
   readonly query: {
@@ -24,7 +47,21 @@ export interface AddDraft {
   readonly note: string;
 }
 
-export type Draft = NoteDraft | AddDraft;
+/** 図書館の画面で入力しかけた開館時間（入力欄の値のまま）。 */
+export interface ScheduleDraft {
+  readonly kind: "schedule";
+  readonly libraryId: string;
+  readonly form: ScheduleForm;
+}
+
+/** 図書館の画面で追加しかけた臨時休館期間（入力欄の値のまま）。 */
+export interface ClosureDraft {
+  readonly kind: "closure";
+  readonly libraryId: string;
+  readonly form: ClosureForm;
+}
+
+export type Draft = NoteDraft | AddDraft | ScheduleDraft | ClosureDraft;
 
 /** saveDraft は入力中の内容を退避する。前に退避した内容は置き換える。 */
 export function saveDraft(draft: Draft): void {
@@ -94,10 +131,46 @@ function parseDraft(raw: string): Draft | undefined {
   } catch {
     return undefined;
   }
-  if (typeof u !== "object" || u === null) {
+  const o = asRecord(u);
+  if (!o) {
     return undefined;
   }
-  const o = u as Record<string, unknown>;
+  switch (o.kind) {
+    case "note":
+    case "add":
+      return parseBookDraft(o);
+    case "schedule": {
+      const form = parseScheduleForm(o.form);
+      return typeof o.libraryId === "string" && form
+        ? { kind: "schedule", libraryId: o.libraryId, form }
+        : undefined;
+    }
+    case "closure": {
+      const f = asRecord(o.form);
+      return typeof o.libraryId === "string" &&
+        f &&
+        typeof f.start === "string" &&
+        typeof f.end === "string" &&
+        typeof f.reason === "string"
+        ? {
+            kind: "closure",
+            libraryId: o.libraryId,
+            form: { start: f.start, end: f.end, reason: f.reason },
+          }
+        : undefined;
+    }
+    default:
+      return undefined;
+  }
+}
+
+function asRecord(u: unknown): Record<string, unknown> | undefined {
+  return typeof u === "object" && u !== null && !Array.isArray(u)
+    ? (u as Record<string, unknown>)
+    : undefined;
+}
+
+function parseBookDraft(o: Record<string, unknown>): Draft | undefined {
   if (typeof o.isbn !== "string") {
     return undefined;
   }
@@ -105,10 +178,9 @@ function parseDraft(raw: string): Draft | undefined {
     return { kind: "note", isbn: o.isbn, text: o.text };
   }
   if (o.kind === "add" && typeof o.note === "string") {
-    const q = o.query as Record<string, unknown> | null | undefined;
+    const q = asRecord(o.query);
     if (
-      typeof q === "object" &&
-      q !== null &&
+      q &&
       typeof q.q === "string" &&
       typeof q.author === "string" &&
       typeof q.publisher === "string"
@@ -122,4 +194,40 @@ function parseDraft(raw: string): Draft | undefined {
     }
   }
   return undefined;
+}
+
+function parseScheduleForm(u: unknown): ScheduleForm | undefined {
+  const f = asRecord(u);
+  const days = asRecord(f?.days);
+  if (
+    !f ||
+    !days ||
+    (f.holiday !== "same" &&
+      f.holiday !== "closed" &&
+      f.holiday !== "hours" &&
+      f.holiday !== "") ||
+    typeof f.holidayOpen !== "string" ||
+    typeof f.holidayClose !== "string"
+  ) {
+    return undefined;
+  }
+  const parsed: Partial<Record<Weekday, DayForm>> = {};
+  for (const { key } of weekdays) {
+    const d = asRecord(days[key]);
+    if (
+      !d ||
+      typeof d.open !== "boolean" ||
+      typeof d.openAt !== "string" ||
+      typeof d.closeAt !== "string"
+    ) {
+      return undefined;
+    }
+    parsed[key] = { open: d.open, openAt: d.openAt, closeAt: d.closeAt };
+  }
+  return {
+    days: parsed as Record<Weekday, DayForm>,
+    holiday: f.holiday,
+    holidayOpen: f.holidayOpen,
+    holidayClose: f.holidayClose,
+  };
 }
