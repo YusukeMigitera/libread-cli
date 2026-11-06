@@ -206,7 +206,7 @@ description: "Task list for スマートフォンのブラウザから使える 
   - The note never appears in any outgoing request (FR-114).
   - Success responses pass `assertMatchesExample` with `books.json` and `book-search.json` (T017).
 - [X] T042 [P] [US2] Write tests in `web/src/api/books.test.ts` for `decodeBooks`, `decodeBookSearch` and the request helpers (`addBook`, `updateNote`, `removeBook`, `searchBooks`). The decoders accept the `books.json` and `book-search.json` examples from `web/src/test/examples.ts` (T017).
-- [ ] T043 [P] [US2] Write tests in `web/src/screens/Books.test.tsx` (contracts/screens.md「本」):
+- [X] T043 [P] [US2] Write tests in `web/src/screens/Books.test.tsx` (contracts/screens.md「本」):
   - The list shows title, author, publisher, note and added date.
   - 「メモを編集」 → input, 「保存」 sends `PATCH`, is disabled while saving, and the list updates; 「取消」 restores; an empty note clears it.
   - When `PATCH` throws `UnauthenticatedError`, the draft is saved to `sessionStorage`, the login screen is shown, and after re-login on `#/books` the draft is back in the input (research W12) and removed from `sessionStorage`.
