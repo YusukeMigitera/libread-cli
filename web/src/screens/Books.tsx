@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useApiErrorHandler } from "../App";
 import {
   addBook,
@@ -20,7 +20,13 @@ import {
   UnauthenticatedError,
 } from "../api/http";
 import { ErrorRetry } from "../components/ErrorRetry";
-import { saveNoteDraft, takeNoteDraft } from "../draft";
+import {
+  clearDraft,
+  peekDraft,
+  saveDraft,
+  takeDraft,
+  type AddDraft,
+} from "../draft";
 import { Import } from "./Import";
 
 // 本の画面（contracts/screens.md「本」）。読みかけの本の一覧とメモの編集・外す、本を探して登録、001 のデータの取り込み。
@@ -69,13 +75,15 @@ export function Books() {
   });
   const [editing, setEditing] = useState<Editing | undefined>(undefined);
   const [removeError, setRemoveError] = useState<string | undefined>(undefined);
+  /** 外している途中の本の ISBN。 */
+  const [removing, setRemoving] = useState<ReadonlySet<string>>(new Set());
 
   const load = useCallback(() => {
     fetchLists()
       .then((lists) => {
         setState({ lists, loading: false, error: undefined });
         // 再ログインの前に退避した書きかけのメモを、入力欄に戻す（research W12）。
-        const draft = takeNoteDraft();
+        const draft = takeDraft("note");
         if (draft && lists.books.some((b) => b.isbn === draft.isbn)) {
           setEditing({ isbn: draft.isbn, text: draft.text, saving: false });
         }
@@ -111,17 +119,22 @@ export function Books() {
         setBooks((books) =>
           books.map((b) => (b.isbn === updated.isbn ? updated : b)),
         );
-        setEditing(undefined);
+        // 保存中にほかの本のメモを編集し始めていたら、その入力は残す。
+        setEditing((prev) => (prev?.isbn === isbn ? undefined : prev));
       })
       .catch((e: unknown) => {
         if (e instanceof UnauthenticatedError) {
-          saveNoteDraft({ isbn, text });
+          saveDraft({ kind: "note", isbn, text });
         }
         throw e;
       })
       .catch(handleError)
       .catch((e: unknown) => {
-        setEditing({ isbn, text, saving: false, error: messageOf(e) });
+        setEditing((prev) =>
+          prev?.isbn === isbn
+            ? { isbn, text, saving: false, error: messageOf(e) }
+            : prev,
+        );
       });
   };
 
@@ -130,13 +143,27 @@ export function Books() {
       return;
     }
     setRemoveError(undefined);
+    setRemoving((prev) => new Set(prev).add(book.isbn));
+    const removed = () => {
+      setBooks((books) => books.filter((b) => b.isbn !== book.isbn));
+    };
     removeBook(book.isbn)
-      .then(() => {
-        setBooks((books) => books.filter((b) => b.isbn !== book.isbn));
-      })
+      .then(removed)
       .catch(handleError)
       .catch((e: unknown) => {
+        // ほかの端末ですでに外していた。
+        if (e instanceof ApiError && e.status === 404) {
+          removed();
+          return;
+        }
         setRemoveError(messageOf(e));
+      })
+      .finally(() => {
+        setRemoving((prev) => {
+          const next = new Set(prev);
+          next.delete(book.isbn);
+          return next;
+        });
       });
   };
 
@@ -165,6 +192,7 @@ export function Books() {
                   key={b.isbn}
                   book={b}
                   editing={editing?.isbn === b.isbn ? editing : undefined}
+                  removing={removing.has(b.isbn)}
                   onEdit={() => {
                     setEditing({ isbn: b.isbn, text: b.note, saving: false });
                   }}
@@ -215,6 +243,7 @@ export function Books() {
 interface BookItemProps {
   book: ReadingBook;
   editing: Editing | undefined;
+  removing: boolean;
   onEdit: () => void;
   onChange: (text: string) => void;
   onCancel: () => void;
@@ -226,6 +255,7 @@ interface BookItemProps {
 function BookItem({
   book,
   editing,
+  removing,
   onEdit,
   onChange,
   onCancel,
@@ -251,6 +281,7 @@ function BookItem({
             id={inputId}
             type="text"
             value={editing.text}
+            readOnly={editing.saving}
             onChange={(e) => {
               onChange(e.target.value);
             }}
@@ -278,7 +309,7 @@ function BookItem({
           <button type="button" onClick={onEdit}>
             メモを編集
           </button>
-          <button type="button" onClick={onRemove}>
+          <button type="button" onClick={onRemove} disabled={removing}>
             外す
           </button>
         </div>
@@ -323,19 +354,44 @@ interface FinderProps {
 function BookFinder({ registered, onAdded }: FinderProps) {
   const handleError = useApiErrorHandler();
   const ids = { q: useId(), author: useId(), publisher: useId() };
-  const [form, setForm] = useState({ q: "", author: "", publisher: "" });
-  const [search, setSearch] = useState<SearchState>({ kind: "idle" });
+  // 再ログインの前に登録しかけた本があれば、同じ条件で探し直し、その本のメモの入力欄に戻す（research W12）。
+  const [restore, setRestore] = useState<AddDraft | undefined>(() =>
+    peekDraft("add"),
+  );
+  const [form, setForm] = useState(
+    () => restore?.query ?? { q: "", author: "", publisher: "" },
+  );
+  const [search, setSearch] = useState<SearchState>(() =>
+    restore ? { kind: "loading", query: restore.query } : { kind: "idle" },
+  );
+  const [formError, setFormError] = useState<string | undefined>(undefined);
+
+  const fetchResult = useCallback(
+    (query: BookQuery) => {
+      searchBooks(query)
+        .then((result) => {
+          setSearch({ kind: "done", query, result });
+        })
+        .catch(handleError)
+        .catch((e: unknown) => {
+          setSearch({ kind: "error", query, message: messageOf(e) });
+        });
+    },
+    [handleError],
+  );
+
+  const restored = useRef(false);
+  useEffect(() => {
+    if (restore && !restored.current) {
+      restored.current = true;
+      clearDraft();
+      fetchResult(restore.query);
+    }
+  }, [restore, fetchResult]);
 
   const run = (query: BookQuery) => {
     setSearch({ kind: "loading", query });
-    searchBooks(query)
-      .then((result) => {
-        setSearch({ kind: "done", query, result });
-      })
-      .catch(handleError)
-      .catch((e: unknown) => {
-        setSearch({ kind: "error", query, message: messageOf(e) });
-      });
+    fetchResult(query);
   };
 
   const onSubmit = () => {
@@ -345,8 +401,11 @@ function BookFinder({ registered, onAdded }: FinderProps) {
       publisher: form.publisher.trim(),
     };
     if (query.q === "") {
+      setFormError("書名または ISBN を入力してください");
       return;
     }
+    setFormError(undefined);
+    setRestore(undefined);
     run(query);
   };
 
@@ -391,6 +450,11 @@ function BookFinder({ registered, onAdded }: FinderProps) {
         <button type="submit" disabled={search.kind === "loading"}>
           探す
         </button>
+        {formError !== undefined && (
+          <p className="error" role="alert">
+            {formError}
+          </p>
+        )}
       </form>
       {search.kind === "loading" && <p>探しています…</p>}
       {search.kind === "error" && (
@@ -406,6 +470,7 @@ function BookFinder({ registered, onAdded }: FinderProps) {
           query={search.query}
           result={search.result}
           registered={registered}
+          restore={restore}
           onAdded={onAdded}
         />
       )}
@@ -417,10 +482,18 @@ interface ResultProps {
   query: BookQuery;
   result: BookSearch;
   registered: readonly ReadingBook[];
+  /** 再ログインの前に登録しかけた本。その本のメモの入力欄を開いておく。 */
+  restore: AddDraft | undefined;
   onAdded: (book: ReadingBook) => void;
 }
 
-function SearchResult({ query, result, registered, onAdded }: ResultProps) {
+function SearchResult({
+  query,
+  result,
+  registered,
+  restore,
+  onAdded,
+}: ResultProps) {
   const { credit } = result;
   return (
     <div className="search-result">
@@ -432,7 +505,9 @@ function SearchResult({ query, result, registered, onAdded }: ResultProps) {
           {result.books.map((c) => (
             <Candidate
               key={c.isbn}
+              query={query}
               candidate={c}
+              restoredNote={restore?.isbn === c.isbn ? restore.note : undefined}
               registered={
                 c.registered || registered.some((b) => b.isbn === c.isbn)
               }
@@ -465,16 +540,30 @@ type AddState =
     };
 
 interface CandidateProps {
+  /** この結果を探した条件。本人確認が切れたときに退避する。 */
+  query: BookQuery;
   candidate: BookCandidate;
+  /** 再ログインの前に入力していたメモ。あればメモの入力欄を開いておく。 */
+  restoredNote: string | undefined;
   registered: boolean;
   onAdded: (book: ReadingBook) => void;
 }
 
 /** 検索結果の1件。「登録」を押すとメモ（任意）の入力欄を出し、「登録する」で登録する。 */
-function Candidate({ candidate, registered, onAdded }: CandidateProps) {
+function Candidate({
+  query,
+  candidate,
+  restoredNote,
+  registered,
+  onAdded,
+}: CandidateProps) {
   const handleError = useApiErrorHandler();
   const noteId = useId();
-  const [add, setAdd] = useState<AddState>({ kind: "idle" });
+  const [add, setAdd] = useState<AddState>(() =>
+    restoredNote === undefined
+      ? { kind: "idle" }
+      : { kind: "noting", note: restoredNote, saving: false },
+  );
   const byline = [candidate.author, candidate.publisher].filter(
     (s) => s !== "",
   );
@@ -485,6 +574,21 @@ function Candidate({ candidate, registered, onAdded }: CandidateProps) {
       .then((book) => {
         setAdd({ kind: "idle" });
         onAdded(book);
+      })
+      .catch((e: unknown) => {
+        if (e instanceof UnauthenticatedError) {
+          saveDraft({
+            kind: "add",
+            query: {
+              q: query.q,
+              author: query.author ?? "",
+              publisher: query.publisher ?? "",
+            },
+            isbn: candidate.isbn,
+            note,
+          });
+        }
+        throw e;
       })
       .catch(handleError)
       .catch((e: unknown) => {
@@ -523,6 +627,7 @@ function Candidate({ candidate, registered, onAdded }: CandidateProps) {
             id={noteId}
             type="text"
             value={add.note}
+            readOnly={add.saving}
             onChange={(e) => {
               setAdd({ kind: "noting", note: e.target.value, saving: false });
             }}

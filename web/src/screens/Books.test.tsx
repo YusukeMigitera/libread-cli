@@ -562,3 +562,147 @@ describe("取り込み（T040）", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("レビューでの指摘", () => {
+  test("保存中に別の本のメモを編集し始めても、保存が終わったときにその入力を消さない", async () => {
+    const api = newApi();
+    const patch = deferred();
+    api.override = (method) => {
+      if (method !== "PATCH") {
+        return undefined;
+      }
+      api.override = undefined;
+      return patch.promise;
+    };
+    stubApi(api);
+    const user = userEvent.setup();
+    render(<Books />);
+
+    const neko = await bookItem("吾輩は猫である");
+    await user.click(within(neko).getByRole("button", { name: "メモを編集" }));
+    await user.type(within(neko).getByLabelText("メモ"), "追記");
+    await user.click(within(neko).getByRole("button", { name: "保存" }));
+
+    const botchanItem = await bookItem("坊っちゃん");
+    await user.click(
+      within(botchanItem).getByRole("button", { name: "メモを編集" }),
+    );
+    await user.type(within(botchanItem).getByLabelText("メモ"), "書きかけ");
+
+    patch.resolve(
+      jsonResponse(200, { ...readingBook(), note: "p.120まで追記" }),
+    );
+    expect(await within(neko).findByText("p.120まで追記")).toBeInTheDocument();
+    expect(within(botchanItem).getByLabelText("メモ")).toHaveValue("書きかけ");
+  });
+
+  test("保存中はメモを書き換えられず、「保存」も押せないまま", async () => {
+    const api = newApi();
+    const patch = deferred();
+    api.override = (method) => (method === "PATCH" ? patch.promise : undefined);
+    stubApi(api);
+    const user = userEvent.setup();
+    render(<Books />);
+
+    const item = await bookItem("吾輩は猫である");
+    await user.click(within(item).getByRole("button", { name: "メモを編集" }));
+    const input = within(item).getByLabelText("メモ");
+    await user.click(within(item).getByRole("button", { name: "保存" }));
+    await user.type(input, "さらに");
+
+    expect(input).toHaveValue("p.120まで");
+    expect(within(item).getByRole("button", { name: "保存" })).toBeDisabled();
+    patch.resolve(jsonResponse(200, readingBook()));
+  });
+
+  test("登録で本人確認が切れたら、検索条件とメモを退避し、再ログイン後に戻す（research W12）", async () => {
+    window.location.hash = "#/books";
+    const api = newApi({ books: [botchan] });
+    api.override = (method) =>
+      method === "POST"
+        ? jsonResponse(401, example("error-unauthenticated"))
+        : undefined;
+    const { calls } = stubApi(api);
+    const user = userEvent.setup();
+    const { unmount } = render(<App />);
+
+    await user.type(
+      await screen.findByLabelText("書名または ISBN"),
+      "吾輩は猫である",
+    );
+    await user.type(screen.getByLabelText("著者"), "夏目漱石");
+    await user.click(screen.getByRole("button", { name: "探す" }));
+    const results = await screen.findByRole("list", { name: "検索結果" });
+    const [first] = within(results).getAllByRole("listitem") as [HTMLElement];
+    await user.click(within(first).getByRole("button", { name: "登録" }));
+    await user.type(within(first).getByLabelText("メモ（任意）"), "p.1から");
+    await user.click(within(first).getByRole("button", { name: "登録する" }));
+
+    expect(
+      await screen.findByRole("link", { name: "Google でログイン" }),
+    ).toBeInTheDocument();
+    expect(sessionStorage.length).toBe(1);
+
+    unmount();
+    api.override = undefined;
+    render(<App />);
+    const again = await screen.findByRole("list", { name: "検索結果" });
+    const [restored] = within(again).getAllByRole("listitem") as [HTMLElement];
+    expect(within(restored).getByLabelText("メモ（任意）")).toHaveValue(
+      "p.1から",
+    );
+    expect(screen.getByLabelText("書名または ISBN")).toHaveValue(
+      "吾輩は猫である",
+    );
+    expect(screen.getByLabelText("著者")).toHaveValue("夏目漱石");
+    expect(sessionStorage.length).toBe(0);
+    const searches = calls().filter((c) =>
+      c.path.startsWith("/api/book-search"),
+    );
+    expect(searches).toHaveLength(2);
+    expect(searches[1]?.path).toBe(searches[0]?.path);
+  });
+
+  test("空白だけの「書名または ISBN」では探さず、入力を促す", async () => {
+    const { calls } = stubApi(newApi());
+    const user = userEvent.setup();
+    render(<Books />);
+    await user.type(await screen.findByLabelText("書名または ISBN"), "   ");
+    await user.click(screen.getByRole("button", { name: "探す" }));
+
+    expect(
+      screen.getByText("書名または ISBN を入力してください"),
+    ).toBeInTheDocument();
+    expect(calls().some((c) => c.path.startsWith("/api/book-search"))).toBe(
+      false,
+    );
+  });
+
+  test("外しているあいだは「外す」を押せない。ほかの端末で外し済み（404）なら一覧から外す", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    const api = newApi();
+    const del = deferred();
+    api.override = (method) => (method === "DELETE" ? del.promise : undefined);
+    const { calls } = stubApi(api);
+    const user = userEvent.setup();
+    render(<Books />);
+
+    const item = await bookItem("吾輩は猫である");
+    await user.click(within(item).getByRole("button", { name: "外す" }));
+    expect(within(item).getByRole("button", { name: "外す" })).toBeDisabled();
+
+    del.resolve(
+      jsonResponse(404, {
+        error: {
+          code: "notFound",
+          message: "この本は読みかけの本に登録されていません",
+        },
+      }),
+    );
+    await waitFor(() => {
+      expect(screen.queryByText("吾輩は猫である")).not.toBeInTheDocument();
+    });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(calls().filter((c) => c.method === "DELETE")).toHaveLength(1);
+  });
+});
