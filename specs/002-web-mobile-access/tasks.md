@@ -264,7 +264,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 **Purpose**: ストーリーをまたぐ確認、デプロイ、CLI の廃止
 
-- [ ] T053 [P] Add `internal/server/outbound_test.go`, porting `internal/cli/outbound_test.go` to the API (research W9, Constitution 技術的制約): record every outgoing request across all endpoints and assert no request contains a note, the per-endpoint limits from 001 research R9 hold (`/api/check` one Calil session and no Calil request within 30分 of a fresh cache; library search/add one Calil request; book search/add one NDL request), at most one request per service is in flight, and every request has `User-Agent: libread/<version>`.
+- [X] T053 [P] Add `internal/server/outbound_test.go`, porting `internal/cli/outbound_test.go` to the API (research W9, Constitution 技術的制約): record every outgoing request across all endpoints and assert no request contains a note, the per-endpoint limits from 001 research R9 hold (`/api/check` one Calil session and no Calil request within 30分 of a fresh cache; library search/add one Calil request; book search/add one NDL request), at most one request per service is in flight, and every request has `User-Agent: libread/<version>`.
 - [ ] T054 [P] Add `internal/server/check_perf_test.go` for SC-102, porting `internal/cli/check_perf_test.go`: 10 libraries in 10 systems and 5 books with a Calil fake that stays Running; `/api/check` returns within 10 seconds of injected time and marks them 不明（取得タイムアウト）.
 - [ ] T055 Run `make check` and fix every warning (also run `go test -race ./...`).
 - [ ] T056 Run quickstart.md step 3 locally against the real services and Google, and record any differences in `specs/002-web-mobile-access/quickstart.md`.
