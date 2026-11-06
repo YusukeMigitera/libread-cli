@@ -113,13 +113,27 @@ printf '%s' '<クライアントシークレット>' | gcloud secrets create lib
 openssl rand -base64 32 | tr -d '\n'     | gcloud secrets create libread-session-key --data-file=-
 ```
 
-- Cloud Run のサービスアカウントに、バケットの `roles/storage.objectUser` と、3つの秘密情報の `roles/secretmanager.secretAccessor` を付ける。
+Cloud Run で動かすための専用のサービスアカウント `libread-run` を作り、バケットの `roles/storage.objectUser` と、3つの秘密情報の `roles/secretmanager.secretAccessor` だけを付ける。
+
+```sh
+gcloud iam service-accounts create libread-run --display-name="libread (Cloud Run)"
+gcloud storage buckets add-iam-policy-binding gs://<バケット名> \
+  --member=serviceAccount:libread-run@<プロジェクト ID>.iam.gserviceaccount.com --role=roles/storage.objectUser
+for s in libread-calil-appkey libread-google-client-secret libread-session-key; do
+  gcloud secrets add-iam-policy-binding "$s" \
+    --member=serviceAccount:libread-run@<プロジェクト ID>.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor
+done
+```
+
+- `--service-account` を指定しないと、Compute Engine の既定のサービスアカウントで動く。プロジェクトの編集者ロールが付いていることがあり、ほかのサービスとも共用なので使わない。
+- バケット名は全世界で一意なので、`<プロジェクト ID>-libread` のようにプロジェクト ID を含める。個人情報は入れない。
 - カーリルの開発者ダッシュボードで、アプリケーションキーに呼び出し元の制限がないかを確かめる（research W9）。
 
 デプロイ（2回目以降はこれだけ）:
 
 ```sh
 gcloud run deploy libread --source . --region asia-northeast1 \
+  --service-account libread-run@<プロジェクト ID>.iam.gserviceaccount.com \
   --min-instances 0 --max-instances 1 --allow-unauthenticated \
   --add-volume name=store,type=cloud-storage,bucket=<バケット名> \
   --add-volume-mount volume=store,mount-path=/mnt/store \
