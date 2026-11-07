@@ -4,5 +4,7 @@
 .gcloudignore
 .git
 .github
+# google-github-actions/auth がワークスペースの直下に作る認証情報（OIDC トークンを取り直すための URL と要求用のトークンを含む）
+gha-creds-*.json
 # .gitignore の対象（web/node_modules、web/dist、.env など）
 #!include:.gitignore
