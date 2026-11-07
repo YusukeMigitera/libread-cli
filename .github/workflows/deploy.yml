@@ -8,6 +8,13 @@ name: deploy
 on:
   push:
     branches: [main]
+    # 文書だけの変更ではデプロイしない（イメージのビルドとリビジョンの切り替えを省く）。
+    # push に含まれるファイルがすべてここに当てはまるときだけ動かない。コードと一緒に変えたときは動く。
+    paths-ignore:
+      - "specs/**"
+      - ".specify/**"
+      - ".claude/**"
+      - "README.md"
   workflow_dispatch:
 
 # 既定では何も許さず、ジョブごとに必要な権限だけを付ける。
