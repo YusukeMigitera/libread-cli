@@ -160,6 +160,70 @@ gcloud run deploy libread --source . --region asia-northeast1 \
 - `Dockerfile` は、Node で `web/` をビルドし、Go でサーバーをビルドして、両方を1つのイメージに入れる。
 - デプロイの最中は、画面から保存しない。新旧のリビジョンが短い時間同時に動き、変更が失われることがある（research W3「デプロイ中の例外」）。
 
+### 自動デプロイ（GitHub Actions）
+
+手作業でのデプロイが動いたあと、`main` への push（PR のマージ）で自動でデプロイする（research W13）。
+ワークフローは [`.github/workflows/deploy.yml`](../../.github/workflows/deploy.yml)。`make check` が通ったときだけ、上と同じ `gcloud run deploy` を実行する。
+GitHub から Google Cloud へは Workload Identity 連携で認証し、サービスアカウントの鍵は作らない。
+
+初回だけ、次を用意する。`<リポジトリの ID>` は GitHub のリポジトリの数値の ID
+（`curl -s https://api.github.com/repos/YusukeMigitera/libread-cli | grep -m1 '"id"'`）。
+名前ではなく ID で絞るので、リポジトリ名を変えても、同じ名前の別のリポジトリからは入れない。
+
+```sh
+# Workload Identity プールと、このリポジトリの main からのトークンだけを受け入れるプロバイダ
+gcloud services enable iamcredentials.googleapis.com sts.googleapis.com
+gcloud iam workload-identity-pools create github --location=global --display-name="GitHub Actions"
+gcloud iam workload-identity-pools providers create-oidc libread-cli \
+  --location=global --workload-identity-pool=github --display-name="libread-cli" \
+  --issuer-uri=https://token.actions.githubusercontent.com \
+  --attribute-mapping="google.subject=assertion.sub,attribute.repository_id=assertion.repository_id,attribute.ref=assertion.ref" \
+  --attribute-condition="assertion.repository_id=='<リポジトリの ID>' && assertion.ref=='refs/heads/main'"
+
+# デプロイ用のサービスアカウントと、GitHub Actions からの利用
+gcloud iam service-accounts create libread-deploy --display-name="libread (GitHub Actions deploy)"
+gcloud iam service-accounts add-iam-policy-binding libread-deploy@<プロジェクト ID>.iam.gserviceaccount.com \
+  --role=roles/iam.workloadIdentityUser \
+  --member="principalSet://iam.googleapis.com/projects/<プロジェクト番号>/locations/global/workloadIdentityPools/github/attribute.repository_id/<リポジトリの ID>"
+```
+
+デプロイ用のサービスアカウントには、`gcloud run deploy --source` に要る権限だけを、できるだけ対象のリソースに限って付ける。
+`<ソースのバケット>` は `--source` のソースを置くバケット（`gcloud storage ls` で `run-sources-<プロジェクト ID>-asia-northeast1`）、
+`<ビルドのサービスアカウント>` は `gcloud builds get-default-service-account` の値。
+
+```sh
+DEPLOY=serviceAccount:libread-deploy@<プロジェクト ID>.iam.gserviceaccount.com
+gcloud run services add-iam-policy-binding libread --region asia-northeast1 --member="$DEPLOY" --role=roles/run.admin
+gcloud projects add-iam-policy-binding <プロジェクト ID> --member="$DEPLOY" --role=roles/cloudbuild.builds.editor
+gcloud projects add-iam-policy-binding <プロジェクト ID> --member="$DEPLOY" --role=roles/serviceusage.serviceUsageConsumer
+gcloud storage buckets add-iam-policy-binding gs://<ソースのバケット> --member="$DEPLOY" --role=roles/storage.objectAdmin
+gcloud storage buckets add-iam-policy-binding gs://<ソースのバケット> --member="$DEPLOY" --role=roles/storage.legacyBucketReader
+gcloud artifacts repositories add-iam-policy-binding cloud-run-source-deploy --location asia-northeast1 --member="$DEPLOY" --role=roles/artifactregistry.reader
+for sa in libread-run@<プロジェクト ID>.iam.gserviceaccount.com <ビルドのサービスアカウント>; do
+  gcloud iam service-accounts add-iam-policy-binding "$sa" --member="$DEPLOY" --role=roles/iam.serviceAccountUser
+done
+```
+
+- Artifact Registry へイメージを push するのはビルドのサービスアカウントなので、デプロイ用には読み取り（`artifactregistry.reader`）だけを付ける。
+- `run.admin` は、`--allow-unauthenticated` で公開の設定（IAM ポリシー）を書くのに要る。
+
+GitHub のリポジトリ変数（Settings → Secrets and variables → Actions → Variables）に、次を登録する。秘密情報は GitHub に置かない（Secret Manager にある）。
+
+| 変数 | 値 |
+|---|---|
+| `GCP_PROJECT_ID` | プロジェクト ID |
+| `GCP_REGION` | `asia-northeast1` |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | `projects/<プロジェクト番号>/locations/global/workloadIdentityPools/github/providers/libread-cli` |
+| `GCP_DEPLOY_SERVICE_ACCOUNT` | `libread-deploy@<プロジェクト ID>.iam.gserviceaccount.com` |
+| `GCP_RUN_SERVICE_ACCOUNT` | `libread-run@<プロジェクト ID>.iam.gserviceaccount.com` |
+| `LIBREAD_BUCKET` | バケット名 |
+| `LIBREAD_OWNER_EMAIL` | 本人の Google アカウント |
+| `LIBREAD_GOOGLE_CLIENT_ID` | OAuth クライアントの ID |
+| `LIBREAD_PUBLIC_ORIGIN` | `https://<Cloud Run の URL>` |
+
+- PR をマージすると、Actions の deploy が走る。終わるまで（数分）画面から保存しない（research W3「デプロイ中の例外」）。
+- Actions の画面の「Run workflow」からも手で実行できる（`workflow_dispatch`）。
+
 ## 5. スマートフォンでの確認
 
 1. スマートフォンのブラウザで `https://<Cloud Run の URL>` を開き、ログインする。ホーム画面に追加しておく。iPhone では Safari でログインできることを確かめる（ローカルの `http://localhost` では Safari でログインできないため、ここが最初の確認になる）。

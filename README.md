@@ -37,7 +37,10 @@
 2. Google Cloud で OAuth クライアント（種類「ウェブ アプリケーション」）を作り、承認済みのリダイレクト URI に `https://<Cloud Run の URL>/auth/callback` を加える。
 3. リポジトリ直下で `gcloud run deploy libread --source . ...` を実行する。`Dockerfile` が画面とサーバーをビルドして1つのイメージにする。
 
-デプロイの最中は画面から保存しないでください。新旧のリビジョンが短い時間同時に動き、変更が失われることがあります（[research.md W3](specs/002-web-mobile-access/research.md)）。
+`main` に push する（PR をマージする）と、GitHub Actions（[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)）が `make check` を通したうえで、同じ `gcloud run deploy` を自動で実行します。
+Google Cloud へは Workload Identity 連携で認証し、サービスアカウントの鍵は使いません。初回の準備は [quickstart.md 手順 4「自動デプロイ」](specs/002-web-mobile-access/quickstart.md#自動デプロイgithub-actions) にあります。
+
+デプロイの最中（PR をマージしてから Actions の deploy が終わるまで）は画面から保存しないでください。新旧のリビジョンが短い時間同時に動き、変更が失われることがあります（[research.md W3](specs/002-web-mobile-access/research.md)）。
 
 ## データの保存場所
 
