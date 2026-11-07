@@ -99,7 +99,7 @@ Safari でのログインは、HTTPS になる本番で確かめる（手順 5-1
   `libread_login` がないと、Google から戻ったときに state を照合できず、ログインを拒否する。
   Chrome・Firefox は localhost の `Secure` の Cookie を保存するので、この問題は起きない。
   本番は HTTPS なので起きないはずで、`Secure` は外さない。手順 3 の冒頭に、ローカルでは Chrome か Firefox を使うことを追記した。
-  iPhone の Safari でのログインは手順 5-1 で確かめる。
+  本番（HTTPS）では PC の Safari でログインできた（本番での確認結果）。
 
 ## 4. Cloud Run へのデプロイ
 
@@ -181,9 +181,9 @@ gcloud run deploy libread --source . --region asia-northeast1 \
 | 4. 停止状態から30秒以内（SC-102） | 2026-11-07 | 期待どおり（30秒以内） |
 | 5. `http://` から `https://` へ（FR-119） | 2026-11-07 | 期待どおり |
 | 6. 館内でのメモの書き換え（SC-106） | 2026-11-07 | 期待どおり（30秒以内） |
-| 7. デプロイ後もデータが残る（SC-107） | — | 未実施 |
-| PC のブラウザの 360px 幅（FR-115） | — | 未実施 |
-| PC の Safari でのログイン（HTTPS） | — | 未実施。iOS Safari の代わりに、同じ WebKit の PC の Safari で本番にログインできるかを確かめる（ローカルの `http://localhost` ではログインできなかったため） |
+| 7. デプロイ後もデータが残る（SC-107） | 2026-11-07 | 期待どおり。同じ `gcloud run deploy` で新しいリビジョンをデプロイしたあとも、本・図書館・メモが残っていた |
+| PC のブラウザの 360px 幅（FR-115） | 2026-11-07 | 期待どおり。表示は崩れなかった |
+| PC の Safari でのログイン（HTTPS） | 2026-11-07 | 期待どおり。iOS Safari の代わりに、同じ WebKit の PC の Safari で本番にログインできた。ローカルで Safari がログインできなかった原因は、推定どおり `http://localhost` での `Secure` の Cookie と考えてよい |
 
 ## 6. 001 の CLI の廃止（FR-117）
 

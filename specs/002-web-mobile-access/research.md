@@ -172,7 +172,7 @@
 - サーバーはすべての応答に `Strict-Transport-Security: max-age=31536000` を付ける。セッション Cookie には `Secure` を付ける。
 - ローカルでの確認は `http://localhost` で行う。Chrome・Firefox は localhost を安全な接続として扱うので、`Secure` の Cookie も使える。
   Safari（WebKit）は `http://localhost` で `Secure` の Cookie を保存しないため、ローカルではログインできない（quickstart 手順 3 の確認結果、2026-11-06）。
-  開発のためだけに `Secure` を外す分岐は入れない（本番の安全に関わる設定を、開発の都合で変えないため）。Safari では本番（HTTPS）で確かめる。
+  開発のためだけに `Secure` を外す分岐は入れない（本番の安全に関わる設定を、開発の都合で変えないため）。Safari では本番（HTTPS）で確かめ、PC の Safari でログインできた（2026-11-07）。
 
 ## W11. ログ（spec の Outstanding「運用の監視」）
 
