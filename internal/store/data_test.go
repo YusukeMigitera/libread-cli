@@ -234,10 +234,11 @@ func TestResolveDataDir(t *testing.T) {
 }
 
 // ParseData は Load と同じ内容を受け付け、同じ Data を返す（research W8: 取り込みで使う）。
+// データは 001 の CLI の data.json と同じ形のもの（internal/server/testdata に写してある）。
 func TestParseDataMatchesLoad(t *testing.T) {
 	for _, name := range []string{"check_scenario1.json", "check_example.json", "check_edge.json", "check_single.json"} {
 		t.Run(name, func(t *testing.T) {
-			raw, err := os.ReadFile(filepath.Join("..", "cli", "testdata", name))
+			raw, err := os.ReadFile(filepath.Join("..", "server", "testdata", name))
 			if err != nil {
 				t.Fatal(err)
 			}
