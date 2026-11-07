@@ -218,21 +218,6 @@ func TestSaveCreatesDir(t *testing.T) {
 	}
 }
 
-func TestResolveDataDir(t *testing.T) {
-	got, err := ResolveDataDir("/tmp/custom")
-	if err != nil || got != "/tmp/custom" {
-		t.Errorf("override: got %q, %v", got, err)
-	}
-	base, err := os.UserConfigDir()
-	if err != nil {
-		t.Skip("UserConfigDir を取得できない環境")
-	}
-	got, err = ResolveDataDir("")
-	if err != nil || got != filepath.Join(base, "libread") {
-		t.Errorf("default: got %q, %v; want %q", got, err, filepath.Join(base, "libread"))
-	}
-}
-
 // ParseData は Load と同じ内容を受け付け、同じ Data を返す（research W8: 取り込みで使う）。
 // データは 001 の CLI の data.json と同じ形のもの（internal/server/testdata に写してある）。
 func TestParseDataMatchesLoad(t *testing.T) {

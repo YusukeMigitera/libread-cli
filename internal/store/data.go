@@ -24,18 +24,6 @@ type Data struct {
 	Libraries []domain.RegisteredLibrary
 }
 
-// ResolveDataDir は LIBREAD_DATA_DIR の値（空なら os.UserConfigDir()/libread）を返す。
-func ResolveDataDir(override string) (string, error) {
-	if override != "" {
-		return override, nil
-	}
-	base, err := os.UserConfigDir()
-	if err != nil {
-		return "", fmt.Errorf("設定ディレクトリを特定できません（LIBREAD_DATA_DIR で指定できます）: %w", err)
-	}
-	return filepath.Join(base, "libread"), nil
-}
-
 // Load は dir/data.json を読む。ファイルがなければ空のデータを返す。
 func Load(dir string) (Data, error) {
 	path := filepath.Join(dir, dataFileName)
