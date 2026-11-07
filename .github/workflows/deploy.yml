@@ -1,6 +1,7 @@
 # main への push（PR のマージ）で、品質ゲートを通してから Cloud Run にデプロイする（research W13、quickstart.md 手順 4）。
 # Google Cloud へは Workload Identity 連携で認証する。サービスアカウントの鍵は使わない。
 # 秘密でない設定はリポジトリ変数（Settings → Secrets and variables → Actions → Variables）に置く。
+# ただし本人のメールアドレスは、公開リポジトリの Actions のログに出ないよう、リポジトリのシークレットに置く（シークレットはログで伏せられる）。
 # 秘密情報（カーリルのキー、クライアントシークレット、セッションの鍵）は Secret Manager にあり、GitHub には置かない。
 name: deploy
 
@@ -70,7 +71,7 @@ jobs:
           REGION: ${{ vars.GCP_REGION }}
           RUN_SERVICE_ACCOUNT: ${{ vars.GCP_RUN_SERVICE_ACCOUNT }}
           BUCKET: ${{ vars.LIBREAD_BUCKET }}
-          OWNER_EMAIL: ${{ vars.LIBREAD_OWNER_EMAIL }}
+          OWNER_EMAIL: ${{ secrets.LIBREAD_OWNER_EMAIL }}
           CLIENT_ID: ${{ vars.LIBREAD_GOOGLE_CLIENT_ID }}
           PUBLIC_ORIGIN: ${{ vars.LIBREAD_PUBLIC_ORIGIN }}
         run: |

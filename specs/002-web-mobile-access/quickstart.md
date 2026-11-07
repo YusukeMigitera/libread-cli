@@ -200,7 +200,7 @@ gcloud run services add-iam-policy-binding libread --region asia-northeast1 --me
 gcloud projects add-iam-policy-binding <プロジェクト ID> --member="$DEPLOY" --role=roles/cloudbuild.builds.editor
 gcloud projects add-iam-policy-binding <プロジェクト ID> --member="$DEPLOY" --role=roles/serviceusage.serviceUsageConsumer
 gcloud storage buckets add-iam-policy-binding gs://<ソースのバケット> --member="$DEPLOY" --role=roles/storage.objectAdmin
-gcloud storage buckets add-iam-policy-binding gs://<ソースのバケット> --member="$DEPLOY" --role=roles/storage.legacyBucketReader
+gcloud projects add-iam-policy-binding <プロジェクト ID> --member="$DEPLOY" --role=roles/storage.bucketViewer
 gcloud artifacts repositories add-iam-policy-binding cloud-run-source-deploy --location asia-northeast1 --member="$DEPLOY" --role=roles/artifactregistry.reader
 for sa in libread-run@<プロジェクト ID>.iam.gserviceaccount.com <ビルドのサービスアカウント>; do
   gcloud iam service-accounts add-iam-policy-binding "$sa" --member="$DEPLOY" --role=roles/iam.serviceAccountUser
@@ -209,8 +209,10 @@ done
 
 - Artifact Registry へイメージを push するのはビルドのサービスアカウントなので、デプロイ用には読み取り（`artifactregistry.reader`）だけを付ける。
 - `run.admin` は、`--allow-unauthenticated` で公開の設定（IAM ポリシー）を書くのに要る。
+- `storage.bucketViewer`（プロジェクト）は、`--source` がソースのバケットを探すのに要る（`storage.buckets.list`。バケットの中身は読めない）。バケットにだけ付けた権限では足りず、初回の自動デプロイ（2026-11-07）が `storage.buckets.list` の不足で失敗した。
 
 GitHub のリポジトリ変数（Settings → Secrets and variables → Actions → Variables）に、次を登録する。秘密情報は GitHub に置かない（Secret Manager にある）。
+リポジトリは公開なので、Actions のログは誰でも見られる。変数の値はログにそのまま出るので、個人情報は変数に置かない。
 
 | 変数 | 値 |
 |---|---|
@@ -220,9 +222,10 @@ GitHub のリポジトリ変数（Settings → Secrets and variables → Actions
 | `GCP_DEPLOY_SERVICE_ACCOUNT` | `libread-deploy@<プロジェクト ID>.iam.gserviceaccount.com` |
 | `GCP_RUN_SERVICE_ACCOUNT` | `libread-run@<プロジェクト ID>.iam.gserviceaccount.com` |
 | `LIBREAD_BUCKET` | バケット名 |
-| `LIBREAD_OWNER_EMAIL` | 本人の Google アカウント |
 | `LIBREAD_GOOGLE_CLIENT_ID` | OAuth クライアントの ID |
 | `LIBREAD_PUBLIC_ORIGIN` | `https://<Cloud Run の URL>` |
+
+本人の Google アカウントは、リポジトリのシークレット（同じ画面の **Secrets**）の `LIBREAD_OWNER_EMAIL` に登録する。シークレットの値はログで伏せられる。
 
 - PR をマージすると、Actions の deploy が走る。終わるまで（数分）画面から保存しない（research W3「デプロイ中の例外」）。
 - Actions の画面の「Run workflow」からも手で実行できる（`workflow_dispatch`）。
