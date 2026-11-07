@@ -230,6 +230,13 @@ GitHub のリポジトリ変数（Settings → Secrets and variables → Actions
 - PR をマージすると、Actions の deploy が走る。終わるまで（数分）画面から保存しない（research W3「デプロイ中の例外」）。
 - Actions の画面の「Run workflow」からも手で実行できる（`workflow_dispatch`）。
 
+#### 自動デプロイの確認結果（T062）
+
+| 日時 | 実行 | 結果 |
+|---|---|---|
+| 2026-11-07 11:46 UTC | [deploy #1](https://github.com/YusukeMigitera/libread-cli/actions/runs/42369568628)（PR #16 のマージ） | 失敗。`check` は成功し、`deploy` のソースのアップロードで `403`（`storage.buckets.list` がない）になった。デプロイ用のサービスアカウントにプロジェクトの `roles/storage.bucketViewer` を足した。あわせて、リポジトリ変数の値（本人のメールアドレス）が公開のログに出ていたので、メールアドレスをシークレットに移し、このログを削除した |
+| 2026-11-07 12:14 UTC | [deploy #2](https://github.com/YusukeMigitera/libread-cli/actions/runs/42371609076)（PR #17 のマージ） | 成功。`check` 約1分、`deploy` 約4分（ビルド約4分）。リビジョン `libread-00004-czw` が 100% のトラフィックを受けた。ログでメールアドレスは `***` に伏せられていた |
+
 ## 5. スマートフォンでの確認
 
 1. スマートフォンのブラウザで `https://<Cloud Run の URL>` を開き、ログインする。ホーム画面に追加しておく。iPhone では Safari でログインできることを確かめる（ローカルの `http://localhost` では Safari でログインできないため、ここが最初の確認になる）。
