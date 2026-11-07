@@ -1,0 +1,8 @@
+# gcloud run deploy --source . でアップロードしないファイル（quickstart.md 手順 4）。
+# このファイルがあると gcloud は既定の除外を使わないので、除外するものをすべてここに書く。
+# イメージに入るものは Dockerfile と .dockerignore が決める。ここではアップロードの量と、秘密情報を送らないことを守る。
+.gcloudignore
+.git
+.github
+# .gitignore の対象（web/node_modules、web/dist、.env など）
+#!include:.gitignore
