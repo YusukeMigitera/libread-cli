@@ -90,7 +90,7 @@ Safari でのログインは、HTTPS になる本番で確かめる（手順 5-1
 | 3. 図書館 | 2026-11-06 | 期待どおり。手順との違いはなかった |
 | 4. 本 | 2026-11-06 | 期待どおり。手順との違いはなかった |
 | 5. 今日 | 2026-11-06 | 期待どおり。手順との違いはなかった |
-| 6. すべての端末からログアウト | 2026-11-06 | 期待どおり（Chrome の通常のウィンドウとシークレットウィンドウで確認） |
+| 6. すべての端末からログアウト | 2026-11-06 | 期待どおり（Brave の通常のウィンドウとシークレットウィンドウで確認） |
 
 手順との違い:
 
@@ -164,6 +164,9 @@ gcloud run deploy libread --source . --region asia-northeast1 \
 
 手作業でのデプロイが動いたあと、`main` への push（PR のマージ）で自動でデプロイする（research W13）。
 ワークフローは [`.github/workflows/deploy.yml`](../../.github/workflows/deploy.yml)。`make check` が通ったときだけ、上と同じ `gcloud run deploy` を実行する。
+品質ゲート（`check`）とデプロイ（`deploy`）はジョブを分ける。品質ゲートでは依存パッケージのスクリプトやテストのコードが動くので、
+OIDC トークンを取れるのはデプロイのジョブだけにする。デプロイのジョブでは Go・Node・npm を使わない（ビルドは Cloud Build が行う）。
+アップロードしないファイルは `.gcloudignore` に書く（`.git` と `.gitignore` の対象。`gcloud meta list-files-for-upload .` で確かめられる）。
 GitHub から Google Cloud へは Workload Identity 連携で認証し、サービスアカウントの鍵は作らない。
 
 初回だけ、次を用意する。`<リポジトリの ID>` は GitHub のリポジトリの数値の ID
