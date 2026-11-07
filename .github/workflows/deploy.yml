@@ -1,0 +1,84 @@
+# main への push（PR のマージ）で、品質ゲートを通してから Cloud Run にデプロイする（research W13、quickstart.md 手順 4）。
+# Google Cloud へは Workload Identity 連携で認証する。サービスアカウントの鍵は使わない。
+# 秘密でない設定はリポジトリ変数（Settings → Secrets and variables → Actions → Variables）に置く。
+# 秘密情報（カーリルのキー、クライアントシークレット、セッションの鍵）は Secret Manager にあり、GitHub には置かない。
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 既定では何も許さず、ジョブごとに必要な権限だけを付ける。
+permissions: {}
+
+jobs:
+  # 品質ゲート。依存パッケージのスクリプト（npm ci）やテストのコードが動くので、
+  # OIDC トークンを取れないようにする（id-token を付けない）。
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: 品質ゲート
+        run: make check
+
+  # デプロイ。品質ゲートが通ったときだけ動く。ビルドは Cloud Build が行うので、ここでは Go・Node・npm を使わず、
+  # OIDC トークンを使うのは固定したアクションと gcloud だけにする。
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write # Workload Identity 連携の OIDC トークン
+    # デプロイを重ねない。途中で止めるとリビジョンが中途半端になるので、前のデプロイの終わりを待つ。
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # GitHub のトークンを .git/config に残さない（ソースのアップロードに含めない）
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      # quickstart.md 手順 4 と同じコマンド。変えるときは両方を直す。
+      - name: Cloud Run にデプロイ
+        env:
+          PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          REGION: ${{ vars.GCP_REGION }}
+          RUN_SERVICE_ACCOUNT: ${{ vars.GCP_RUN_SERVICE_ACCOUNT }}
+          BUCKET: ${{ vars.LIBREAD_BUCKET }}
+          OWNER_EMAIL: ${{ vars.LIBREAD_OWNER_EMAIL }}
+          CLIENT_ID: ${{ vars.LIBREAD_GOOGLE_CLIENT_ID }}
+          PUBLIC_ORIGIN: ${{ vars.LIBREAD_PUBLIC_ORIGIN }}
+        run: |
+          gcloud run deploy libread --source . --project "$PROJECT_ID" --region "$REGION" --quiet \
+            --service-account "$RUN_SERVICE_ACCOUNT" \
+            --min-instances 0 --max-instances 1 --allow-unauthenticated \
+            --add-volume name=store,type=cloud-storage,bucket="$BUCKET" \
+            --add-volume-mount volume=store,mount-path=/mnt/store \
+            --set-env-vars LIBREAD_DATA_DIR=/mnt/store/data,LIBREAD_CACHE_DIR=/mnt/store/cache,LIBREAD_STATIC_DIR=/app/static \
+            --set-env-vars LIBREAD_OWNER_EMAIL="$OWNER_EMAIL",LIBREAD_GOOGLE_CLIENT_ID="$CLIENT_ID",LIBREAD_PUBLIC_ORIGIN="$PUBLIC_ORIGIN" \
+            --set-secrets LIBREAD_CALIL_APPKEY=libread-calil-appkey:latest,LIBREAD_GOOGLE_CLIENT_SECRET=libread-google-client-secret:latest,LIBREAD_SESSION_KEY=libread-session-key:latest

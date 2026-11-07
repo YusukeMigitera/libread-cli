@@ -24,18 +24,6 @@ type Data struct {
 	Libraries []domain.RegisteredLibrary
 }
 
-// ResolveDataDir は LIBREAD_DATA_DIR の値（空なら os.UserConfigDir()/libread）を返す。
-func ResolveDataDir(override string) (string, error) {
-	if override != "" {
-		return override, nil
-	}
-	base, err := os.UserConfigDir()
-	if err != nil {
-		return "", fmt.Errorf("設定ディレクトリを特定できません（LIBREAD_DATA_DIR で指定できます）: %w", err)
-	}
-	return filepath.Join(base, "libread"), nil
-}
-
 // Load は dir/data.json を読む。ファイルがなければ空のデータを返す。
 func Load(dir string) (Data, error) {
 	path := filepath.Join(dir, dataFileName)
@@ -46,18 +34,23 @@ func Load(dir string) (Data, error) {
 	if err != nil {
 		return Data{}, fmt.Errorf("%s を読み込めません: %w", path, err)
 	}
-	var f dataFile
-	if err := json.Unmarshal(raw, &f); err != nil {
-		return Data{}, fmt.Errorf("%s の形式が正しくありません: %w", path, err)
-	}
-	if f.Version != schemaVersion {
-		return Data{}, fmt.Errorf("%s: 対応していないバージョン %d です", path, f.Version)
-	}
-	d, err := f.toDomain()
+	d, err := ParseData(raw)
 	if err != nil {
 		return Data{}, fmt.Errorf("%s: %w", path, err)
 	}
 	return d, nil
+}
+
+// ParseData は data.json の中身を検証して読む。001 の data.json の取り込み（research W8）でも使う。
+func ParseData(raw []byte) (Data, error) {
+	var f dataFile
+	if err := json.Unmarshal(raw, &f); err != nil {
+		return Data{}, fmt.Errorf("形式が正しくありません: %w", err)
+	}
+	if f.Version != schemaVersion {
+		return Data{}, fmt.Errorf("対応していないバージョン %d です", f.Version)
+	}
+	return f.toDomain()
 }
 
 // Save は d を dir/data.json にアトミックに書き込む。

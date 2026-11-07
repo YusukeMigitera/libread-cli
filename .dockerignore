@@ -1,0 +1,6 @@
+web/node_modules
+web/dist
+bin/
+.git
+.env*
+gha-creds-*.json

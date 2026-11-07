@@ -218,17 +218,48 @@ func TestSaveCreatesDir(t *testing.T) {
 	}
 }
 
-func TestResolveDataDir(t *testing.T) {
-	got, err := ResolveDataDir("/tmp/custom")
-	if err != nil || got != "/tmp/custom" {
-		t.Errorf("override: got %q, %v", got, err)
+// ParseData は Load と同じ内容を受け付け、同じ Data を返す（research W8: 取り込みで使う）。
+// データは 001 の CLI の data.json と同じ形のもの（internal/server/testdata に写してある）。
+func TestParseDataMatchesLoad(t *testing.T) {
+	for _, name := range []string{"check_scenario1.json", "check_example.json", "check_edge.json", "check_single.json"} {
+		t.Run(name, func(t *testing.T) {
+			raw, err := os.ReadFile(filepath.Join("..", "server", "testdata", name))
+			if err != nil {
+				t.Fatal(err)
+			}
+			dir := t.TempDir()
+			if err := os.WriteFile(filepath.Join(dir, "data.json"), raw, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			want, err := Load(dir)
+			if err != nil {
+				t.Fatalf("Load: %v", err)
+			}
+			got, err := ParseData(raw)
+			if err != nil {
+				t.Fatalf("ParseData: %v", err)
+			}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("ParseData と Load の結果が違う\n got: %+v\nwant: %+v", got, want)
+			}
+		})
 	}
-	base, err := os.UserConfigDir()
-	if err != nil {
-		t.Skip("UserConfigDir を取得できない環境")
+}
+
+func TestParseDataRejectsInvalid(t *testing.T) {
+	tests := map[string]string{
+		"壊れたJSON":    `{"version": 1,`,
+		"未知のversion": `{"version": 2, "books": [], "libraries": []}`,
+		"versionなし":  `{"books": [], "libraries": []}`,
+		"不正なISBN":    `{"version": 1, "books": [{"isbn": "9784003101019", "title": "x", "addedOn": "2026-10-21"}], "libraries": []}`,
+		"開館>=閉館":     `{"version": 1, "books": [], "libraries": [{"systemId": "S", "libKey": "K", "name": "n", "schedule": {"weekly": {"sun": {"open": "09:00", "close": "09:00"}}, "holiday": {"mode": "same"}, "updatedOn": "2026-10-21"}}]}`,
+		"休館期間の開始>終了": `{"version": 1, "books": [], "libraries": [{"systemId": "S", "libKey": "K", "name": "n", "closures": [{"start": "2026-11-14", "end": "2026-11-10"}]}]}`,
 	}
-	got, err = ResolveDataDir("")
-	if err != nil || got != filepath.Join(base, "libread") {
-		t.Errorf("default: got %q, %v; want %q", got, err, filepath.Join(base, "libread"))
+	for name, doc := range tests {
+		t.Run(name, func(t *testing.T) {
+			if _, err := ParseData([]byte(doc)); err == nil {
+				t.Error("want error")
+			}
+		})
 	}
 }

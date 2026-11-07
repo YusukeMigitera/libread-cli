@@ -1,0 +1,358 @@
+/* 画面幅 360px を基準に、1列で横スクロールを出さない（FR-115）。固定の幅は 360px を超えない。 */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Hiragino Sans",
+    "Noto Sans JP",
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fafafa;
+}
+
+img,
+table {
+  max-width: 100%;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 100%;
+  margin: 0 auto;
+  /* 下部のタブに隠れないようにする */
+  padding: 16px 16px calc(72px + env(safe-area-inset-bottom));
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.button,
+button {
+  display: inline-block;
+  max-width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #888;
+  border-radius: 8px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button.primary {
+  border-color: #1a5fb4;
+  background: #1a5fb4;
+  color: #fff;
+}
+
+.error {
+  color: #b00020;
+}
+
+.error-retry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.error-retry p {
+  margin: 0;
+  color: #b00020;
+}
+
+.tabs {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  border-top: 1px solid #ccc;
+  background: #fff;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tabs a {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 12px 4px;
+  color: #555;
+  text-align: center;
+  text-decoration: none;
+}
+
+.tabs a[aria-current="page"] {
+  color: #1a5fb4;
+  font-weight: bold;
+}
+
+/* 今日の画面 */
+
+.checked-at {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.stale {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #fff3cd;
+  color: #7a5200;
+  font-weight: bold;
+}
+
+.stale-note {
+  margin: 0;
+  color: #7a5200;
+}
+
+.book-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.book-select select {
+  max-width: 100%;
+  padding: 8px;
+  font: inherit;
+}
+
+h2 {
+  margin: 8px 0 0;
+  font-size: 1.1rem;
+}
+
+.libraries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.libraries > li {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.libraries h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.libraries .opening {
+  margin: 0;
+}
+
+.holdings {
+  margin: 4px 0 0;
+  padding-left: 1.2em;
+}
+
+.sources {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.sources p,
+.sources ul {
+  margin: 0 0 4px;
+}
+
+/* 本の画面: 001 のデータの取り込み */
+
+.import {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px dashed #888;
+  border-radius: 8px;
+}
+
+.import input[type="file"] {
+  max-width: 100%;
+}
+
+.notice {
+  margin: 0;
+  color: #555;
+}
+
+/* 本の画面: 一覧・メモ・検索と登録 */
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.item p {
+  margin: 0;
+}
+
+.item > button {
+  align-self: flex-start;
+}
+
+.item .title {
+  font-weight: bold;
+}
+
+.item .byline,
+.item .meta {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.item .note {
+  white-space: pre-wrap;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.note-editor,
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.note-editor input,
+.search-form input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.search-form button {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+.search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hint {
+  margin: 0;
+  color: #7a5200;
+}
+
+.credit {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* 図書館の画面: 一覧・開館時間・臨時休館・検索と登録・設定 */
+
+.schedule,
+.closures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.closures {
+  flex-direction: column;
+}
+
+.schedule-editor,
+.closure-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.schedule-editor fieldset,
+.closure-editor fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.schedule-editor .holiday {
+  padding-top: 4px;
+}
+
+.schedule-editor .day,
+.schedule-editor .hours {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.schedule-editor input[type="time"],
+.closure-editor input,
+.search-form select {
+  max-width: 100%;
+  padding: 6px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.settings .actions {
+  flex-direction: column;
+  align-items: flex-start;
+}

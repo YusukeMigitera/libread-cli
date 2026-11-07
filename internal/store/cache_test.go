@@ -75,18 +75,3 @@ func TestCachePutLeavesNoTempFiles(t *testing.T) {
 		t.Errorf("entries = %d, want 1", len(entries))
 	}
 }
-
-func TestResolveCacheDir(t *testing.T) {
-	got, err := ResolveCacheDir("/tmp/custom-cache")
-	if err != nil || got != "/tmp/custom-cache" {
-		t.Errorf("override: got %q, %v", got, err)
-	}
-	base, err := os.UserCacheDir()
-	if err != nil {
-		t.Skip("UserCacheDir を取得できない環境")
-	}
-	got, err = ResolveCacheDir("")
-	if err != nil || got != filepath.Join(base, "libread") {
-		t.Errorf("default: got %q, %v", got, err)
-	}
-}

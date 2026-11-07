@@ -6,6 +6,8 @@
 # 秘密情報
 .env
 .env.*
+# google-github-actions/auth が作る認証情報
+gha-creds-*.json
 
 # Claude Code の個人設定
 .claude/settings.local.json
@@ -15,6 +17,10 @@ coverage.out
 
 # OS
 .DS_Store
+
+# 画面（web/）
+web/node_modules/
+web/dist/
 
 # Go
 *.test
