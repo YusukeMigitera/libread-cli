@@ -264,15 +264,16 @@ description: "Task list for スマートフォンのブラウザから使える 
 
 **Purpose**: ストーリーをまたぐ確認、デプロイ、CLI の廃止
 
-- [ ] T053 [P] Add `internal/server/outbound_test.go`, porting `internal/cli/outbound_test.go` to the API (research W9, Constitution 技術的制約): record every outgoing request across all endpoints and assert no request contains a note, the per-endpoint limits from 001 research R9 hold (`/api/check` one Calil session and no Calil request within 30分 of a fresh cache; library search/add one Calil request; book search/add one NDL request), at most one request per service is in flight, and every request has `User-Agent: libread/<version>`.
-- [ ] T054 [P] Add `internal/server/check_perf_test.go` for SC-102, porting `internal/cli/check_perf_test.go`: 10 libraries in 10 systems and 5 books with a Calil fake that stays Running; `/api/check` returns within 10 seconds of injected time and marks them 不明（取得タイムアウト）.
-- [ ] T055 Run `make check` and fix every warning (also run `go test -race ./...`).
-- [ ] T056 Run quickstart.md step 3 locally against the real services and Google, and record any differences in `specs/002-web-mobile-access/quickstart.md`.
-- [ ] T057 Deploy to Cloud Run following quickstart.md step 4 (bucket, secrets, IAM, Calil key restriction check, `gcloud run deploy`), then run quickstart.md step 5 on the phone. Record the results (including the cold-start time for SC-102 and the 360px check for FR-115) in `specs/002-web-mobile-access/quickstart.md`.
-- [ ] T058 Import the real 001 `data.json` in production (quickstart.md step 3-2) and confirm the counts (SC-108).
-- [ ] T059 Remove the 001 CLI (FR-117, quickstart.md step 6): delete `cmd/libread/` and `internal/cli/` (`internal/server/testdata/` keeps the six data/golden pairs listed in T031). Move any helper still used only by the server out of `internal/cli` first. `make check` must pass afterwards.
-- [ ] T060 Rewrite `README.md` for the Web version: what it is, how to deploy (link to quickstart.md step 4), how to use it on the phone, where data lives (Cloud Storage bucket), the environment variables, development (`make check`, `npm run dev`), and the external-service credits (keep the 001 credits section). Link to `specs/002-web-mobile-access/`.
-- [ ] T061 Change **Status** in `specs/002-web-mobile-access/spec.md` from `Draft` to `Implemented` with the completion date, and note in `specs/001-readable-libraries-today/spec.md` that FR-015（ターミナルからの操作）was superseded by spec 002 FR-117.
+- [X] T053 [P] Add `internal/server/outbound_test.go`, porting `internal/cli/outbound_test.go` to the API (research W9, Constitution 技術的制約): record every outgoing request across all endpoints and assert no request contains a note, the per-endpoint limits from 001 research R9 hold (`/api/check` one Calil session and no Calil request within 30分 of a fresh cache; library search/add one Calil request; book search/add one NDL request), at most one request per service is in flight, and every request has `User-Agent: libread/<version>`.
+- [X] T054 [P] Add `internal/server/check_perf_test.go` for SC-102, porting `internal/cli/check_perf_test.go`: 10 libraries in 10 systems and 5 books with a Calil fake that stays Running; `/api/check` returns within 10 seconds of injected time and marks them 不明（取得タイムアウト）.
+- [X] T055 Run `make check` and fix every warning (also run `go test -race ./...`).
+- [X] T056 Run quickstart.md step 3 locally against the real services and Google, and record any differences in `specs/002-web-mobile-access/quickstart.md`.
+- [X] T057 Deploy to Cloud Run following quickstart.md step 4 (bucket, secrets, IAM, Calil key restriction check, `gcloud run deploy`), then run quickstart.md step 5 on the phone. Record the results (including the cold-start time for SC-102 and the 360px check for FR-115) in `specs/002-web-mobile-access/quickstart.md`.
+- [X] T058 Import the real 001 `data.json` in production (quickstart.md step 3-2) and confirm the counts (SC-108).
+  - **該当なし（2026-11-06）**: 001 の CLI の `data.json` は一時ディレクトリに置いていたため残っておらず、移したいデータもない。本番では Web から直接登録する。取り込みの機能は自動テスト（`internal/server/import_test.go`、`web/src/screens/Import.test.tsx`）で確かめている。
+- [X] T059 Remove the 001 CLI (FR-117, quickstart.md step 6): delete `cmd/libread/` and `internal/cli/` (`internal/server/testdata/` keeps the six data/golden pairs listed in T031). Move any helper still used only by the server out of `internal/cli` first. `make check` must pass afterwards.
+- [X] T060 Rewrite `README.md` for the Web version: what it is, how to deploy (link to quickstart.md step 4), how to use it on the phone, where data lives (Cloud Storage bucket), the environment variables, development (`make check`, `npm run dev`), and the external-service credits (keep the 001 credits section). Link to `specs/002-web-mobile-access/`.
+- [X] T061 Change **Status** in `specs/002-web-mobile-access/spec.md` from `Draft` to `Implemented` with the completion date, and note in `specs/001-readable-libraries-today/spec.md` that FR-015（ターミナルからの操作）was superseded by spec 002 FR-117.
 - [ ] T062 Add automatic deployment (research W13) after the manual deployment in T057 has worked:
   - Set up Workload Identity Federation for this GitHub repository and a deploy service account with only the roles needed for `gcloud run deploy --source` (Cloud Run admin on the service, Cloud Build, Artifact Registry writer, and `iam.serviceAccountUser` on the runtime service account). Do not create a service account key. Record the `gcloud` commands in `specs/002-web-mobile-access/quickstart.md` step 4.
   - Create `.github/workflows/deploy.yml`: on push to `main`, set up Go 1.25 and Node 22, run `make check`, authenticate with `google-github-actions/auth` (Workload Identity), and run the same `gcloud run deploy` command as quickstart.md step 4. Keep non-secret values (project, region, bucket, owner email, client ID, public origin) in GitHub repository variables, never in the workflow file.
@@ -290,7 +291,7 @@ description: "Task list for スマートフォンのブラウザから使える 
 - **US1 (Phase 3)**: Depends on Foundational.
 - **US2 (Phase 4)**: Depends on Foundational. T046 extends `web/src/screens/Books.tsx` created in T040; if US2 is built before US1, create that file in T046 and add the import section later in T040.
 - **US3 (Phase 5)**: Depends on Foundational. The last case in T047 uses `GET /api/check` (T036); if US3 is built before US1, skip that case until T036 is done.
-- **Polish (Phase 6)**: Depends on US1–US3. T057 → T058 → T059 in this order (the CLI is removed only after the production import). T062 needs T057 (a working manual deployment).
+- **Polish (Phase 6)**: Depends on US1–US3. T057 → T058 → T059 in this order (the CLI is removed only after the production import; T058 turned out to be not applicable, so T059 only waits for T057). T062 needs T057 (a working manual deployment).
 
 ### Within Each Phase
 

@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-04
 
-**Status**: Draft
+**Status**: Implemented（2026-11-07。tasks.md の T001〜T061 完了。T058 は取り込むデータがないため該当なし。T062 の自動デプロイは未着手）
 
 **Input**: User description: "libread を Web 化する。スマホのブラウザで見られる画面を作り、クラウドで実行する。利用者は本人1人のまま。フロントエンドは Vite + React で、簡単かつ動的な実装にも対応できるようにしたい。"
 

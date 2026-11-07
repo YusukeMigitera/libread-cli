@@ -1,5 +1,5 @@
 // Package checkrun は、所蔵状況の取得（キャッシュ込み）と「読める」の判定を組み立てる。
-// 001 の CLI（internal/cli）と Web のサーバー（internal/server）が共通で使う。
+// Web のサーバー（internal/server）が使う。001 の CLI と共通にするために切り出したもの（CLI は spec 002 FR-117 で廃止）。
 package checkrun
 
 import (

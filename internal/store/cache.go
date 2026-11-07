@@ -17,18 +17,6 @@ type Cache struct {
 
 func NewCache(dir string) Cache { return Cache{dir: dir} }
 
-// ResolveCacheDir は LIBREAD_CACHE_DIR の値（空なら os.UserCacheDir()/libread）を返す。
-func ResolveCacheDir(override string) (string, error) {
-	if override != "" {
-		return override, nil
-	}
-	base, err := os.UserCacheDir()
-	if err != nil {
-		return "", fmt.Errorf("キャッシュディレクトリを特定できません（LIBREAD_CACHE_DIR で指定できます）: %w", err)
-	}
-	return filepath.Join(base, "libread"), nil
-}
-
 type cacheEntry[T any] struct {
 	StoredAt time.Time `json:"storedAt"`
 	Value    T         `json:"value"`
