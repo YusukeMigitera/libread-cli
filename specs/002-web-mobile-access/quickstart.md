@@ -228,6 +228,7 @@ GitHub のリポジトリ変数（Settings → Secrets and variables → Actions
 本人の Google アカウントは、リポジトリのシークレット（同じ画面の **Secrets**）の `LIBREAD_OWNER_EMAIL` に登録する。シークレットの値はログで伏せられる。
 
 - PR をマージすると、Actions の deploy が走る。終わるまで（数分）画面から保存しない（research W3「デプロイ中の例外」）。
+- 文書だけの変更（`specs/`・`.specify/`・`.claude/`・`README.md` だけを変えた push）ではデプロイしない（`paths-ignore`）。コードと一緒に変えたときはデプロイする。
 - Actions の画面の「Run workflow」からも手で実行できる（`workflow_dispatch`）。
 
 #### 自動デプロイの確認結果（T062）
